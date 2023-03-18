@@ -22,7 +22,8 @@ public class FilmController {
         validate(film);
         film.setId(++nextId);
         films.put(film.getId(), film);
-        log.debug("Выполнен POST /films. Количество фильмов в базе: {}", films.size());
+        log.debug("Выполнен POST /films. Фильм: {}, " +
+                "количество фильмов в базе: {}", film, films.size());
         return film;
     }
 
@@ -30,7 +31,8 @@ public class FilmController {
     public Film updateUser(@Valid @RequestBody Film film) {
         validate(film);
         films.put(film.getId(), film);
-        log.debug("Выполнен PUT /films. Количество фильмов в базе: {}", films.size());
+        log.debug("Выполнен PUT /films. Фильм: {}, " +
+                "количество фильмов в базе: {}", film, films.size());
         return film;
     }
 

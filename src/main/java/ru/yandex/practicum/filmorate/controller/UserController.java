@@ -21,7 +21,8 @@ public class UserController {
         validate(user);
         user.setId(++nextId);
         users.put(user.getId(), user);
-        log.debug("Выполнен POST /users. Количество пользователей в базе: {}", users.size());
+        log.debug("Выполнен POST /users. Пользователь: {}, " +
+                "количество пользователей в базе: {}", user, users.size());
         return user;
     }
 
@@ -29,7 +30,8 @@ public class UserController {
     public User updateUser(@Valid @RequestBody User user) {
         validate(user);
         users.put(user.getId(), user);
-        log.debug("Выполнен PUT /users. Количество пользователей в базе: {}", users.size());
+        log.debug("Выполнен PUT /users. Пользователь: {}, " +
+                "количество пользователей в базе: {}", user, users.size());
         return user;
     }
 
