@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -14,7 +15,7 @@ class FilmControllerTest {
 
     @BeforeEach
     void BeforeEach() {
-        filmController = new FilmController();
+        filmController = new FilmController(new InMemoryFilmStorage());
     }
 
     @Test
@@ -25,8 +26,8 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(1980, Month.MAY, 23));
         film.setDuration(226);
 
-        filmController.createUser(film);
-        assertEquals(1, filmController.findAllUsers().size());
+        filmController.createFilm(film);
+        assertEquals(1, filmController.findAllFilms().size());
     }
 
     @Test
@@ -36,8 +37,8 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(1980, Month.MAY, 23));
         film.setDuration(226);
 
-        assertThrows(RuntimeException.class, () -> filmController.createUser(film));
-        assertEquals(0, filmController.findAllUsers().size());
+        assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
+        assertEquals(0, filmController.findAllFilms().size());
     }
 
     @Test
@@ -50,8 +51,8 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(1980, Month.MAY, 23));
         film.setDuration(226);
 
-        assertThrows(RuntimeException.class, () -> filmController.createUser(film));
-        assertEquals(0, filmController.findAllUsers().size());
+        assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
+        assertEquals(0, filmController.findAllFilms().size());
     }
 
     @Test
@@ -62,8 +63,8 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(1790, Month.MAY, 23));
         film.setDuration(226);
 
-        assertThrows(RuntimeException.class, () -> filmController.createUser(film));
-        assertEquals(0, filmController.findAllUsers().size());
+        assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
+        assertEquals(0, filmController.findAllFilms().size());
     }
 
     @Test
@@ -74,7 +75,7 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(1980, Month.MAY, 23));
         film.setDuration(0);
 
-        assertThrows(RuntimeException.class, () -> filmController.createUser(film));
-        assertEquals(0, filmController.findAllUsers().size());
+        assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
+        assertEquals(0, filmController.findAllFilms().size());
     }
 }

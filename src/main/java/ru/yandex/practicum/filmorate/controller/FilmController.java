@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -14,32 +16,34 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private static int nextId;
-    private final Map<Integer, Film> films = new HashMap<>();
+
+    private FilmStorage filmStorage;
+
+    @Autowired
+    public FilmController(FilmStorage filmStorage) {
+        this.filmStorage = filmStorage;
+    }
 
     @PostMapping
-    public Film createUser(@Valid @RequestBody Film film) {
-        validate(film);
-        film.setId(++nextId);
-        films.put(film.getId(), film);
+    public Film createFilm(@Valid @RequestBody Film film) {
         log.debug("Выполнен POST /films. Фильм: {}, " +
-                "количество фильмов в базе: {}", film, films.size());
-        return film;
+                "количество фильмов в базе: {}", film, filmStorage.findAllFilms().size());
+        validate(film);
+        return filmStorage.createFilm(film);
     }
 
     @PutMapping
-    public Film updateUser(@Valid @RequestBody Film film) {
-        validate(film);
-        films.put(film.getId(), film);
+    public Film updateFilm(@Valid @RequestBody Film film) {
         log.debug("Выполнен PUT /films. Фильм: {}, " +
-                "количество фильмов в базе: {}", film, films.size());
-        return film;
+                "количество фильмов в базе: {}", film, filmStorage.findAllFilms().size());
+        validate(film);
+        return filmStorage.updateFilm(film);
     }
 
     @GetMapping
-    public Collection<Film> findAllUsers() {
+    public Collection<Film> findAllFilms() {
         log.info("Выполнен GET /films");
-        return films.values();
+        return filmStorage.findAllFilms();
     }
 
     private void validate(Film film) throws ValidationException {
@@ -56,7 +60,7 @@ public class FilmController {
                 e = new ValidationException("Продолжительность фильма должна быть положительной");
             }
         } else {
-            if (!films.containsKey(film.getId())) {
+            if (filmStorage.findAllFilms().stream().noneMatch(film1 -> film1.getId() == film.getId())) {
                 e = new ValidationException("Фильма с таким id не существует");
             }
         }
