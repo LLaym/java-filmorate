@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -16,34 +16,33 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-
-    private FilmStorage filmStorage;
+    private FilmService filmService;
 
     @Autowired
-    public FilmController(FilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
     }
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
         log.debug("Выполнен POST /films. Фильм: {}, " +
-                "количество фильмов в базе: {}", film, filmStorage.findAllFilms().size());
+                "количество фильмов в базе: {}", film, filmService.findAllFilms().size());
         validate(film);
-        return filmStorage.createFilm(film);
+        return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
         log.debug("Выполнен PUT /films. Фильм: {}, " +
-                "количество фильмов в базе: {}", film, filmStorage.findAllFilms().size());
+                "количество фильмов в базе: {}", film, filmService.findAllFilms().size());
         validate(film);
-        return filmStorage.updateFilm(film);
+        return filmService.updateFilm(film);
     }
 
     @GetMapping
     public Collection<Film> findAllFilms() {
         log.info("Выполнен GET /films");
-        return filmStorage.findAllFilms();
+        return filmService.findAllFilms();
     }
 
     private void validate(Film film) throws ValidationException {
@@ -60,7 +59,7 @@ public class FilmController {
                 e = new ValidationException("Продолжительность фильма должна быть положительной");
             }
         } else {
-            if (filmStorage.findAllFilms().stream().noneMatch(film1 -> film1.getId() == film.getId())) {
+            if (filmService.findAllFilms().stream().noneMatch(film1 -> film1.getId() == film.getId())) {
                 e = new ValidationException("Фильма с таким id не существует");
             }
         }

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -17,33 +16,32 @@ import java.util.*;
 @RequestMapping("/users")
 public class UserController {
     private UserService userService;
-    private UserStorage userStorage;  // TODO Не уверен что это нужно тут, может реализовать хранение через userService?
+
     @Autowired
-    public UserController(UserService userService, UserStorage userStorage) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userStorage = userStorage;
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
         log.debug("Выполнен POST /users. Пользователь: {}, " +
-                "количество пользователей в базе: {}", user, userStorage.findAllUsers().size());
+                "количество пользователей в базе: {}", user, userService.findAllUsers().size());
         validate(user);
-        return userStorage.createUser(user);
+        return userService.createUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
         log.debug("Выполнен PUT /users. Пользователь: {}, " +
-                "количество пользователей в базе: {}", user, userStorage.findAllUsers().size());
+                "количество пользователей в базе: {}", user, userService.findAllUsers().size());
         validate(user);
-        return userStorage.updateUser(user);
+        return userService.updateUser(user);
     }
 
     @GetMapping
     public Collection<User> findAllUsers() {
         log.info("Выполнен GET /users");
-        return userStorage.findAllUsers();
+        return userService.findAllUsers();
     }
 
     private void validate(User user) throws ValidationException {
@@ -61,7 +59,7 @@ public class UserController {
                 e = new ValidationException("Дата рождения не может быть в будущем.");
             }
         } else {
-            if (userStorage.findAllUsers().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
+            if (userService.findAllUsers().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
                 e = new ValidationException("Пользователя с таким id не существует");
             }
         }

@@ -17,21 +17,33 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    // TODO Метод может быть неверным
-    public String addToFriends(User user1, User user2) {
-        user1.getFriends().add(user2.getId());
-        user2.getFriends().add(user1.getId());
-        return String.format("%s и %s теперь друзья!", user1, user2);
+    public User createUser(User user) {
+        return userStorage.createUser(user);
     }
 
-    // TODO Метод может быть неверным
-    public Collection<User> getMutualFriends(User user1, User user2) {
-        Set<Integer> user1Friends = user1.getFriends();
-        Set<Integer> user2Friends = user2.getFriends();
-        Set<Integer> common = new HashSet<>(user1Friends);
-        common.retainAll(user2Friends);
-
-        return userStorage.findAllUsers().stream()
-                .filter(user -> common.contains(user.getId())).collect(Collectors.toList());
+    public User updateUser(User user) {
+        return userStorage.updateUser(user);
     }
+
+    public Collection<User> findAllUsers() {
+        return userStorage.getAllUsers();
+    }
+
+//    // TODO Метод может быть неверным
+//    public String addToFriends(User user1, User user2) {
+//        user1.getFriends().add(user2.getId());
+//        user2.getFriends().add(user1.getId());
+//        return String.format("%s и %s теперь друзья!", user1, user2);
+//    }
+//    // TODO Метод может быть неверным
+//
+//    public Collection<User> getMutualFriends(User user1, User user2) {
+//        Set<Integer> user1Friends = user1.getFriends();
+//        Set<Integer> user2Friends = user2.getFriends();
+//        Set<Integer> common = new HashSet<>(user1Friends);
+//        common.retainAll(user2Friends);
+//
+//        return userStorage.getAllUsers().stream()
+//                .filter(user -> common.contains(user.getId())).collect(Collectors.toList());
+//    }
 }

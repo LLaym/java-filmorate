@@ -9,5 +9,5 @@ import java.util.Collection;
 public interface FilmStorage {
     Film createFilm(@Valid @RequestBody Film film);
     Film updateFilm(@Valid @RequestBody Film film);
-    Collection<Film> findAllFilms();
+    Collection<Film> getAllFilms();
 }

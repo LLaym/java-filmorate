@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
@@ -11,11 +12,13 @@ import java.time.Month;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
+    FilmService filmService;
     FilmController filmController;
 
     @BeforeEach
     void BeforeEach() {
-        filmController = new FilmController(new InMemoryFilmStorage());
+        filmService = new FilmService(new InMemoryFilmStorage());
+        filmController = new FilmController(filmService);
     }
 
     @Test
