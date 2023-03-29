@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -13,32 +15,33 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private static int nextId;
-    private final Map<Integer, User> users = new HashMap<>();
+    private UserStorage userStorage;
+
+    @Autowired
+    public UserController(UserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
-        validate(user);
-        user.setId(++nextId);
-        users.put(user.getId(), user);
         log.debug("Выполнен POST /users. Пользователь: {}, " +
-                "количество пользователей в базе: {}", user, users.size());
-        return user;
+                "количество пользователей в базе: {}", user, userStorage.findAllUsers().size());
+        validate(user);
+        return userStorage.createUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        validate(user);
-        users.put(user.getId(), user);
         log.debug("Выполнен PUT /users. Пользователь: {}, " +
-                "количество пользователей в базе: {}", user, users.size());
-        return user;
+                "количество пользователей в базе: {}", user, userStorage.findAllUsers().size());
+        validate(user);
+        return userStorage.updateUser(user);
     }
 
     @GetMapping
     public Collection<User> findAllUsers() {
         log.info("Выполнен GET /users");
-        return users.values();
+        return userStorage.findAllUsers();
     }
 
     private void validate(User user) throws ValidationException {
@@ -56,7 +59,7 @@ public class UserController {
                 e = new ValidationException("Дата рождения не может быть в будущем.");
             }
         } else {
-            if (!users.containsKey(user.getId())) {
+            if (userStorage.findAllUsers().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
                 e = new ValidationException("Пользователя с таким id не существует");
             }
         }
