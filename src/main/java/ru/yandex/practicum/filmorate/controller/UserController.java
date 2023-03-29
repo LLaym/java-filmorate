@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
@@ -15,10 +16,11 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private UserStorage userStorage;
-
+    private UserService userService;
+    private UserStorage userStorage;  // TODO Не уверен что это нужно тут, может реализовать хранение через userService?
     @Autowired
-    public UserController(UserStorage userStorage) {
+    public UserController(UserService userService, UserStorage userStorage) {
+        this.userService = userService;
         this.userStorage = userStorage;
     }
 
