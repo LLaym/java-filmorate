@@ -32,4 +32,9 @@ public class UserController {
     public Collection<User> findAllUsers() {
         return userService.findAllUsers();
     }
+
+    @GetMapping("{id}")
+    public User findUserById(@PathVariable Integer id) {
+        return userService.findUserById(id);
+    }
 }
