@@ -22,15 +22,13 @@ public class UserService {
 
     public User createUser(User user) {
         validate(user);
-        log.debug("Выполнен POST /users. Пользователь: {}, " +
-                "количество пользователей в базе: {}", user, userStorage.getAllUsers().size());
+        log.info("Добавлен пользователь: {}", user);
         return userStorage.createUser(user);
     }
 
     public User updateUser(User user) {
         validate(user);
-        log.debug("Выполнен PUT /users. Пользователь: {}, " +
-                "количество пользователей в базе: {}", user, userStorage.getAllUsers().size());
+        log.info("Обновлён пользователь: {}", user);
         return userStorage.updateUser(user);
     }
 

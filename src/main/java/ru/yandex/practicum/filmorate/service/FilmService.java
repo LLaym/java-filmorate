@@ -21,15 +21,13 @@ public class FilmService {
 
     public Film createFilm(Film film) {
         validate(film);
-        log.debug("Выполнен POST /films. Фильм: {}, " +
-                "количество фильмов в базе: {}", film, filmStorage.getAllFilms().size());
+        log.info("Добавлен фильм: {}", film);
         return filmStorage.createFilm(film);
     }
 
     public Film updateFilm(Film film) {
         validate(film);
-        log.debug("Выполнен PUT /films. Фильм: {}, " +
-                "количество фильмов в базе: {}", film, filmStorage.getAllFilms().size());
+        log.info("Обновлён фильм: {}", film);
         return filmStorage.updateFilm(film);
     }
 
