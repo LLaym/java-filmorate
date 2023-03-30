@@ -13,6 +13,7 @@ import java.util.Collection;
 @Slf4j
 @Service
 public class UserService {
+    private static int nextId;
     private UserStorage userStorage;
 
     @Autowired
@@ -22,8 +23,9 @@ public class UserService {
 
     public User createUser(User user) {
         validate(user);
-        log.info("Добавлен пользователь: {}", user);
-        return userStorage.createUser(user);
+        User userWithId = user.toBuilder().id(++nextId).build();
+        log.info("Добавлен пользователь: {}", userWithId);
+        return userStorage.createUser(userWithId);
     }
 
     public User updateUser(User user) {

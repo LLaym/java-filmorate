@@ -13,6 +13,7 @@ import java.util.Collection;
 @Slf4j
 @Service
 public class FilmService {
+    private static int nextId;
     private FilmStorage filmStorage;
 
     public FilmService(FilmStorage filmStorage) {
@@ -21,8 +22,9 @@ public class FilmService {
 
     public Film createFilm(Film film) {
         validate(film);
-        log.info("Добавлен фильм: {}", film);
-        return filmStorage.createFilm(film);
+        Film filmWithId = film.toBuilder().id(++nextId).build();
+        log.info("Добавлен фильм: {}", filmWithId);
+        return filmStorage.createFilm(filmWithId);
     }
 
     public Film updateFilm(Film film) {

@@ -9,14 +9,12 @@ import java.util.Map;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
-    private static int nextId;
     private final Map<Integer, User> users = new HashMap<>();
 
     @Override
     public User createUser(User user) {
-        User userWithId = user.toBuilder().id(++nextId).build();
-        users.put(userWithId.getId(), userWithId);
-        return userWithId;
+        users.put(user.getId(), user);
+        return user;
     }
 
     @Override
