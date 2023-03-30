@@ -23,22 +23,19 @@ class FilmControllerTest {
 
     @Test
     void shouldAdd() {
-        Film film = new Film();
-        film.setName("Shining");
-        film.setDescription("Horror");
-        film.setReleaseDate(LocalDate.of(1980, Month.MAY, 23));
-        film.setDuration(226);
-
+        Film film = Film.builder().name("Shining").description("Horror")
+                .releaseDate(LocalDate.of(1980, Month.MAY, 23))
+                .duration(226).build();
         filmController.createFilm(film);
+
         assertEquals(1, filmController.findAllFilms().size());
     }
 
     @Test
     void shouldSkipEmptyName() {
-        Film film = new Film();
-        film.setDescription("Horror");
-        film.setReleaseDate(LocalDate.of(1980, Month.MAY, 23));
-        film.setDuration(226);
+        Film film = Film.builder().description("Horror")
+                .releaseDate(LocalDate.of(1980, Month.MAY, 23))
+                .duration(226).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(0, filmController.findAllFilms().size());
@@ -46,13 +43,12 @@ class FilmControllerTest {
 
     @Test
     void shouldSkipTooLongDescription() {
-        Film film = new Film();
-        film.setName("Shining");
-        film.setDescription("HorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorror" +
-                "HorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorror" +
-                "HorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorror");
-        film.setReleaseDate(LocalDate.of(1980, Month.MAY, 23));
-        film.setDuration(226);
+        Film film = Film.builder().name("Shining").description("HorrorHorrorHorrorHorrorHorror" +
+                        "HorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorror" +
+                        "HorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorror" +
+                        "HorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorror")
+                .releaseDate(LocalDate.of(1980, Month.MAY, 23))
+                .duration(226).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(0, filmController.findAllFilms().size());
@@ -60,11 +56,9 @@ class FilmControllerTest {
 
     @Test
     void shouldSkipUnsupportedDate() {
-        Film film = new Film();
-        film.setName("Shining");
-        film.setDescription("Horror");
-        film.setReleaseDate(LocalDate.of(1790, Month.MAY, 23));
-        film.setDuration(226);
+        Film film = Film.builder().name("Shining").description("Horror")
+                .releaseDate(LocalDate.of(1790, Month.MAY, 23))
+                .duration(226).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(0, filmController.findAllFilms().size());
@@ -72,11 +66,9 @@ class FilmControllerTest {
 
     @Test
     void zeroDurationFilm() {
-        Film film = new Film();
-        film.setName("Shining");
-        film.setDescription("Horror");
-        film.setReleaseDate(LocalDate.of(1980, Month.MAY, 23));
-        film.setDuration(0);
+        Film film = Film.builder().name("Shining").description("Horror")
+                .releaseDate(LocalDate.of(1980, Month.MAY, 23))
+                .duration(0).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(0, filmController.findAllFilms().size());

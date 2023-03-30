@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -9,8 +10,9 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Data
+@Builder(toBuilder = true)
 public class User {
-    private Set<Integer> friends;
+    private final Set<Integer> friends;
     private int id;
     @Email
     private String email;

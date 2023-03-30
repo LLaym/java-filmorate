@@ -14,9 +14,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film createFilm(Film film) {
-        film.setId(++nextId);
-        films.put(film.getId(), film);
-        return film;
+        Film filmWithId = film.toBuilder().id(++nextId).build();
+        films.put(filmWithId.getId(), filmWithId);
+        return filmWithId;
     }
 
     @Override
