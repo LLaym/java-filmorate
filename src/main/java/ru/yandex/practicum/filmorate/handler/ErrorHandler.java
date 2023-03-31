@@ -16,25 +16,33 @@ public class ErrorHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class, ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse validationExceptionHandler(final Throwable e) {
+    public ErrorResponse handleValidationException(final Throwable e) {
         String error = "ошибка валидации";
-        log.warn("произошла ошибка: {}. описание: {}", error, e.getMessage());
+        log.warn("Произошла ошибка: {}. описание: {}", error, e.getMessage());
         return new ErrorResponse(error, e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse userNotFoundException(final UserNotFoundException e) {
-        String error = "пользователь не найден";
-        log.warn("произошла ошибка: {}. описание: {}", error, e.getMessage());
+    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
+        String error = "ошибка поиска";
+        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
         return new ErrorResponse(error, e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse filmNotFoundException(final FilmNotFoundException e) {
-        String error = "фильм не найден";
-        log.warn("произошла ошибка: {}. описание: {}", error, e.getMessage());
+    public ErrorResponse handleFilmNotFoundException(final FilmNotFoundException e) {
+        String error = "ошибка поиска";
+        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
+        return new ErrorResponse(error, e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleThrowable(final Throwable e) {
+        String error = "непредвиденная ошибка";
+        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
         return new ErrorResponse(error, e.getMessage());
     }
 }
