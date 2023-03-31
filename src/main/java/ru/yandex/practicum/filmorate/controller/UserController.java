@@ -43,4 +43,14 @@ public class UserController {
     public Collection<User> makeTwoUsersStopBeingFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         return userService.makeTwoUsersStopBeingFriends(id, friendId);
     }
+
+    @GetMapping("{id}/friends")
+    public Collection<User> findUserFriends(@PathVariable Integer id) {
+        return userService.findUserFriends(id);
+    }
+
+    @GetMapping("{id}/friends/common/{otherId}")
+    public Collection<User> findUsersMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        return userService.findUsersMutualFriends(id, otherId);
+    }
 }

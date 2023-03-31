@@ -9,8 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -69,6 +68,30 @@ public class UserService {
         return List.of(user1, user2);
     }
 
+    public Collection<User> findUserFriends(Integer id) {
+        validateUserId(id);
+        User user = userStorage.getUserById(id);
+        List<User> usersFriends = new ArrayList<>();
+        user.getFriends().forEach(identifier -> usersFriends.add(userStorage.getUserById(identifier)));
+        log.info("Возвращен список друзей пользователя: {}", usersFriends);
+        return usersFriends;
+    }
+
+    public Collection<User> findUsersMutualFriends(Integer id, Integer otherId) {
+        validateUserId(id);
+        validateUserId(otherId);
+        User user1 = userStorage.getUserById(id);
+        User user2 = userStorage.getUserById(otherId);
+        Set<Integer> user1Friends = user1.getFriends();
+        Set<Integer> user2Friends = user2.getFriends();
+        Set<Integer> common = new HashSet<>(user1Friends);
+        common.retainAll(user2Friends);
+        List<User> mutualFriends = new ArrayList<>();
+        common.forEach(identifier -> mutualFriends.add(userStorage.getUserById(identifier)));
+        log.info("Возвращен список общих друзей: {}", mutualFriends);
+        return mutualFriends;
+    }
+
     private void validateUserId(Integer id) {
         if (id == null || id <= 0) {
             throw new ValidationException("параметр id не может быть меньше 0");
@@ -94,16 +117,4 @@ public class UserService {
             }
         }
     }
-//    // TODO Метод может быть неверным
-//
-//    public Collection<User> getMutualFriends(User user1, User user2) {
-//        Set<Integer> user1Friends = user1.getFriends();
-//        Set<Integer> user2Friends = user2.getFriends();
-//        Set<Integer> common = new HashSet<>(user1Friends);
-//        common.retainAll(user2Friends);
-//
-//        return userStorage.getAllUsers().stream()
-//                .filter(user -> common.contains(user.getId())).collect(Collectors.toList());
-//
-//    }
 }
