@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
@@ -13,23 +14,20 @@ import java.util.Collection;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class FilmService {
     private static int nextId;
     private FilmStorage filmStorage;
 
-    public FilmService(FilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
-    }
-
     public Film createFilm(Film film) {
-        validate(film);
+        validateFilm(film);
         Film filmWithId = film.toBuilder().id(++nextId).build();
         log.info("Добавлен фильм: {}", filmWithId);
         return filmStorage.createFilm(filmWithId);
     }
 
     public Film updateFilm(Film film) {
-        validate(film);
+        validateFilm(film);
         log.info("Обновлён фильм: {}", film);
         return filmStorage.updateFilm(film);
     }
@@ -39,7 +37,7 @@ public class FilmService {
         return filmStorage.getAllFilms();
     }
 
-    private void validate(Film film) throws ValidationException {
+    private void validateFilm(Film film) throws ValidationException {
         boolean isNewFilm = film.getId() == 0;
         if (isNewFilm) {
             if (film.getName() == null || film.getName().equals("")) {

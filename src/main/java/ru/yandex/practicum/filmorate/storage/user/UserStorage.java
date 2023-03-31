@@ -8,6 +8,5 @@ public interface UserStorage {
     User createUser(User user);
     User updateUser(User user);
     Collection<User> getAllUsers();
-
     User getUserById(Integer id);
 }

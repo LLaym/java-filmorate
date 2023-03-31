@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -13,27 +13,23 @@ import java.util.Collection;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class UserService {
     private static int nextId;
     private UserStorage userStorage;
 
-    @Autowired
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
-
     public User createUser(User user) {
-        if (user.getName() == null || user.getName().equals("")) {
+        validateUser(user);
+        user.setId(++nextId);
+        if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
-        validate(user);
-        User userWithId = user.toBuilder().id(++nextId).build();
-        log.info("Добавлен пользователь: {}", userWithId);
-        return userStorage.createUser(userWithId);
+        log.info("Добавлен пользователь: {}", user);
+        return userStorage.createUser(user);
     }
 
     public User updateUser(User user) {
-        validate(user);
+        validateUser(user);
         log.info("Обновлён пользователь: {}", user);
         return userStorage.updateUser(user);
     }
@@ -44,12 +40,22 @@ public class UserService {
     }
 
     public User findUserById(Integer id) {
-        User user = userStorage.getUserById(id); // TODO нужно проверять найден или нет
+        validateId(id);
+        User user = userStorage.getUserById(id);
         log.info("Получен пользователь: {}", user);
         return user;
     }
 
-    private void validate(User user) throws ValidationException {
+    private void validateId(Integer id) {
+        if (id == null || id <= 0) {
+            throw new ValidationException("Параметр id не может быть меньше 0");
+        }
+        if (userStorage.getUserById(id) == null) {
+            throw new UserNotFoundException("Пользователя с таким id не существует");
+        }
+    }
+
+    private void validateUser(User user) throws ValidationException {
         boolean isNewUser = user.getId() == 0;
         if (isNewUser) {
             if (user.getEmail() == null || user.getEmail().equals("") || !user.getEmail().contains("@")) {
@@ -84,5 +90,4 @@ public class UserService {
 //                .filter(user -> common.contains(user.getId())).collect(Collectors.toList());
 //
 //    }
-
 }
