@@ -10,4 +10,6 @@ public interface FilmStorage {
     Film createFilm(@Valid @RequestBody Film film);
     Film updateFilm(@Valid @RequestBody Film film);
     Collection<Film> getAllFilms();
+
+    Film getFilmById(Integer id);
 }

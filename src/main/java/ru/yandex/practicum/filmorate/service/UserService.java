@@ -40,18 +40,18 @@ public class UserService {
     }
 
     public User findUserById(Integer id) {
-        validateId(id);
+        validateUserId(id);
         User user = userStorage.getUserById(id);
         log.info("Получен пользователь: {}", user);
         return user;
     }
 
-    private void validateId(Integer id) {
+    private void validateUserId(Integer id) {
         if (id == null || id <= 0) {
-            throw new ValidationException("Параметр id не может быть меньше 0");
+            throw new ValidationException("параметр id не может быть меньше 0");
         }
         if (userStorage.getUserById(id) == null) {
-            throw new UserNotFoundException("Пользователя с таким id не существует");
+            throw new UserNotFoundException("пользователя с таким id не существует");
         }
     }
 
@@ -59,15 +59,15 @@ public class UserService {
         boolean isNewUser = user.getId() == 0;
         if (isNewUser) {
             if (user.getEmail() == null || user.getEmail().equals("") || !user.getEmail().contains("@")) {
-                throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @");
+                throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
             } else if (user.getLogin() == null || user.getLogin().equals("") || user.getLogin().contains(" ")) {
-                throw new ValidationException("Логин не может быть пустым и содержать пробелы");
+                throw new ValidationException("логин не может быть пустым и содержать пробелы");
             } else if (user.getBirthday().isAfter(LocalDate.now())) {
-                throw new ValidationException("Дата рождения не может быть в будущем.");
+                throw new ValidationException("дата рождения не может быть в будущем.");
             }
         } else {
             if (userStorage.getAllUsers().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
-                throw new UserNotFoundException("Пользователя с таким id не существует");
+                throw new UserNotFoundException("пользователя с таким id не существует");
             }
         }
     }

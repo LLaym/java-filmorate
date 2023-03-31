@@ -27,4 +27,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Collection<Film> getAllFilms() {
         return films.values();
     }
+
+    @Override
+    public Film getFilmById(Integer id) {
+        return films.get(id);
+    }
 }
