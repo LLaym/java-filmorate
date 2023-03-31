@@ -33,4 +33,9 @@ public class FilmController {
     public Film findFilmById(@PathVariable Integer id) {
         return filmService.findFilmById(id);
     }
+
+//    @PutMapping("{id}/like/{userId}")
+//    public Film likeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+//        return filmService.likeFilm(id, userId);
+//    }
 }

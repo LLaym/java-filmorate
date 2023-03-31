@@ -3,14 +3,13 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.Collection;
+
+import static ru.yandex.practicum.filmorate.service.Validator.validateFilm;
+import static ru.yandex.practicum.filmorate.service.Validator.validateFilmId;
 
 @Slf4j
 @Service
@@ -44,31 +43,7 @@ public class FilmService {
         return film;
     }
 
-    private void validateFilmId(Integer id) {
-        if (id == null || id <= 0) {
-            throw new ValidationException("параметр id не может быть меньше 0");
-        }
-        if (filmStorage.getFilmById(id) == null) {
-            throw new FilmNotFoundException("фильма с таким id не существует");
-        }
-    }
-
-    private void validateFilm(Film film) throws ValidationException {
-        boolean isNewFilm = film.getId() == 0;
-        if (isNewFilm) {
-            if (film.getName() == null || film.getName().equals("")) {
-                throw new ValidationException("название не может быть пустым");
-            } else if (film.getDescription().length() > 200) {
-                throw new ValidationException("максимальная длина описания — 200 символов");
-            } else if (film.getReleaseDate().isBefore(LocalDate.of(1895, Month.DECEMBER, 28))) {
-                throw new ValidationException("дата релиза — не раньше 28 декабря 1895 года");
-            } else if (film.getDuration() <= 0) {
-                throw new ValidationException("продолжительность фильма должна быть положительной");
-            }
-        } else {
-            if (filmStorage.getAllFilms().stream().noneMatch(film1 -> film1.getId() == film.getId())) {
-                throw new FilmNotFoundException("фильма с таким id не существует");
-            }
-        }
-    }
+//    public Film likeFilm(Integer id, Integer userId) {
+//        validateFilmId(id);
+//    }
 }

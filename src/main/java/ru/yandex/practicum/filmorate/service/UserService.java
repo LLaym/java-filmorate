@@ -3,13 +3,13 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.time.LocalDate;
 import java.util.*;
+
+import static ru.yandex.practicum.filmorate.service.Validator.validateUser;
+import static ru.yandex.practicum.filmorate.service.Validator.validateUserId;
 
 @Slf4j
 @Service
@@ -90,31 +90,5 @@ public class UserService {
         common.forEach(identifier -> mutualFriends.add(userStorage.getUserById(identifier)));
         log.info("Возвращен список общих друзей: {}", mutualFriends);
         return mutualFriends;
-    }
-
-    private void validateUserId(Integer id) {
-        if (id == null || id <= 0) {
-            throw new ValidationException("параметр id не может быть меньше 0");
-        }
-        if (userStorage.getUserById(id) == null) {
-            throw new UserNotFoundException("пользователя с таким id не существует");
-        }
-    }
-
-    private void validateUser(User user) throws ValidationException {
-        boolean isNewUser = user.getId() == 0;
-        if (isNewUser) {
-            if (user.getEmail() == null || user.getEmail().equals("") || !user.getEmail().contains("@")) {
-                throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
-            } else if (user.getLogin() == null || user.getLogin().equals("") || user.getLogin().contains(" ")) {
-                throw new ValidationException("логин не может быть пустым и содержать пробелы");
-            } else if (user.getBirthday().isAfter(LocalDate.now())) {
-                throw new ValidationException("дата рождения не может быть в будущем.");
-            }
-        } else {
-            if (userStorage.getAllUsers().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
-                throw new UserNotFoundException("пользователя с таким id не существует");
-            }
-        }
     }
 }
