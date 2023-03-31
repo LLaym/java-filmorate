@@ -33,4 +33,9 @@ public class UserController {
     public User findUserById(@PathVariable Integer id) {
         return userService.findUserById(id);
     }
+
+    @PutMapping("{id}/friends/{friendId}")
+    public Collection<User> makeTwoUsersFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
+        return userService.makeTwoUsersFriends(id, friendId);
+    }
 }

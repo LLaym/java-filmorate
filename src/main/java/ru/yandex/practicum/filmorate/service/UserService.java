@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -46,6 +47,17 @@ public class UserService {
         return user;
     }
 
+    public Collection<User> makeTwoUsersFriends(Integer id, Integer friendId) {
+        validateUserId(id);
+        validateUserId(friendId);
+        User user1 = userStorage.getUserById(id);
+        User user2 = userStorage.getUserById(friendId);
+        user1.getFriends().add(friendId);
+        user2.getFriends().add(id);
+        log.info("Пользователь {} и {} теперь друзья!", user1, user2);
+        return List.of(user1, user2);
+    }
+
     private void validateUserId(Integer id) {
         if (id == null || id <= 0) {
             throw new ValidationException("параметр id не может быть меньше 0");
@@ -71,13 +83,6 @@ public class UserService {
             }
         }
     }
-
-//        // TODO Метод может быть неверным
-//    public String addToFriends(User user1, User user2) {
-//        user1.getFriends().add(user2.getId());
-//        user2.getFriends().add(user1.getId());
-//        return String.format("%s и %s теперь друзья!", user1, user2);
-//    }
 //    // TODO Метод может быть неверным
 //
 //    public Collection<User> getMutualFriends(User user1, User user2) {
