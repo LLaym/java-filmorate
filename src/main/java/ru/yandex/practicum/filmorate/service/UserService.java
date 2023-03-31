@@ -58,6 +58,17 @@ public class UserService {
         return List.of(user1, user2);
     }
 
+    public Collection<User> makeTwoUsersStopBeingFriends(Integer id, Integer friendId) {
+        validateUserId(id);
+        validateUserId(friendId);
+        User user1 = userStorage.getUserById(id);
+        User user2 = userStorage.getUserById(friendId);
+        user1.getFriends().remove(friendId);
+        user2.getFriends().remove(id);
+        log.info("Пользователь {} и {} больше не дружат!", user1, user2);
+        return List.of(user1, user2);
+    }
+
     private void validateUserId(Integer id) {
         if (id == null || id <= 0) {
             throw new ValidationException("параметр id не может быть меньше 0");

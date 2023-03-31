@@ -38,4 +38,9 @@ public class UserController {
     public Collection<User> makeTwoUsersFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         return userService.makeTwoUsersFriends(id, friendId);
     }
+
+    @DeleteMapping("{id}/friends/{friendId}")
+    public Collection<User> makeTwoUsersStopBeingFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
+        return userService.makeTwoUsersStopBeingFriends(id, friendId);
+    }
 }
