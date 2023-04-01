@@ -53,8 +53,8 @@ public class Validator {
     }
 
     public static void validateUserId(Integer id) {
-        if (id == null || id <= 0) {
-            throw new ValidationException("параметр id не может быть меньше 0");
+        if (id == null) {
+            throw new ValidationException("требуется корректный id параметр");
         }
         if (userStorage.getUserById(id) == null) {
             throw new UserNotFoundException("пользователя с таким id не существует");
