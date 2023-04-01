@@ -17,7 +17,7 @@ class UserControllerTest {
     UserController userController;
 
     @BeforeEach
-    void BeforeEach() {
+    void initEach() {
         userService = new UserService(new InMemoryUserStorage());
         userController = new UserController(userService);
     }

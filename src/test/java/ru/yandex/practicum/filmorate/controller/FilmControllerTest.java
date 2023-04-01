@@ -17,7 +17,7 @@ class FilmControllerTest {
     FilmController filmController;
 
     @BeforeEach
-    void BeforeEach() {
+    void initEach() {
         filmService = new FilmService(new InMemoryFilmStorage());
         filmController = new FilmController(filmService);
     }
