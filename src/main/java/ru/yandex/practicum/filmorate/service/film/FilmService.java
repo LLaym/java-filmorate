@@ -1,9 +1,10 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.Validator;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
@@ -64,7 +65,7 @@ public class FilmService {
         List<Film> sortedFilms = filmStorage.getAllFilms().stream()
                 .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
                 .collect(Collectors.toList());
-
+        log.info("Возвращен топ {} фильмов", count);
         if (sortedFilms.size() > count) {
             return sortedFilms.subList(0, count);
         } else {
