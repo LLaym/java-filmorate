@@ -32,7 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
-### .mvn folder and Maven files ###
+### .mvn folder and mvbnw + mvbw.cmd ###
 /.mvn/wrapper/maven-wrapper.jar
 /.mvn/wrapper/maven-wrapper.properties
 mvnw
