@@ -20,13 +20,16 @@ public class FilmService {
 
     public Film createFilm(Film film) {
         Validator.validateFilm(film);
+
         Film filmWithId = film.toBuilder().id(++nextId).build();
+
         log.info("Добавлен фильм: {}", filmWithId);
         return filmStorage.createFilm(filmWithId);
     }
 
     public Film updateFilm(Film film) {
         Validator.validateFilm(film);
+
         log.info("Обновлён фильм: {}", film);
         return filmStorage.updateFilm(film);
     }
@@ -38,7 +41,9 @@ public class FilmService {
 
     public Film findFilmById(Integer id) {
         Validator.validateFilmId(id);
+
         Film film = filmStorage.getFilmById(id);
+
         log.info("Получен фильм: {}", film);
         return film;
     }
@@ -46,8 +51,10 @@ public class FilmService {
     public Film likeFilm(Integer id, Integer userId) {
         Validator.validateFilmId(id);
         Validator.validateUserId(userId);
+
         Film film = filmStorage.getFilmById(id);
         film.getLikes().add(userId);
+
         log.info("Поставлен лайк фильму: {}", film);
         return film;
     }
@@ -55,8 +62,10 @@ public class FilmService {
     public Film dislikeFilm(Integer id, Integer userId) {
         Validator.validateFilmId(id);
         Validator.validateUserId(userId);
+
         Film film = filmStorage.getFilmById(id);
         film.getLikes().remove(userId);
+
         log.info("Убран лайк у фильма: {}", film);
         return film;
     }
@@ -65,6 +74,7 @@ public class FilmService {
         List<Film> sortedFilms = filmStorage.getAllFilms().stream()
                 .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
                 .collect(Collectors.toList());
+
         log.info("Возвращен топ {} фильмов", count);
         if (sortedFilms.size() > count) {
             return sortedFilms.subList(0, count);
