@@ -1,37 +1,39 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
-@Qualifier("inMemoryFilmStorage")
-public class InMemoryFilmStorage implements FilmStorage {
-    private final Map<Integer, Film> films = new HashMap<>();
+@Qualifier("filmDbStorage")
+public class FilmDbStorage implements FilmStorage {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Film createFilm(Film film) {
-        films.put(film.getId(), film);
-        return film;
+        return null;
     }
 
     @Override
     public Film updateFilm(Film film) {
-        films.put(film.getId(), film);
-        return film;
+        return null;
     }
 
     @Override
     public Collection<Film> getAllFilms() {
-        return films.values();
+        return null;
     }
 
     @Override
     public Film getFilmById(Integer id) {
-        return films.get(id);
+        return null;
     }
 }
