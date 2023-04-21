@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.Validator;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
@@ -17,8 +16,6 @@ public class UserService {
     private UserStorage userStorage;
 
     public User createUser(User user) {
-        Validator.validateUser(user);
-
         user.setId(++nextId);
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
@@ -29,8 +26,6 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        Validator.validateUser(user);
-
         log.info("Обновлён пользователь: {}", user);
         return userStorage.updateUser(user);
     }
@@ -41,8 +36,6 @@ public class UserService {
     }
 
     public User findUserById(Integer id) {
-        Validator.validateUserId(id);
-
         User user = userStorage.getUserById(id);
 
         log.info("Получен пользователь: {}", user);
@@ -50,9 +43,6 @@ public class UserService {
     }
 
     public Collection<User> makeTwoUsersFriends(Integer id, Integer friendId) {
-        Validator.validateUserId(id);
-        Validator.validateUserId(friendId);
-
         User user1 = userStorage.getUserById(id);
         User user2 = userStorage.getUserById(friendId);
         user1.getFriends().add(friendId);
@@ -63,9 +53,6 @@ public class UserService {
     }
 
     public Collection<User> makeTwoUsersStopBeingFriends(Integer id, Integer friendId) {
-        Validator.validateUserId(id);
-        Validator.validateUserId(friendId);
-
         User user1 = userStorage.getUserById(id);
         User user2 = userStorage.getUserById(friendId);
         user1.getFriends().remove(friendId);
@@ -76,8 +63,6 @@ public class UserService {
     }
 
     public Collection<User> findUserFriends(Integer id) {
-        Validator.validateUserId(id);
-
         User user = userStorage.getUserById(id);
         List<User> usersFriends = new ArrayList<>();
         user.getFriends().forEach(identifier -> usersFriends.add(userStorage.getUserById(identifier)));
@@ -87,9 +72,6 @@ public class UserService {
     }
 
     public Collection<User> findUsersMutualFriends(Integer id, Integer otherId) {
-        Validator.validateUserId(id);
-        Validator.validateUserId(otherId);
-
         User user1 = userStorage.getUserById(id);
         User user2 = userStorage.getUserById(otherId);
 

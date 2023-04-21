@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.Validator;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
@@ -19,8 +18,6 @@ public class FilmService {
     private FilmStorage filmStorage;
 
     public Film createFilm(Film film) {
-        Validator.validateFilm(film);
-
         Film filmWithId = film.toBuilder().id(++nextId).build();
 
         log.info("Добавлен фильм: {}", filmWithId);
@@ -28,8 +25,6 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
-        Validator.validateFilm(film);
-
         log.info("Обновлён фильм: {}", film);
         return filmStorage.updateFilm(film);
     }
@@ -40,8 +35,6 @@ public class FilmService {
     }
 
     public Film findFilmById(Integer id) {
-        Validator.validateFilmId(id);
-
         Film film = filmStorage.getFilmById(id);
 
         log.info("Получен фильм: {}", film);
@@ -49,9 +42,6 @@ public class FilmService {
     }
 
     public Film likeFilm(Integer id, Integer userId) {
-        Validator.validateFilmId(id);
-        Validator.validateUserId(userId);
-
         Film film = filmStorage.getFilmById(id);
         film.getLikes().add(userId);
 
@@ -60,9 +50,6 @@ public class FilmService {
     }
 
     public Film dislikeFilm(Integer id, Integer userId) {
-        Validator.validateFilmId(id);
-        Validator.validateUserId(userId);
-
         Film film = filmStorage.getFilmById(id);
         film.getLikes().remove(userId);
 
