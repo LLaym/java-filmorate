@@ -1,3 +1,11 @@
+-- TRUNCATE TABLE mpa_ratings;
+-- TRUNCATE TABLE users;
+-- TRUNCATE TABLE friendships;
+-- TRUNCATE TABLE films;
+-- TRUNCATE TABLE film_like;
+-- TRUNCATE TABLE genres;
+-- TRUNCATE TABLE film_genre;
+
 INSERT INTO mpa_ratings (name)
 VALUES ('G'),
        ('PG'),

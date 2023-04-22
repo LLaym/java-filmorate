@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.MpaRatingStorage;
@@ -15,7 +13,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.List;
 
 @Component
 @Qualifier("filmDbStorage")
@@ -33,23 +30,38 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film createFilm(Film film) {
-        String sql = "INSERT INTO films (name, description, release_date, duration, mpa_rating_id)" +
-                " VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO films (name, description, release_date, duration)" +
+                " VALUES (?, ?, ?, ?)";
 
         String name = film.getName();
         String description = film.getDescription();
         String release_date = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String duration = String.valueOf(film.getDuration());
-        String mpa_rating_id = String.valueOf(film.getMpa().getId());
+//        String mpa_rating_id = String.valueOf(film.getMpa().getId());
 
-        jdbcTemplate.update(sql, name, description, release_date, duration, mpa_rating_id);
+        jdbcTemplate.update(sql, name, description, release_date, duration);
 
+        // TODO Здесь нужно вернуть фильм из базы данных. То есть return getFilmById()
         return film;
     }
 
     @Override
     public Film updateFilm(Film film) {
-        return null;
+        String sql = "UPDATE films " +
+                "SET name = ?, description = ?, release_date = ?, duration = ? " +
+                "WHERE id = ?";
+
+        String id = String.valueOf(film.getId());
+        String name = film.getName();
+        String description = film.getDescription();
+        String release_date = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String duration = String.valueOf(film.getDuration());
+//        String mpa_rating_id = String.valueOf(film.getMpa().getId());
+
+        jdbcTemplate.update(sql, name, description, release_date, duration, id);
+
+        // TODO Здесь нужно вернуть фильм из базы данных. То есть return getFilmById()
+        return film;
     }
 
     @Override
@@ -73,8 +85,8 @@ public class FilmDbStorage implements FilmStorage {
         String description = rs.getString("description");
         LocalDate release_date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
-        MpaRating mpaRating = mpaRatingStorage.getMpaRatingById(rs.getInt("mpa_rating_id"));
-        List<Genre> genres = (List<Genre>) genreStorage.getGenresByFilmId(id);
+//        MpaRating mpaRating = mpaRatingStorage.getMpaRatingById(rs.getInt("mpa_rating_id"));
+//        List<Genre> genres = (List<Genre>) genreStorage.getGenresByFilmId(id);
 
         Film film = Film.builder()
                 .id(id)
@@ -82,8 +94,6 @@ public class FilmDbStorage implements FilmStorage {
                 .description(description)
                 .releaseDate(release_date)
                 .duration(duration)
-                .mpa(mpaRating)
-                .genres(genres)
                 .build();
 
         return film;
