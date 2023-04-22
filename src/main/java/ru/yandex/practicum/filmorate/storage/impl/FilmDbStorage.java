@@ -2,53 +2,57 @@ package ru.yandex.practicum.filmorate.storage.impl;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.MpaRatingStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Qualifier("filmDbStorage")
 public class FilmDbStorage implements FilmStorage {
-
-    private final GenreStorage genreStorage;
-    private final MpaRatingStorage mpaRatingStorage;
     private final JdbcTemplate jdbcTemplate;
 
-    public FilmDbStorage(GenreStorage genreStorage, MpaRatingStorage mpaRatingStorage, JdbcTemplate jdbcTemplate) {
-        this.genreStorage = genreStorage;
-        this.mpaRatingStorage = mpaRatingStorage;
+    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public Film createFilm(Film film) {
-        String sql = "INSERT INTO films (name, description, release_date, duration)" +
-                " VALUES (?, ?, ?, ?)";
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("films")
+                .usingGeneratedKeyColumns("id");
 
         String name = film.getName();
         String description = film.getDescription();
         String release_date = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String duration = String.valueOf(film.getDuration());
-//        String mpa_rating_id = String.valueOf(film.getMpa().getId());
 
-        jdbcTemplate.update(sql, name, description, release_date, duration);
+        final Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", name);
+        parameters.put("description", description);
+        parameters.put("release_date", release_date);
+        parameters.put("duration", duration);
 
-        // TODO Здесь нужно вернуть фильм из базы данных. То есть return getFilmById()
-        return film;
+        Integer generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
+
+        return getFilmById(generatedId);
     }
 
     @Override
     public Film updateFilm(Film film) {
         String sql = "UPDATE films " +
-                "SET name = ?, description = ?, release_date = ?, duration = ? " +
+                "SET name = ?" +
+                ", description = ?" +
+                ", release_date = ?" +
+                ", duration = ? " +
                 "WHERE id = ?";
 
         String id = String.valueOf(film.getId());
@@ -56,12 +60,10 @@ public class FilmDbStorage implements FilmStorage {
         String description = film.getDescription();
         String release_date = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String duration = String.valueOf(film.getDuration());
-//        String mpa_rating_id = String.valueOf(film.getMpa().getId());
 
         jdbcTemplate.update(sql, name, description, release_date, duration, id);
 
-        // TODO Здесь нужно вернуть фильм из базы данных. То есть return getFilmById()
-        return film;
+        return getFilmById(film.getId());
     }
 
     @Override
@@ -76,7 +78,7 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT * FROM films WHERE id = ?";
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), id)
-                .stream().findFirst().get();
+                .stream().findFirst().orElse(null);
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
@@ -85,8 +87,6 @@ public class FilmDbStorage implements FilmStorage {
         String description = rs.getString("description");
         LocalDate release_date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
-//        MpaRating mpaRating = mpaRatingStorage.getMpaRatingById(rs.getInt("mpa_rating_id"));
-//        List<Genre> genres = (List<Genre>) genreStorage.getGenresByFilmId(id);
 
         Film film = Film.builder()
                 .id(id)
