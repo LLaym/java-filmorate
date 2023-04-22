@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.sql.ResultSet;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.List;
 
 @Component
 @Qualifier("filmDbStorage")
@@ -69,6 +71,7 @@ public class FilmDbStorage implements FilmStorage {
         LocalDate release_date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
         MpaRating mpaRating = mpaRatingStorage.getMpaRatingById(rs.getInt("mpa_rating_id"));
+        List<Genre> genres = (List<Genre>) genreStorage.getGenresByFilmId(id);
 
         Film film = Film.builder()
                 .id(id)
@@ -77,6 +80,7 @@ public class FilmDbStorage implements FilmStorage {
                 .releaseDate(release_date)
                 .duration(duration)
                 .mpa(mpaRating)
+                .genres(genres)
                 .build();
 
         return film;
