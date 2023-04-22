@@ -13,7 +13,7 @@ public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
 
     @Override
-    public User createUser(User user) {
+    public User saveUser(User user) {
         users.put(user.getId(), user);
         return user;
     }

@@ -21,7 +21,7 @@ public class FilmService {
 
     public Film createFilm(Film film) {
         log.info("Добавлен фильм: {}", film);
-        return filmStorage.createFilm(film);
+        return filmStorage.saveFilm(film);
     }
 
     public Film updateFilm(Film film) {

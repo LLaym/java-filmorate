@@ -22,7 +22,7 @@ public class UserService {
         }
 
         log.info("Добавлен пользователь: {}", user);
-        return userStorage.createUser(user);
+        return userStorage.saveUser(user);
     }
 
     public User updateUser(User user) {
