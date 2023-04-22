@@ -1,10 +1,10 @@
-package ru.yandex.practicum.filmorate.service.film;
+package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class FilmService {
-    private static int nextId = 0;
     private FilmStorage filmStorage;
 
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
@@ -21,10 +20,8 @@ public class FilmService {
     }
 
     public Film createFilm(Film film) {
-        Film filmWithId = film.toBuilder().id(++nextId).build();
-
-        log.info("Добавлен фильм: {}", filmWithId);
-        return filmStorage.createFilm(filmWithId);
+        log.info("Добавлен фильм: {}", film);
+        return filmStorage.createFilm(film);
     }
 
     public Film updateFilm(Film film) {
