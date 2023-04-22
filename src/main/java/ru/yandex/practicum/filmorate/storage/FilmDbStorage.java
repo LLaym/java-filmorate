@@ -13,9 +13,11 @@ import java.util.Collection;
 @Qualifier("filmDbStorage")
 public class FilmDbStorage implements FilmStorage {
 
+    private final MpaRatingStorage mpaRatingStorage;
     private final JdbcTemplate jdbcTemplate;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+    public FilmDbStorage(MpaRatingStorage mpaRatingStorage, JdbcTemplate jdbcTemplate) {
+        this.mpaRatingStorage = mpaRatingStorage;
         this.jdbcTemplate = jdbcTemplate;
     }
 
