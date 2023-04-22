@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 
 @Component
@@ -17,7 +18,10 @@ public class MpaRatingDbStorage implements MpaRatingStorage {
 
     @Override
     public MpaRating getMpaRatingById(Integer id) {
-        return null;
+        String sql = "SELECT * FROM mpa_ratings WHERE id = ?";
+
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeMpaRating(rs)), id)
+                .stream().findFirst().get();
     }
 
     @Override
@@ -27,7 +31,10 @@ public class MpaRatingDbStorage implements MpaRatingStorage {
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeMpaRating(rs)));
     }
 
-    private MpaRating makeMpaRating(ResultSet rs) {
-        return null;
+    private MpaRating makeMpaRating(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        String name = rs.getString("name");
+
+        return new MpaRating(id, name);
     }
 }
