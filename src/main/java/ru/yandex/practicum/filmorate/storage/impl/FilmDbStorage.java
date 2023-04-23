@@ -40,7 +40,7 @@ public class FilmDbStorage implements FilmStorage {
         parameters.put("release_date", release_date);
         parameters.put("duration", duration);
 
-        Integer generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
+        int generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
 
         return getFilmById(generatedId);
     }
@@ -106,7 +106,7 @@ public class FilmDbStorage implements FilmStorage {
         int duration = rs.getInt("duration");
         Set<Integer> likes = getFilmLikes(id);
 
-        Film film = Film.builder()
+        return Film.builder()
                 .id(id)
                 .name(name)
                 .description(description)
@@ -114,8 +114,6 @@ public class FilmDbStorage implements FilmStorage {
                 .duration(duration)
                 .likes(likes)
                 .build();
-
-        return film;
     }
 
     private Set<Integer> getFilmLikes(Integer filmId) {
@@ -128,6 +126,7 @@ public class FilmDbStorage implements FilmStorage {
         while (rowSet.next()) {
             likes.add(rowSet.getInt("user_id"));
         }
+
         return likes;
     }
 }

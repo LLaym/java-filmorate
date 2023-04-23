@@ -41,7 +41,7 @@ public class UserDbStorage implements UserStorage {
         parameters.put("name", name);
         parameters.put("birthday", birthday);
 
-        Integer generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
+        int generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
 
         return getUserById(generatedId);
     }
@@ -113,7 +113,7 @@ public class UserDbStorage implements UserStorage {
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
         Set<Integer> friends = getUserFriends(id);
 
-        User user = User.builder()
+        return User.builder()
                 .id(id)
                 .email(email)
                 .login(login)
@@ -121,8 +121,6 @@ public class UserDbStorage implements UserStorage {
                 .birthday(birthday)
                 .friends(friends)
                 .build();
-
-        return user;
     }
 
     private Set<Integer> getUserFriends(Integer userId) {
@@ -135,6 +133,7 @@ public class UserDbStorage implements UserStorage {
         while (rowSet.next()) {
             friends.add(rowSet.getInt("second_user_id"));
         }
+
         return friends;
     }
 }

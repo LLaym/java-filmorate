@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class FilmService {
-    private FilmStorage filmStorage;
+    private final FilmStorage filmStorage;
 
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
@@ -67,6 +67,7 @@ public class FilmService {
                 .collect(Collectors.toList());
 
         log.info("Возвращен топ {} фильмов", count);
+
         if (sortedFilms.size() > count) {
             return sortedFilms.subList(0, count);
         } else {

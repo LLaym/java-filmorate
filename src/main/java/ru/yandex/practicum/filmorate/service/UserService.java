@@ -12,7 +12,7 @@ import java.util.*;
 @Service
 public class UserService {
 
-    private UserStorage userStorage;
+    private final UserStorage userStorage;
 
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
@@ -84,7 +84,9 @@ public class UserService {
         Set<Integer> common = new HashSet<>(user1Friends);
 
         common.retainAll(user2Friends);
+
         List<User> mutualFriends = new ArrayList<>();
+
         common.forEach(identifier -> mutualFriends.add(userStorage.getUserById(identifier)));
 
         log.info("Возвращен список общих друзей: {}", mutualFriends);
