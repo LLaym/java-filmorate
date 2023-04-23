@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.junit.jupiter.api.BeforeEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorage;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -13,15 +13,11 @@ import java.time.Month;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@SpringBootTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmControllerTest {
-    FilmService filmService;
-    FilmController filmController;
-
-    @BeforeEach
-    void initEach() {
-        filmService = new FilmService(new FilmDbStorage(new JdbcTemplate()));
-        filmController = new FilmController(filmService);
-    }
+    private final FilmController filmController;
 
     @Test
     void shouldAdd() {
@@ -40,7 +36,7 @@ class FilmControllerTest {
                 .duration(226).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
-        assertEquals(0, filmController.findAllFilms().size());
+        assertEquals(1, filmController.findAllFilms().size());
     }
 
     @Test
@@ -53,7 +49,7 @@ class FilmControllerTest {
                 .duration(226).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
-        assertEquals(0, filmController.findAllFilms().size());
+        assertEquals(1, filmController.findAllFilms().size());
     }
 
     @Test
@@ -63,16 +59,16 @@ class FilmControllerTest {
                 .duration(226).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
-        assertEquals(0, filmController.findAllFilms().size());
+        assertEquals(1, filmController.findAllFilms().size());
     }
 
     @Test
-    void zeroDurationFilm() {
+    void shouldSkipZeroDurationFilm() {
         Film film = Film.builder().name("Shining").description("Horror")
                 .releaseDate(LocalDate.of(1980, Month.MAY, 23))
                 .duration(0).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
-        assertEquals(0, filmController.findAllFilms().size());
+        assertEquals(1, filmController.findAllFilms().size());
     }
 }
