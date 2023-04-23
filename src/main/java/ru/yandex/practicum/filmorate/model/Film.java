@@ -7,14 +7,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
 @Builder(toBuilder = true)
 public class Film {
-    private final Set<Integer> likes = new HashSet<>();
     private int id;
     @NotBlank
     private String name;
@@ -23,6 +20,5 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration;
-    private MpaRating mpa;
-    private List<Genre> genres;
+    private Set<Integer> likes;
 }
