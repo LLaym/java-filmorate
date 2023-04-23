@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -11,10 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 @Qualifier("userDbStorage")
@@ -79,15 +77,21 @@ public class UserDbStorage implements UserStorage {
     public User getUserById(Integer id) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), id)
+        User user = jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), id)
                 .stream().findFirst().orElse(null);
+
+//        user.setFriends(getFriends(id));
+
+        return user;
     }
 
     @Override
     public Collection<User> saveFriendship(Integer id, Integer friendId) {
         String sql = "INSERT INTO friendships (first_user_id, second_user_id) VALUES (?, ?)";
+        String sql2 = "INSERT INTO friendships (first_user_id, second_user_id) VALUES (?, ?)";
 
         jdbcTemplate.update(sql, id, friendId);
+        jdbcTemplate.update(sql2, friendId, id);
 
         return List.of(getUserById(id), getUserById(friendId));
     }
@@ -95,8 +99,10 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Collection<User> removeFriendship(Integer id, Integer friendId) {
         String sql = "DELETE FROM friendships WHERE first_user_id = ? AND second_user_id = ?";
+        String sql2 = "DELETE FROM friendships WHERE first_user_id = ? AND second_user_id = ?";
 
         jdbcTemplate.update(sql, id, friendId);
+        jdbcTemplate.update(sql2, friendId, id);
 
         return List.of(getUserById(id), getUserById(friendId));
     }
@@ -107,6 +113,7 @@ public class UserDbStorage implements UserStorage {
         String login = rs.getString("login");
         String name = rs.getString("name");
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
+        Set<Integer> friends = getFriends(id);
 
         User user = User.builder()
                 .id(id)
@@ -114,8 +121,22 @@ public class UserDbStorage implements UserStorage {
                 .login(login)
                 .name(name)
                 .birthday(birthday)
+                .friends(friends)
                 .build();
 
         return user;
+    }
+
+    private Set<Integer> getFriends(Integer id) {
+        String sql2 = "SELECT second_user_id FROM friendships WHERE first_user_id = ?";
+
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql2, id);
+
+        Set<Integer> friends = new HashSet<>();
+
+        while (rowSet.next()) {
+            friends.add(rowSet.getInt("second_user_id"));
+        }
+        return friends;
     }
 }

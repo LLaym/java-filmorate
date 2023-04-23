@@ -67,6 +67,7 @@ public class UserService {
     public Collection<User> findUserFriends(Integer id) {
         User user = userStorage.getUserById(id);
         List<User> userFriends = new ArrayList<>();
+
         user.getFriends().forEach(identifier -> userFriends.add(userStorage.getUserById(identifier)));
 
         log.info("Возвращен список друзей пользователя: {}", userFriends);
