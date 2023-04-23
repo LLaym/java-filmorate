@@ -49,8 +49,7 @@ public class FilmService {
     }
 
     public Film dislikeFilm(Integer id, Integer userId) {
-        Film film = filmStorage.getFilmById(id);
-        film.getLikes().remove(userId);
+        Film film = filmStorage.removeLike(id, userId);
 
         log.info("Убран лайк у фильма: {}", film);
         return film;

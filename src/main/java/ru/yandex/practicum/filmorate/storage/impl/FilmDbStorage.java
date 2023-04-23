@@ -90,6 +90,15 @@ public class FilmDbStorage implements FilmStorage {
         return getFilmById(id);
     }
 
+    @Override
+    public Film removeLike(Integer id, Integer userId) {
+        String sql = "DELETE FROM film_like WHERE film_id = ? AND user_id = ?";
+
+        jdbcTemplate.update(sql, id, userId);
+
+        return getFilmById(id);
+    }
+
     private Film makeFilm(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");

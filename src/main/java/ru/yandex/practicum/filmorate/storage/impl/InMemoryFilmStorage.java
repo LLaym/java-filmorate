@@ -41,4 +41,10 @@ public class InMemoryFilmStorage implements FilmStorage {
         // Метод затычка
         return null;
     }
+
+    @Override
+    public Film removeLike(Integer id, Integer userId) {
+        // Метод затычка
+        return null;
+    }
 }
