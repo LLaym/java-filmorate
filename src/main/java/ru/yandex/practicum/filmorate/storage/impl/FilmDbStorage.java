@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -11,9 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 @Qualifier("filmDbStorage")
@@ -105,6 +104,7 @@ public class FilmDbStorage implements FilmStorage {
         String description = rs.getString("description");
         LocalDate release_date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
+        Set<Integer> likes = getFilmLikes(id);
 
         Film film = Film.builder()
                 .id(id)
@@ -112,8 +112,22 @@ public class FilmDbStorage implements FilmStorage {
                 .description(description)
                 .releaseDate(release_date)
                 .duration(duration)
+                .likes(likes)
                 .build();
 
         return film;
+    }
+
+    private Set<Integer> getFilmLikes(Integer filmId) {
+        String sql = "SELECT user_id FROM film_like WHERE film_id = ?";
+
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, filmId);
+
+        Set<Integer> likes = new HashSet<>();
+
+        while (rowSet.next()) {
+            likes.add(rowSet.getInt("user_id"));
+        }
+        return likes;
     }
 }

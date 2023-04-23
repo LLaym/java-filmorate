@@ -80,8 +80,6 @@ public class UserDbStorage implements UserStorage {
         User user = jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), id)
                 .stream().findFirst().orElse(null);
 
-//        user.setFriends(getFriends(id));
-
         return user;
     }
 
@@ -113,7 +111,7 @@ public class UserDbStorage implements UserStorage {
         String login = rs.getString("login");
         String name = rs.getString("name");
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
-        Set<Integer> friends = getFriends(id);
+        Set<Integer> friends = getUserFriends(id);
 
         User user = User.builder()
                 .id(id)
@@ -127,10 +125,10 @@ public class UserDbStorage implements UserStorage {
         return user;
     }
 
-    private Set<Integer> getFriends(Integer id) {
-        String sql2 = "SELECT second_user_id FROM friendships WHERE first_user_id = ?";
+    private Set<Integer> getUserFriends(Integer userId) {
+        String sql = "SELECT second_user_id FROM friendships WHERE first_user_id = ?";
 
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql2, id);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
 
         Set<Integer> friends = new HashSet<>();
 
