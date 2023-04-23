@@ -21,16 +21,19 @@ public class FilmService {
 
     public Film createFilm(Film film) {
         log.info("Добавлен фильм: {}", film);
+
         return filmStorage.saveFilm(film);
     }
 
     public Film updateFilm(Film film) {
         log.info("Обновлён фильм: {}", film);
+
         return filmStorage.updateFilm(film);
     }
 
     public Collection<Film> findAllFilms() {
         log.info("Возвращен список всех фильмов");
+
         return filmStorage.getAllFilms();
     }
 
@@ -38,6 +41,7 @@ public class FilmService {
         Film film = filmStorage.getFilmById(id);
 
         log.info("Получен фильм: {}", film);
+
         return film;
     }
 
@@ -45,6 +49,7 @@ public class FilmService {
         Film film = filmStorage.saveLike(id, userId);
 
         log.info("Поставлен лайк фильму: {}", film);
+
         return film;
     }
 
@@ -52,6 +57,7 @@ public class FilmService {
         Film film = filmStorage.removeLike(id, userId);
 
         log.info("Убран лайк у фильма: {}", film);
+
         return film;
     }
 

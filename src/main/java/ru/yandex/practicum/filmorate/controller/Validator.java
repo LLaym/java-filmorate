@@ -20,7 +20,8 @@ public class Validator {
     private static UserStorage userStorage;
 
     @Autowired
-    public Validator(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserStorage userStorage) {
+    public Validator(@Qualifier("filmDbStorage") FilmStorage filmStorage
+            , @Qualifier("userDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }

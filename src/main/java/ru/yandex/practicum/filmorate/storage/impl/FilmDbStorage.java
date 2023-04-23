@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+@Repository
 @Qualifier("filmDbStorage")
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
