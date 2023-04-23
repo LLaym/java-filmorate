@@ -17,12 +17,14 @@ public class UserController {
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
         Validator.validateUser(user);
+
         return userService.createUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
         Validator.validateUser(user);
+
         return userService.updateUser(user);
     }
 
@@ -34,6 +36,7 @@ public class UserController {
     @GetMapping("{id}")
     public User findUserById(@PathVariable Integer id) {
         Validator.validateUserId(id);
+
         return userService.findUserById(id);
     }
 
@@ -41,6 +44,7 @@ public class UserController {
     public Collection<User> makeTwoUsersFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         Validator.validateUserId(id);
         Validator.validateUserId(friendId);
+
         return userService.makeTwoUsersFriends(id, friendId);
     }
 
@@ -48,12 +52,14 @@ public class UserController {
     public Collection<User> makeTwoUsersStopBeingFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         Validator.validateUserId(id);
         Validator.validateUserId(friendId);
+
         return userService.makeTwoUsersStopBeingFriends(id, friendId);
     }
 
     @GetMapping("{id}/friends")
     public Collection<User> findUserFriends(@PathVariable Integer id) {
         Validator.validateUserId(id);
+
         return userService.findUserFriends(id);
     }
 
@@ -61,6 +67,7 @@ public class UserController {
     public Collection<User> findUsersMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
         Validator.validateUserId(id);
         Validator.validateUserId(otherId);
+
         return userService.findUsersMutualFriends(id, otherId);
     }
 }

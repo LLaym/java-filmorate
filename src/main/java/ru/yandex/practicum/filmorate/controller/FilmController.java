@@ -17,12 +17,14 @@ public class FilmController {
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
         Validator.validateFilm(film);
+
         return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
         Validator.validateFilm(film);
+
         return filmService.updateFilm(film);
     }
 
@@ -34,6 +36,7 @@ public class FilmController {
     @GetMapping("{id}")
     public Film findFilmById(@PathVariable Integer id) {
         Validator.validateFilmId(id);
+
         return filmService.findFilmById(id);
     }
 
@@ -41,6 +44,7 @@ public class FilmController {
     public Film likeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         Validator.validateFilmId(id);
         Validator.validateUserId(userId);
+
         return filmService.likeFilm(id, userId);
     }
 
@@ -48,6 +52,7 @@ public class FilmController {
     public Film dislikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         Validator.validateFilmId(id);
         Validator.validateUserId(userId);
+
         return filmService.dislikeFilm(id, userId);
     }
 
