@@ -35,4 +35,16 @@ public class InMemoryUserStorage implements UserStorage {
     public User getUserById(Integer id) {
         return users.get(id);
     }
+
+    @Override
+    public Collection<User> saveFriendship(Integer id, Integer friendId) {
+        // Метод затычка
+        return null;
+    }
+
+    @Override
+    public Collection<User> removeFriendship(Integer id, Integer friendId) {
+        // Метод затычка
+        return null;
+    }
 }

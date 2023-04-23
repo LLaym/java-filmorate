@@ -12,4 +12,8 @@ public interface UserStorage {
     Collection<User> getAllUsers();
 
     User getUserById(Integer id);
+
+    Collection<User> saveFriendship(Integer id, Integer friendId);
+
+    Collection<User> removeFriendship(Integer id, Integer friendId);
 }

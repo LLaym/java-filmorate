@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -80,6 +81,24 @@ public class UserDbStorage implements UserStorage {
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), id)
                 .stream().findFirst().orElse(null);
+    }
+
+    @Override
+    public Collection<User> saveFriendship(Integer id, Integer friendId) {
+        String sql = "INSERT INTO friendships (first_user_id, second_user_id) VALUES (?, ?)";
+
+        jdbcTemplate.update(sql, id, friendId);
+
+        return List.of(getUserById(id), getUserById(friendId));
+    }
+
+    @Override
+    public Collection<User> removeFriendship(Integer id, Integer friendId) {
+        String sql = "DELETE FROM friendships WHERE first_user_id = ? AND second_user_id = ?";
+
+        jdbcTemplate.update(sql, id, friendId);
+
+        return List.of(getUserById(id), getUserById(friendId));
     }
 
     private User makeUser(ResultSet rs) throws SQLException {

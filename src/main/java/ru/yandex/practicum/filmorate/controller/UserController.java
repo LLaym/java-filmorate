@@ -45,7 +45,7 @@ public class UserController {
         Validator.validateUserId(id);
         Validator.validateUserId(friendId);
 
-        return userService.makeTwoUsersFriends(id, friendId);
+        return userService.makeFriendship(id, friendId);
     }
 
     @DeleteMapping("{id}/friends/{friendId}")
@@ -53,7 +53,7 @@ public class UserController {
         Validator.validateUserId(id);
         Validator.validateUserId(friendId);
 
-        return userService.makeTwoUsersStopBeingFriends(id, friendId);
+        return userService.dropFriendship(id, friendId);
     }
 
     @GetMapping("{id}/friends")

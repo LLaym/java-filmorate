@@ -48,36 +48,30 @@ public class UserService {
         return user;
     }
 
-    public Collection<User> makeTwoUsersFriends(Integer id, Integer friendId) {
-        User user1 = userStorage.getUserById(id);
-        User user2 = userStorage.getUserById(friendId);
-        user1.getFriends().add(friendId);
-        user2.getFriends().add(id);
+    public Collection<User> makeFriendship(Integer id, Integer friendId) {
+        List<User> friends = (List<User>) userStorage.saveFriendship(id, friendId);
 
-        log.info("Пользователь {} и {} теперь друзья!", user1, user2);
+        log.info("Пользователи {} теперь друзья!", friends);
 
-        return List.of(user1, user2);
+        return friends;
     }
 
-    public Collection<User> makeTwoUsersStopBeingFriends(Integer id, Integer friendId) {
-        User user1 = userStorage.getUserById(id);
-        User user2 = userStorage.getUserById(friendId);
-        user1.getFriends().remove(friendId);
-        user2.getFriends().remove(id);
+    public Collection<User> dropFriendship(Integer id, Integer friendId) {
+        List<User> notFriends = (List<User>) userStorage.removeFriendship(id, friendId);
 
-        log.info("Пользователь {} и {} больше не дружат!", user1, user2);
+        log.info("Пользователи {} больше не друзья.", notFriends);
 
-        return List.of(user1, user2);
+        return notFriends;
     }
 
     public Collection<User> findUserFriends(Integer id) {
         User user = userStorage.getUserById(id);
-        List<User> usersFriends = new ArrayList<>();
-        user.getFriends().forEach(identifier -> usersFriends.add(userStorage.getUserById(identifier)));
+        List<User> userFriends = new ArrayList<>();
+        user.getFriends().forEach(identifier -> userFriends.add(userStorage.getUserById(identifier)));
 
-        log.info("Возвращен список друзей пользователя: {}", usersFriends);
+        log.info("Возвращен список друзей пользователя: {}", userFriends);
 
-        return usersFriends;
+        return userFriends;
     }
 
     public Collection<User> findUsersMutualFriends(Integer id, Integer otherId) {
