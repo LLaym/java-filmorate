@@ -81,6 +81,15 @@ public class FilmDbStorage implements FilmStorage {
                 .stream().findFirst().orElse(null);
     }
 
+    @Override
+    public Film saveLike(Integer id, Integer userId) {
+        String sql = "INSERT INTO film_like (film_id, user_id) VALUES (?, ?)";
+
+        jdbcTemplate.update(sql, id, userId);
+
+        return getFilmById(id);
+    }
+
     private Film makeFilm(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");

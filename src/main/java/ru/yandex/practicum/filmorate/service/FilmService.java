@@ -42,8 +42,7 @@ public class FilmService {
     }
 
     public Film likeFilm(Integer id, Integer userId) {
-        Film film = filmStorage.getFilmById(id);
-        film.getLikes().add(userId);
+        Film film = filmStorage.saveLike(id, userId);
 
         log.info("Поставлен лайк фильму: {}", film);
         return film;

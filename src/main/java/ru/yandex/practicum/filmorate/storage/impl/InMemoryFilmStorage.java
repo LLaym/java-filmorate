@@ -35,4 +35,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film getFilmById(Integer id) {
         return films.get(id);
     }
+
+    @Override
+    public Film saveLike(Integer id, Integer userId) {
+        // Метод затычка
+        return null;
+    }
 }
