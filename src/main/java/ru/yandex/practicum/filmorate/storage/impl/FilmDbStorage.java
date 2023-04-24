@@ -113,7 +113,7 @@ public class FilmDbStorage implements FilmStorage {
         LocalDate release_date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
         Set<Integer> likes = getFilmLikes(id);
-        Mpa mpa = mpaStorage.getMpaById(rs.getInt("mpa_id"));
+        Mpa mpa = mpaStorage.getMpaById(rs.getInt("mpa_id")).orElse(null);
 
         return Film.builder()
                 .id(id)
