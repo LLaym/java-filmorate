@@ -6,7 +6,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,9 +20,11 @@ import java.util.*;
 @Qualifier("filmDbStorage")
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final MpaStorage mpaStorage;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.mpaStorage = mpaStorage;
     }
 
     @Override
@@ -33,12 +37,14 @@ public class FilmDbStorage implements FilmStorage {
         String description = film.getDescription();
         String release_date = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String duration = String.valueOf(film.getDuration());
+        String mpa = String.valueOf(film.getMpa().getId());
 
         final Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", name);
         parameters.put("description", description);
         parameters.put("release_date", release_date);
         parameters.put("duration", duration);
+        parameters.put("mpa_id", mpa);
 
         int generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
 
@@ -52,6 +58,7 @@ public class FilmDbStorage implements FilmStorage {
                 ", description = ?" +
                 ", release_date = ?" +
                 ", duration = ? " +
+                ", mpa_id = ? " +
                 "WHERE id = ?";
 
         String id = String.valueOf(film.getId());
@@ -59,8 +66,9 @@ public class FilmDbStorage implements FilmStorage {
         String description = film.getDescription();
         String release_date = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String duration = String.valueOf(film.getDuration());
+        String mpa = String.valueOf(film.getMpa().getId());
 
-        jdbcTemplate.update(sql, name, description, release_date, duration, id);
+        jdbcTemplate.update(sql, name, description, release_date, duration, mpa, id);
 
         return getFilmById(film.getId());
     }
@@ -105,6 +113,7 @@ public class FilmDbStorage implements FilmStorage {
         LocalDate release_date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
         Set<Integer> likes = getFilmLikes(id);
+        Mpa mpa = mpaStorage.getMpaById(rs.getInt("mpa_id"));
 
         return Film.builder()
                 .id(id)
@@ -113,6 +122,7 @@ public class FilmDbStorage implements FilmStorage {
                 .releaseDate(release_date)
                 .duration(duration)
                 .likes(likes)
+                .mpa(mpa)
                 .build();
     }
 
