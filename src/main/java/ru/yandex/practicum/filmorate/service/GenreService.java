@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
@@ -23,7 +24,8 @@ public class GenreService {
     }
 
     public Genre findGenreById(Integer id) {
-        Genre genre = genreStorage.getGenreById(id);
+        Genre genre = genreStorage.getGenreById(id)
+                .orElseThrow(() -> new GenreNotFoundException("Жанр с идентификатором " + id + " не найден"));
 
         log.info("Получен жанр: {}", genre);
 
