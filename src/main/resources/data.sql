@@ -6,7 +6,7 @@
 -- TRUNCATE TABLE genres;
 -- TRUNCATE TABLE film_genre;
 
-INSERT INTO mpa_ratings (name)
+INSERT INTO mpas (name)
 VALUES ('G'),
        ('PG'),
        ('PG-13'),
