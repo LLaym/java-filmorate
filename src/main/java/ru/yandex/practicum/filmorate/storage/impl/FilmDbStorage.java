@@ -16,10 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 @Qualifier("filmDbStorage")
@@ -61,7 +58,7 @@ public class FilmDbStorage implements FilmStorage {
             film.getGenres().forEach(genre -> filmGenreStorage.save(generatedId, genre.getId()));
         }
 
-        return getFilmById(generatedId);
+        return getFilmById(generatedId).get();
     }
 
     @Override
@@ -89,7 +86,7 @@ public class FilmDbStorage implements FilmStorage {
 
         jdbcTemplate.update(sql, name, description, release_date, duration, mpa, id);
 
-        return getFilmById(film.getId());
+        return getFilmById(film.getId()).get();
     }
 
     @Override
@@ -100,13 +97,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(Integer id) {
+    public Optional<Film> getFilmById(Integer id) {
         String sql = "SELECT * FROM films WHERE id = ?";
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), id)
                 .stream()
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
