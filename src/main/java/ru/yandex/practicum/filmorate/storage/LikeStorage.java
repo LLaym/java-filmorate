@@ -5,9 +5,9 @@ import ru.yandex.practicum.filmorate.model.Like;
 import java.util.Collection;
 
 public interface LikeStorage {
-    Collection<Like> saveLike(Integer filmId, Integer userId);
+    Like saveLike(Integer filmId, Integer userId);
 
-    Collection<Like> removeLike(Integer filmId, Integer userId);
+    void removeLike(Integer filmId, Integer userId);
 
     Collection<Integer> getTopFilms(Integer count);
 }

@@ -25,19 +25,16 @@ public class FilmService {
 
     public Film createFilm(Film film) {
         log.info("Добавлен фильм: {}", film);
-
         return filmStorage.saveFilm(film);
     }
 
     public Film updateFilm(Film film) {
         log.info("Обновлён фильм: {}", film);
-
         return filmStorage.updateFilm(film);
     }
 
     public Collection<Film> findAllFilms() {
         log.info("Возвращен список всех фильмов");
-
         return filmStorage.getAllFilms();
     }
 
@@ -49,20 +46,18 @@ public class FilmService {
         return film;
     }
 
-    public Collection<Like> likeFilm(Integer filmId, Integer userId) {
-        List<Like> likes = (List<Like>) likeStorage.saveLike(filmId, userId);
+    public Like likeFilm(Integer filmId, Integer userId) {
+        Like like = likeStorage.saveLike(filmId, userId);
 
         log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
 
-        return likes;
+        return like;
     }
 
-    public Collection<Like> dislikeFilm(Integer filmId, Integer userId) {
-        Collection<Like> likes = likeStorage.removeLike(filmId, userId);
-
+    public void dislikeFilm(Integer filmId, Integer userId) {
         log.info("Пользователь с id {} убрал лайк с фильма с id {}", userId, filmId);
 
-        return likes;
+        likeStorage.removeLike(filmId, userId);
     }
 
     public Collection<Film> findTopFilms(Integer count) {

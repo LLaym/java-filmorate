@@ -20,21 +20,19 @@ public class LikeDbStorage implements LikeStorage {
     }
 
     @Override
-    public Collection<Like> saveLike(Integer filmId, Integer userId) {
+    public Like saveLike(Integer filmId, Integer userId) {
         String sql = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
 
         jdbcTemplate.update(sql, filmId, userId);
 
-        return null; // TODO в ответку должено что то возвращаться
+        return new Like(filmId, userId);
     }
 
     @Override
-    public Collection<Like> removeLike(Integer filmId, Integer userId) {
+    public void removeLike(Integer filmId, Integer userId) {
         String sql = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
 
         jdbcTemplate.update(sql, filmId, userId);
-
-        return null; // TODO в ответку должно что то возвращаться
     }
 
     @Override
