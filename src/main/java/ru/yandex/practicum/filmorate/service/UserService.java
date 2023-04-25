@@ -28,19 +28,16 @@ public class UserService {
         }
 
         log.info("Добавлен пользователь: {}", user);
-
         return userStorage.saveUser(user);
     }
 
     public User updateUser(User user) {
         log.info("Обновлён пользователь: {}", user);
-
         return userStorage.updateUser(user);
     }
 
     public List<User> findAllUsers() {
         log.info("Возвращен список всех пользователей");
-
         return userStorage.getAllUsers();
     }
 
@@ -49,19 +46,16 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + id + " не найден"));
 
         log.info("Получен пользователь: {}", user);
-
         return user;
     }
 
     public void makeFriendship(Integer id, Integer friendId) {
         log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", id, friendId);
-
         userStorage.saveFriendship(id, friendId);
     }
 
     public void dropFriendship(Integer id, Integer friendId) {
         log.info("Пользователь с id {} и пользователь с id {} больше не друзья.", id, friendId);
-
         userStorage.removeFriendship(id, friendId);
     }
 
@@ -72,7 +66,6 @@ public class UserService {
         user.getFriends().forEach(identifier -> userFriends.add(userStorage.getUserById(identifier).get()));
 
         log.info("Возвращен список друзей пользователя: {}", userFriends);
-
         return userFriends;
     }
 
@@ -91,7 +84,6 @@ public class UserService {
         common.forEach(identifier -> mutualFriends.add(userStorage.getUserById(identifier).get()));
 
         log.info("Возвращен список общих друзей: {}", mutualFriends);
-
         return mutualFriends;
     }
 }

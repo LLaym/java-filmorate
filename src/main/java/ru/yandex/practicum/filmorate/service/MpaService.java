@@ -19,7 +19,6 @@ public class MpaService {
 
     public List<Mpa> findAllMpas() {
         log.info("Возвращен список всех Mpa рейтингов");
-
         return mpaStorage.getAllMpa();
     }
 
@@ -28,7 +27,6 @@ public class MpaService {
                 .orElseThrow(() -> new MpaNotFoundException("Mpa рейтинг с идентификатором " + id + " не найден"));
 
         log.info("Получен Mpa рейтинг: {}", mpa);
-
         return mpa;
     }
 }

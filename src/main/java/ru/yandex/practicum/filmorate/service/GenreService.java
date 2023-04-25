@@ -19,7 +19,6 @@ public class GenreService {
 
     public List<Genre> findAllGenres() {
         log.info("Возвращен список всех жанров");
-
         return genreStorage.getAllGenres();
     }
 
@@ -28,7 +27,6 @@ public class GenreService {
                 .orElseThrow(() -> new GenreNotFoundException("Жанр с идентификатором " + id + " не найден"));
 
         log.info("Получен жанр: {}", genre);
-
         return genre;
     }
 }
