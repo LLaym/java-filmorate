@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -43,7 +44,7 @@ public class UserDbStorage implements UserStorage {
 
         int generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
 
-        return getUserById(generatedId).get();
+        return getUserById(generatedId);
     }
 
     @Override
@@ -63,7 +64,7 @@ public class UserDbStorage implements UserStorage {
 
         jdbcTemplate.update(sql, email, login, name, birthday, id);
 
-        return getUserById(user.getId()).get();
+        return getUserById(user.getId());
     }
 
     @Override
@@ -74,11 +75,13 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Optional<User> getUserById(Integer id) {
+    public User getUserById(Integer id) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), id)
-                .stream().findFirst();
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + id + " не найден"));
     }
 
     @Override

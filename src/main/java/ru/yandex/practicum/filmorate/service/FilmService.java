@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
@@ -39,8 +38,7 @@ public class FilmService {
     }
 
     public Film findFilmById(Integer id) {
-        Film film = filmStorage.getFilmById(id)
-                .orElseThrow(() -> new FilmNotFoundException("Фильм в идентификатором " + id + " не найден"));
+        Film film = filmStorage.getFilmById(id);
 
         log.info("Получен фильм: {}", film);
         return film;
@@ -61,7 +59,7 @@ public class FilmService {
 
         Collection<Integer> films = likeStorage.getTopFilmsId(count);
 
-        films.forEach(integer -> topFilms.add(filmStorage.getFilmById(integer).get()));
+        films.forEach(integer -> topFilms.add(filmStorage.getFilmById(integer)));
 
         log.info("Возвращен топ фильмов: ", topFilms);
         return topFilms;

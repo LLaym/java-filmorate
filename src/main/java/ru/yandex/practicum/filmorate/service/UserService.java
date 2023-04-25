@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -42,8 +41,7 @@ public class UserService {
     }
 
     public User findUserById(Integer id) {
-        User user = userStorage.getUserById(id)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + id + " не найден"));
+        User user = userStorage.getUserById(id);
 
         log.info("Получен пользователь: {}", user);
         return user;
@@ -60,18 +58,18 @@ public class UserService {
     }
 
     public List<User> findUserFriends(Integer id) {
-        User user = userStorage.getUserById(id).get();
+        User user = userStorage.getUserById(id);
         List<User> userFriends = new ArrayList<>();
 
-        user.getFriends().forEach(identifier -> userFriends.add(userStorage.getUserById(identifier).get()));
+        user.getFriends().forEach(identifier -> userFriends.add(userStorage.getUserById(identifier)));
 
         log.info("Возвращен список друзей пользователя: {}", userFriends);
         return userFriends;
     }
 
     public List<User> findUsersMutualFriends(Integer id, Integer otherId) {
-        User user1 = userStorage.getUserById(id).get();
-        User user2 = userStorage.getUserById(otherId).get();
+        User user1 = userStorage.getUserById(id);
+        User user2 = userStorage.getUserById(otherId);
 
         Set<Integer> user1Friends = user1.getFriends();
         Set<Integer> user2Friends = user2.getFriends();
@@ -81,7 +79,7 @@ public class UserService {
 
         List<User> mutualFriends = new ArrayList<>();
 
-        common.forEach(identifier -> mutualFriends.add(userStorage.getUserById(identifier).get()));
+        common.forEach(identifier -> mutualFriends.add(userStorage.getUserById(identifier)));
 
         log.info("Возвращен список общих друзей: {}", mutualFriends);
         return mutualFriends;

@@ -58,7 +58,7 @@ public class Validator {
         if (id == null) {
             throw new ValidationException("требуется корректный id параметр");
         }
-        if (userStorage.getUserById(id).isEmpty()) {
+        if (userStorage.getUserById(id) == null) {
             throw new UserNotFoundException("пользователя с таким id не существует");
         }
     }
