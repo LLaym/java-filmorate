@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
@@ -33,7 +32,7 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
-    public Collection<Film> findAllFilms() {
+    public List<Film> findAllFilms() {
         log.info("Возвращен список всех фильмов");
         return filmStorage.getAllFilms();
     }
@@ -46,12 +45,10 @@ public class FilmService {
         return film;
     }
 
-    public Like likeFilm(Integer filmId, Integer userId) {
-        Like like = likeStorage.saveLike(filmId, userId);
-
+    public void likeFilm(Integer filmId, Integer userId) {
         log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
 
-        return like;
+        likeStorage.saveLike(filmId, userId);
     }
 
     public void dislikeFilm(Integer filmId, Integer userId) {
@@ -60,15 +57,15 @@ public class FilmService {
         likeStorage.removeLike(filmId, userId);
     }
 
-    public Collection<Film> findTopFilms(Integer count) {
-        List<Film> films = new ArrayList<>();
+    public List<Film> findTopFilms(Integer count) {
+        List<Film> topFilms = new ArrayList<>();
 
-        Collection<Integer> topFilms = likeStorage.getTopFilms(count);
+        Collection<Integer> films = likeStorage.getTopFilmsId(count);
 
-        topFilms.forEach(integer -> films.add(filmStorage.getFilmById(integer)));
+        films.forEach(integer -> topFilms.add(filmStorage.getFilmById(integer)));
 
-        log.info("Возвращен топ фильмов: ", films);
+        log.info("Возвращен топ фильмов: ", topFilms);
 
-        return films;
+        return topFilms;
     }
 }

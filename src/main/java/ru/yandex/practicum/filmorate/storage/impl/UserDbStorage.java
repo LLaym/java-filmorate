@@ -43,7 +43,7 @@ public class UserDbStorage implements UserStorage {
 
         int generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
 
-        return getUserById(generatedId);
+        return getUserById(generatedId).get();
     }
 
     @Override
@@ -63,46 +63,40 @@ public class UserDbStorage implements UserStorage {
 
         jdbcTemplate.update(sql, email, login, name, birthday, id);
 
-        return getUserById(user.getId());
+        return getUserById(user.getId()).get();
     }
 
     @Override
-    public Collection<User> getAllUsers() {
+    public List<User> getAllUsers() {
         String sql = "SELECT * FROM users";
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)));
     }
 
     @Override
-    public User getUserById(Integer id) {
+    public Optional<User> getUserById(Integer id) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
-        User user = jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), id)
-                .stream().findFirst().orElse(null);
-
-        return user;
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), id)
+                .stream().findFirst();
     }
 
     @Override
-    public Collection<User> saveFriendship(Integer id, Integer friendId) {
+    public void saveFriendship(Integer id, Integer friendId) {
         String sql = "INSERT INTO friendships (first_user_id, second_user_id) VALUES (?, ?)";
         String sql2 = "INSERT INTO friendships (first_user_id, second_user_id) VALUES (?, ?)";
 
         jdbcTemplate.update(sql, id, friendId);
         jdbcTemplate.update(sql2, friendId, id);
-
-        return List.of(getUserById(id), getUserById(friendId));
     }
 
     @Override
-    public Collection<User> removeFriendship(Integer id, Integer friendId) {
+    public void removeFriendship(Integer id, Integer friendId) {
         String sql = "DELETE FROM friendships WHERE first_user_id = ? AND second_user_id = ?";
         String sql2 = "DELETE FROM friendships WHERE first_user_id = ? AND second_user_id = ?";
 
         jdbcTemplate.update(sql, id, friendId);
         jdbcTemplate.update(sql2, friendId, id);
-
-        return List.of(getUserById(id), getUserById(friendId));
     }
 
     private User makeUser(ResultSet rs) throws SQLException {

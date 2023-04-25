@@ -3,10 +3,14 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -34,50 +38,47 @@ public class UserService {
         return userStorage.updateUser(user);
     }
 
-    public Collection<User> findAllUsers() {
+    public List<User> findAllUsers() {
         log.info("Возвращен список всех пользователей");
 
         return userStorage.getAllUsers();
     }
 
     public User findUserById(Integer id) {
-        User user = userStorage.getUserById(id);
+        User user = userStorage.getUserById(id)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + id + " не найден"));
 
         log.info("Получен пользователь: {}", user);
 
         return user;
     }
 
-    public Collection<User> makeFriendship(Integer id, Integer friendId) {
-        List<User> friends = (List<User>) userStorage.saveFriendship(id, friendId);
+    public void makeFriendship(Integer id, Integer friendId) {
+        log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", id, friendId);
 
-        log.info("Пользователи {} теперь друзья!", friends);
-
-        return friends;
+        userStorage.saveFriendship(id, friendId);
     }
 
-    public Collection<User> dropFriendship(Integer id, Integer friendId) {
-        List<User> notFriends = (List<User>) userStorage.removeFriendship(id, friendId);
+    public void dropFriendship(Integer id, Integer friendId) {
+        log.info("Пользователь с id {} и пользователь с id {} больше не друзья.", id, friendId);
 
-        log.info("Пользователи {} больше не друзья.", notFriends);
-
-        return notFriends;
+        userStorage.removeFriendship(id, friendId);
     }
 
-    public Collection<User> findUserFriends(Integer id) {
-        User user = userStorage.getUserById(id);
+    public List<User> findUserFriends(Integer id) {
+        User user = userStorage.getUserById(id).get();
         List<User> userFriends = new ArrayList<>();
 
-        user.getFriends().forEach(identifier -> userFriends.add(userStorage.getUserById(identifier)));
+        user.getFriends().forEach(identifier -> userFriends.add(userStorage.getUserById(identifier).get()));
 
         log.info("Возвращен список друзей пользователя: {}", userFriends);
 
         return userFriends;
     }
 
-    public Collection<User> findUsersMutualFriends(Integer id, Integer otherId) {
-        User user1 = userStorage.getUserById(id);
-        User user2 = userStorage.getUserById(otherId);
+    public List<User> findUsersMutualFriends(Integer id, Integer otherId) {
+        User user1 = userStorage.getUserById(id).get();
+        User user2 = userStorage.getUserById(otherId).get();
 
         Set<Integer> user1Friends = user1.getFriends();
         Set<Integer> user2Friends = user2.getFriends();
@@ -87,7 +88,7 @@ public class UserService {
 
         List<User> mutualFriends = new ArrayList<>();
 
-        common.forEach(identifier -> mutualFriends.add(userStorage.getUserById(identifier)));
+        common.forEach(identifier -> mutualFriends.add(userStorage.getUserById(identifier).get()));
 
         log.info("Возвращен список общих друзей: {}", mutualFriends);
 

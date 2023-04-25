@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -17,10 +17,10 @@ public class MpaService {
         this.mpaStorage = mpaStorage;
     }
 
-    public Collection<Mpa> findAllMpas() {
+    public List<Mpa> findAllMpas() {
         log.info("Возвращен список всех Mpa рейтингов");
 
-        return mpaStorage.getAllMpas();
+        return mpaStorage.getAllMpa();
     }
 
     public Mpa findMpaById(Integer id) {

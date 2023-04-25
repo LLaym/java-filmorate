@@ -17,7 +17,7 @@ public class FilmGenreDbStorage implements FilmGenreStorage {
     }
 
     @Override
-    public List<Integer> getGenresByFilmId(Integer filmId) {
+    public List<Integer> getGenresIdByFilmId(Integer filmId) {
         String sql = "SELECT genre_id " +
                 "FROM (SELECT genre_id " +
                 "FROM film_genre " +
@@ -50,14 +50,5 @@ public class FilmGenreDbStorage implements FilmGenreStorage {
         jdbcTemplate.update(sql, filmId);
 
         // TODO в ответку должено что то возвращаться
-    }
-
-    @Override
-    public void update(int filmId, Integer genreId) {
-        String sql = "UPDATE film_genre "
-                + "SET genre_id = ?"
-                + "WHERE film_id = ?";
-
-        jdbcTemplate.update(sql, String.valueOf(genreId), String.valueOf(filmId));
     }
 }

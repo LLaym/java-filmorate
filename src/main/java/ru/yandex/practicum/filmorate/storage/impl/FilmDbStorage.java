@@ -16,7 +16,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 @Qualifier("filmDbStorage")
@@ -90,7 +93,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getAllFilms() {
+    public List<Film> getAllFilms() {
         String sql = "SELECT * FROM films";
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)));
@@ -114,7 +117,7 @@ public class FilmDbStorage implements FilmStorage {
         int duration = rs.getInt("duration");
         Mpa mpa = mpaStorage.getMpaById(rs.getInt("mpa_id")).orElse(null);
 
-        List<Integer> filmGenres = filmGenreStorage.getGenresByFilmId(id);
+        List<Integer> filmGenres = filmGenreStorage.getGenresIdByFilmId(id);
         List<Genre> genres = new ArrayList<>();
         for (Integer filmGenre : filmGenres) {
             genres.add(genreStorage.getGenreById(filmGenre).get());
