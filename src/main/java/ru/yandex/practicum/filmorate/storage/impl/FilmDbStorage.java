@@ -3,11 +3,13 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.FilmGenreStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.sql.ResultSet;
@@ -21,10 +23,14 @@ import java.util.*;
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MpaStorage mpaStorage;
+    private final FilmGenreStorage filmGenreStorage;
+    private final GenreStorage genreStorage;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, FilmGenreStorage filmGenreStorage, GenreStorage genreStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaStorage = mpaStorage;
+        this.filmGenreStorage = filmGenreStorage;
+        this.genreStorage = genreStorage;
     }
 
     @Override
@@ -48,18 +54,22 @@ public class FilmDbStorage implements FilmStorage {
 
         int generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
 
+        if (film.getGenres() != null) {
+            film.getGenres().forEach(genre -> filmGenreStorage.save(generatedId, genre.getId()));
+        }
+
         return getFilmById(generatedId);
     }
 
     @Override
     public Film updateFilm(Film film) {
-        String sql = "UPDATE films " +
-                "SET name = ?" +
-                ", description = ?" +
-                ", release_date = ?" +
-                ", duration = ? " +
-                ", mpa_id = ? " +
-                "WHERE id = ?";
+        String sql = "UPDATE films "
+                + "SET name = ?"
+                + ", description = ?"
+                + ", release_date = ?"
+                + ", duration = ? "
+                + ", mpa_id = ? "
+                + "WHERE id = ?";
 
         String id = String.valueOf(film.getId());
         String name = film.getName();
@@ -67,6 +77,12 @@ public class FilmDbStorage implements FilmStorage {
         String release_date = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String duration = String.valueOf(film.getDuration());
         String mpa = String.valueOf(film.getMpa().getId());
+
+        filmGenreStorage.delete(film.getId());
+
+        if (film.getGenres() != null) {
+            film.getGenres().forEach(genre -> filmGenreStorage.save(film.getId(), genre.getId()));
+        }
 
         jdbcTemplate.update(sql, name, description, release_date, duration, mpa, id);
 
@@ -85,25 +101,9 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT * FROM films WHERE id = ?";
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), id)
-                .stream().findFirst().orElse(null);
-    }
-
-    @Override
-    public Film saveLike(Integer id, Integer userId) {
-        String sql = "INSERT INTO film_like (film_id, user_id) VALUES (?, ?)";
-
-        jdbcTemplate.update(sql, id, userId);
-
-        return getFilmById(id);
-    }
-
-    @Override
-    public Film removeLike(Integer id, Integer userId) {
-        String sql = "DELETE FROM film_like WHERE film_id = ? AND user_id = ?";
-
-        jdbcTemplate.update(sql, id, userId);
-
-        return getFilmById(id);
+                .stream()
+                .findFirst()
+                .orElse(null);
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
@@ -113,30 +113,20 @@ public class FilmDbStorage implements FilmStorage {
         LocalDate release_date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
         Mpa mpa = mpaStorage.getMpaById(rs.getInt("mpa_id")).orElse(null);
-        Set<Integer> likes = getFilmLikes(id);
+
+        List<Integer> filmGenres = filmGenreStorage.getGenresByFilmId(id);
+        List<Genre> genres = new ArrayList<>();
+        for (Integer filmGenre : filmGenres) {
+            genres.add(genreStorage.getGenreById(filmGenre).get());
+        }
 
         return Film.builder()
-                .id(id)
-                .name(name)
+                .id(id).name(name)
                 .description(description)
                 .releaseDate(release_date)
                 .duration(duration)
                 .mpa(mpa)
-                .likes(likes)
+                .genres(genres)
                 .build();
-    }
-
-    private Set<Integer> getFilmLikes(Integer filmId) {
-        String sql = "SELECT user_id FROM film_like WHERE film_id = ?";
-
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, filmId);
-
-        Set<Integer> likes = new HashSet<>();
-
-        while (rowSet.next()) {
-            likes.add(rowSet.getInt("user_id"));
-        }
-
-        return likes;
     }
 }

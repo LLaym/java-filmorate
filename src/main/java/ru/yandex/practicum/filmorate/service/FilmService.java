@@ -4,19 +4,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final LikeStorage likeStorage;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, LikeStorage likeStorage) {
         this.filmStorage = filmStorage;
+        this.likeStorage = likeStorage;
     }
 
     public Film createFilm(Film film) {
@@ -45,33 +49,31 @@ public class FilmService {
         return film;
     }
 
-    public Film likeFilm(Integer id, Integer userId) {
-        Film film = filmStorage.saveLike(id, userId);
+    public Collection<Like> likeFilm(Integer filmId, Integer userId) {
+        List<Like> likes = (List<Like>) likeStorage.saveLike(filmId, userId);
 
-        log.info("Поставлен лайк фильму: {}", film);
+        log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
 
-        return film;
+        return likes;
     }
 
-    public Film dislikeFilm(Integer id, Integer userId) {
-        Film film = filmStorage.removeLike(id, userId);
+    public Collection<Like> dislikeFilm(Integer filmId, Integer userId) {
+        Collection<Like> likes = likeStorage.removeLike(filmId, userId);
 
-        log.info("Убран лайк у фильма: {}", film);
+        log.info("Пользователь с id {} убрал лайк с фильма с id {}", userId, filmId);
 
-        return film;
+        return likes;
     }
 
     public Collection<Film> findTopFilms(Integer count) {
-        List<Film> sortedFilms = filmStorage.getAllFilms().stream()
-                .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
-                .collect(Collectors.toList());
+        List<Film> films = new ArrayList<>();
 
-        log.info("Возвращен топ {} фильмов", count);
+        Collection<Integer> topFilms = likeStorage.getTopFilms(count);
 
-        if (sortedFilms.size() > count) {
-            return sortedFilms.subList(0, count);
-        } else {
-            return sortedFilms;
-        }
+        topFilms.forEach(integer -> films.add(filmStorage.getFilmById(integer)));
+
+        log.info("Возвращен топ фильмов: ", films);
+
+        return films;
     }
 }

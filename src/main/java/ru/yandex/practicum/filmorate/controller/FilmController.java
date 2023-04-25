@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -41,7 +42,7 @@ public class FilmController {
     }
 
     @PutMapping("{id}/like/{userId}")
-    public Film likeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+    public Collection<Like> likeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         Validator.validateFilmId(id);
         Validator.validateUserId(userId);
 
@@ -49,7 +50,7 @@ public class FilmController {
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public Film dislikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+    public Collection<Like> dislikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         Validator.validateFilmId(id);
         Validator.validateUserId(userId);
 
@@ -58,6 +59,7 @@ public class FilmController {
 
     @GetMapping("popular")
     public Collection<Film> findTopFilms(@RequestParam(defaultValue = "10") Integer count) {
+
         return filmService.findTopFilms(count);
     }
 }

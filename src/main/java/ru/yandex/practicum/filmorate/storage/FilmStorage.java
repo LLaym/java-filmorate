@@ -12,8 +12,4 @@ public interface FilmStorage {
     Collection<Film> getAllFilms();
 
     Film getFilmById(Integer id);
-
-    Film saveLike(Integer id, Integer userId);
-
-    Film removeLike(Integer id, Integer userId);
 }
