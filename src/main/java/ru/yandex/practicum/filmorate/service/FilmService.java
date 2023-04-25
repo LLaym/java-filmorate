@@ -43,19 +43,16 @@ public class FilmService {
                 .orElseThrow(() -> new FilmNotFoundException("Фильм в идентификатором " + id + " не найден"));
 
         log.info("Получен фильм: {}", film);
-
         return film;
     }
 
     public void likeFilm(Integer filmId, Integer userId) {
         log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
-
         likeStorage.saveLike(filmId, userId);
     }
 
     public void dislikeFilm(Integer filmId, Integer userId) {
         log.info("Пользователь с id {} убрал лайк с фильма с id {}", userId, filmId);
-
         likeStorage.removeLike(filmId, userId);
     }
 
@@ -67,7 +64,6 @@ public class FilmService {
         films.forEach(integer -> topFilms.add(filmStorage.getFilmById(integer).get()));
 
         log.info("Возвращен топ фильмов: ", topFilms);
-
         return topFilms;
     }
 }
