@@ -61,7 +61,8 @@ public class UserService {
     }
 
     public List<User> findUserFriends(Integer id) {
-        List<User> userFriends = friendshipStorage.getAllByUserId(id).stream()
+        List<User> userFriends = friendshipStorage.getAllByUserId(id)
+                .stream()
                 .map(Friendship::getFriendId)
                 .map(userStorage::getById)
                 .collect(Collectors.toList());

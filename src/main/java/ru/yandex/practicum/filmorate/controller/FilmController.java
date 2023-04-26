@@ -42,19 +42,19 @@ public class FilmController {
     }
 
     @PutMapping("{id}/like/{userId}")
-    public void likeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+    public boolean likeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         Validator.validateFilmId(id);
         Validator.validateUserId(userId);
 
-        filmService.likeFilm(id, userId);
+        return filmService.likeFilm(id, userId);
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public void dislikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+    public boolean dislikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         Validator.validateFilmId(id);
         Validator.validateUserId(userId);
 
-        filmService.dislikeFilm(id, userId);
+        return filmService.dislikeFilm(id, userId);
     }
 
     @GetMapping("popular")

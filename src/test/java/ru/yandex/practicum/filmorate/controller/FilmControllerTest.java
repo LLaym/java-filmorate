@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -23,7 +24,7 @@ class FilmControllerTest {
     void shouldAdd() {
         Film film = Film.builder().name("Shining").description("Horror")
                 .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(226).build();
+                .duration(226).mpa(new Mpa(1, "test")).build();
         filmController.createFilm(film);
 
         assertEquals(1, filmController.findAllFilms().size());
@@ -33,7 +34,7 @@ class FilmControllerTest {
     void shouldSkipEmptyName() {
         Film film = Film.builder().description("Horror")
                 .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(226).build();
+                .duration(226).mpa(new Mpa(1, "test")).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(1, filmController.findAllFilms().size());
@@ -46,7 +47,7 @@ class FilmControllerTest {
                         "HorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorror" +
                         "HorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorror")
                 .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(226).build();
+                .duration(226).mpa(new Mpa(1, "test")).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(1, filmController.findAllFilms().size());
@@ -56,7 +57,7 @@ class FilmControllerTest {
     void shouldSkipUnsupportedDate() {
         Film film = Film.builder().name("Shining").description("Horror")
                 .releaseDate(LocalDate.of(1790, Month.MAY, 23))
-                .duration(226).build();
+                .duration(226).mpa(new Mpa(1, "test")).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(1, filmController.findAllFilms().size());
@@ -66,7 +67,7 @@ class FilmControllerTest {
     void shouldSkipZeroDurationFilm() {
         Film film = Film.builder().name("Shining").description("Horror")
                 .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(0).build();
+                .duration(0).mpa(new Mpa(1, "test")).build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(1, filmController.findAllFilms().size());

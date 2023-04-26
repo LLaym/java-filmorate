@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmGenreStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
 import java.util.List;
@@ -17,15 +15,10 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final LikeStorage likeStorage;
-    private final FilmGenreStorage filmGenreStorage;
-    private final GenreStorage genreStorage;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, LikeStorage likeStorage,
-                       FilmGenreStorage filmGenreStorage, GenreStorage genreStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, LikeStorage likeStorage) {
         this.filmStorage = filmStorage;
         this.likeStorage = likeStorage;
-        this.filmGenreStorage = filmGenreStorage;
-        this.genreStorage = genreStorage;
     }
 
     public Film createFilm(Film film) {
@@ -58,14 +51,14 @@ public class FilmService {
         return film;
     }
 
-    public void likeFilm(Integer filmId, Integer userId) {
+    public boolean likeFilm(Integer filmId, Integer userId) {
         log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
-        likeStorage.save(filmId, userId);
+        return likeStorage.save(filmId, userId);
     }
 
-    public void dislikeFilm(Integer filmId, Integer userId) {
+    public boolean dislikeFilm(Integer filmId, Integer userId) {
         log.info("Пользователь с id {} убрал лайк с фильма с id {}", userId, filmId);
-        likeStorage.delete(filmId, userId);
+        return likeStorage.delete(filmId, userId);
     }
 
     public List<Film> findTopFilms(Integer count) {
