@@ -9,9 +9,8 @@ import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -62,28 +61,34 @@ public class UserService {
     }
 
     public List<User> findUserFriends(Integer id) {
-        User user = userStorage.getById(id);
-        List<User> userFriends = new ArrayList<>();
-
-        user.getFriends().forEach(identifier -> userFriends.add(userStorage.getById(identifier)));
+        List<User> userFriends = friendshipStorage.getAllByUserId(id)
+                .stream()
+                .map(Friendship::getFriendId)
+                .map(userStorage::getById)
+                .collect(Collectors.toList());
 
         log.info("Возвращен список друзей пользователя: {}", userFriends);
         return userFriends;
     }
 
     public List<User> findUsersMutualFriends(Integer id, Integer otherId) {
-        User user1 = userStorage.getById(id);
-        User user2 = userStorage.getById(otherId);
 
-        Set<Integer> user1Friends = user1.getFriends();
-        Set<Integer> user2Friends = user2.getFriends();
-        Set<Integer> common = new HashSet<>(user1Friends);
+        List<Integer> user1Friends = friendshipStorage.getAllByUserId(id)
+                .stream()
+                .map(Friendship::getFriendId)
+                .collect(Collectors.toList());
 
+        List<Integer> user2Friends = friendshipStorage.getAllByUserId(otherId)
+                .stream()
+                .map(Friendship::getFriendId)
+                .collect(Collectors.toList());
+
+        List<Integer> common = new ArrayList<>(user1Friends);
         common.retainAll(user2Friends);
 
-        List<User> mutualFriends = new ArrayList<>();
-
-        common.forEach(identifier -> mutualFriends.add(userStorage.getById(identifier)));
+        List<User> mutualFriends = common.stream()
+                .map(userStorage::getById)
+                .collect(Collectors.toList());
 
         log.info("Возвращен список общих друзей: {}", mutualFriends);
         return mutualFriends;
