@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmGenreStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
 import java.util.List;
@@ -15,20 +17,33 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final LikeStorage likeStorage;
+    private final FilmGenreStorage filmGenreStorage;
+    private final GenreStorage genreStorage;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, LikeStorage likeStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, LikeStorage likeStorage,
+                       FilmGenreStorage filmGenreStorage, GenreStorage genreStorage) {
         this.filmStorage = filmStorage;
         this.likeStorage = likeStorage;
+        this.filmGenreStorage = filmGenreStorage;
+        this.genreStorage = genreStorage;
     }
 
     public Film createFilm(Film film) {
-        log.info("Добавлен фильм: {}", film);
-        return filmStorage.save(film);
+        int generatedId = filmStorage.save(film);
+
+        Film createdFilm = filmStorage.getById(generatedId);
+
+        log.info("Добавлен фильм: {}", createdFilm);
+        return createdFilm;
     }
 
     public Film updateFilm(Film film) {
+        filmStorage.update(film);
+
+        Film updatedFilm = filmStorage.getById(film.getId());
+
         log.info("Обновлён фильм: {}", film);
-        return filmStorage.update(film);
+        return updatedFilm;
     }
 
     public List<Film> findAllFilms() {

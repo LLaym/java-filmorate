@@ -37,7 +37,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film save(Film film) {
+    public Integer save(Film film) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
                 .usingGeneratedKeyColumns("id");
@@ -61,11 +61,11 @@ public class FilmDbStorage implements FilmStorage {
             film.getGenres().forEach(genre -> filmGenreStorage.save(generatedId, genre.getId()));
         }
 
-        return getById(generatedId);
+        return generatedId;
     }
 
     @Override
-    public Film update(Film film) {
+    public Boolean update(Film film) {
         String sql = "UPDATE films "
                 + "SET name = ?"
                 + ", description = ?"
@@ -91,7 +91,7 @@ public class FilmDbStorage implements FilmStorage {
                     .forEach(genreId -> filmGenreStorage.save(film.getId(), genreId));
         }
 
-        return getById(film.getId());
+        return true;
     }
 
     @Override
