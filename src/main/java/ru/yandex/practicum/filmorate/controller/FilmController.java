@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.List;
 
 @RestController
 @RequestMapping("/films")
@@ -57,9 +56,9 @@ public class FilmController {
         filmService.dislikeFilm(id, userId);
     }
 
-    @GetMapping("popular")
-    public List<Film> findTopFilms(@RequestParam(defaultValue = "10") Integer count) {
-
-        return filmService.findTopFilms(count);
-    }
+//    @GetMapping("popular")
+//    public List<Film> findTopFilms(@RequestParam(defaultValue = "10") Integer count) {
+//
+//        return filmService.findTopFilms(count);
+//    }
 }

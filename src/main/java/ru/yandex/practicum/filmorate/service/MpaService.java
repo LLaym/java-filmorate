@@ -19,11 +19,11 @@ public class MpaService {
 
     public List<Mpa> findAllMpas() {
         log.info("Возвращен список всех Mpa рейтингов");
-        return mpaStorage.getAllMpa();
+        return mpaStorage.getAll();
     }
 
     public Mpa findMpaById(Integer id) {
-        Mpa mpa = mpaStorage.getMpaById(id)
+        Mpa mpa = mpaStorage.getById(id)
                 .orElseThrow(() -> new MpaNotFoundException("Mpa рейтинг с идентификатором " + id + " не найден"));
 
         log.info("Получен Mpa рейтинг: {}", mpa);

@@ -17,7 +17,16 @@ public class FilmGenreDbStorage implements FilmGenreStorage {
     }
 
     @Override
-    public List<Integer> getGenresIdByFilmId(Integer filmId) {
+    public void save(int filmId, int genreId) {
+        String sql = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
+
+        jdbcTemplate.update(sql, filmId, genreId);
+
+        // TODO в ответку должено что то возвращаться
+    }
+
+    @Override
+    public List<Integer> getAllByFilmId(int filmId) {
         String sql = "SELECT genre_id " +
                 "FROM (SELECT genre_id " +
                 "FROM film_genre " +
@@ -35,16 +44,7 @@ public class FilmGenreDbStorage implements FilmGenreStorage {
     }
 
     @Override
-    public void save(int filmId, Integer genreId) {
-        String sql = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
-
-        jdbcTemplate.update(sql, filmId, genreId);
-
-        // TODO в ответку должено что то возвращаться
-    }
-
-    @Override
-    public void delete(int filmId) {
+    public void deleteAllByFilmId(int filmId) {
         String sql = "DELETE FROM film_genre WHERE film_id = ?";
 
         jdbcTemplate.update(sql, filmId);

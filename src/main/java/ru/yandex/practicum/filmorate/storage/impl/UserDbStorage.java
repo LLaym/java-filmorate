@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,7 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 @Qualifier("userDbStorage")
@@ -26,7 +27,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User saveUser(User user) {
+    public User save(User user) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");
@@ -44,11 +45,11 @@ public class UserDbStorage implements UserStorage {
 
         int generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
 
-        return getUserById(generatedId);
+        return getById(generatedId);
     }
 
     @Override
-    public User updateUser(User user) {
+    public User update(User user) {
         String sql = "UPDATE users " +
                 "SET email = ?" +
                 ", login = ?" +
@@ -64,18 +65,11 @@ public class UserDbStorage implements UserStorage {
 
         jdbcTemplate.update(sql, email, login, name, birthday, id);
 
-        return getUserById(user.getId());
+        return getById(user.getId());
     }
 
     @Override
-    public List<User> getAllUsers() {
-        String sql = "SELECT * FROM users";
-
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)));
-    }
-
-    @Override
-    public User getUserById(Integer id) {
+    public User getById(int id) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), id)
@@ -85,21 +79,10 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void saveFriendship(Integer id, Integer friendId) {
-        String sql = "INSERT INTO friendships (first_user_id, second_user_id) VALUES (?, ?)";
-        String sql2 = "INSERT INTO friendships (first_user_id, second_user_id) VALUES (?, ?)";
+    public List<User> getAll() {
+        String sql = "SELECT * FROM users";
 
-        jdbcTemplate.update(sql, id, friendId);
-        jdbcTemplate.update(sql2, friendId, id);
-    }
-
-    @Override
-    public void removeFriendship(Integer id, Integer friendId) {
-        String sql = "DELETE FROM friendships WHERE first_user_id = ? AND second_user_id = ?";
-        String sql2 = "DELETE FROM friendships WHERE first_user_id = ? AND second_user_id = ?";
-
-        jdbcTemplate.update(sql, id, friendId);
-        jdbcTemplate.update(sql2, friendId, id);
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)));
     }
 
     private User makeUser(ResultSet rs) throws SQLException {
@@ -108,7 +91,6 @@ public class UserDbStorage implements UserStorage {
         String login = rs.getString("login");
         String name = rs.getString("name");
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
-        Set<Integer> friends = getUserFriends(id);
 
         return User.builder()
                 .id(id)
@@ -116,21 +98,20 @@ public class UserDbStorage implements UserStorage {
                 .login(login)
                 .name(name)
                 .birthday(birthday)
-                .friends(friends)
                 .build();
     }
 
-    private Set<Integer> getUserFriends(Integer userId) {
-        String sql = "SELECT second_user_id FROM friendships WHERE first_user_id = ?";
-
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
-
-        Set<Integer> friends = new HashSet<>();
-
-        while (rowSet.next()) {
-            friends.add(rowSet.getInt("second_user_id"));
-        }
-
-        return friends;
-    }
+//    private Set<Integer> getUserFriends(Integer userId) {
+//        String sql = "SELECT second_user_id FROM friendships WHERE first_user_id = ?";
+//
+//        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
+//
+//        Set<Integer> friends = new HashSet<>();
+//
+//        while (rowSet.next()) {
+//            friends.add(rowSet.getInt("second_user_id"));
+//        }
+//
+//        return friends;
+//    }
 }

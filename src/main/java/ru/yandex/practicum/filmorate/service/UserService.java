@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -16,9 +18,11 @@ import java.util.Set;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final FriendshipStorage friendshipStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendshipStorage friendshipStorage) {
         this.userStorage = userStorage;
+        this.friendshipStorage = friendshipStorage;
     }
 
     public User createUser(User user) {
@@ -27,49 +31,49 @@ public class UserService {
         }
 
         log.info("Добавлен пользователь: {}", user);
-        return userStorage.saveUser(user);
+        return userStorage.save(user);
     }
 
     public User updateUser(User user) {
         log.info("Обновлён пользователь: {}", user);
-        return userStorage.updateUser(user);
+        return userStorage.update(user);
     }
 
     public List<User> findAllUsers() {
         log.info("Возвращен список всех пользователей");
-        return userStorage.getAllUsers();
+        return userStorage.getAll();
     }
 
     public User findUserById(Integer id) {
-        User user = userStorage.getUserById(id);
+        User user = userStorage.getById(id);
 
         log.info("Получен пользователь: {}", user);
         return user;
     }
 
-    public void makeFriendship(Integer id, Integer friendId) {
+    public Friendship makeFriendship(Integer id, Integer friendId) {
         log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", id, friendId);
-        userStorage.saveFriendship(id, friendId);
+        return friendshipStorage.save(id, friendId);
     }
 
-    public void dropFriendship(Integer id, Integer friendId) {
+    public boolean dropFriendship(Integer id, Integer friendId) {
         log.info("Пользователь с id {} и пользователь с id {} больше не друзья.", id, friendId);
-        userStorage.removeFriendship(id, friendId);
+        return friendshipStorage.delete(id, friendId);
     }
 
     public List<User> findUserFriends(Integer id) {
-        User user = userStorage.getUserById(id);
+        User user = userStorage.getById(id);
         List<User> userFriends = new ArrayList<>();
 
-        user.getFriends().forEach(identifier -> userFriends.add(userStorage.getUserById(identifier)));
+        user.getFriends().forEach(identifier -> userFriends.add(userStorage.getById(identifier)));
 
         log.info("Возвращен список друзей пользователя: {}", userFriends);
         return userFriends;
     }
 
     public List<User> findUsersMutualFriends(Integer id, Integer otherId) {
-        User user1 = userStorage.getUserById(id);
-        User user2 = userStorage.getUserById(otherId);
+        User user1 = userStorage.getById(id);
+        User user2 = userStorage.getById(otherId);
 
         Set<Integer> user1Friends = user1.getFriends();
         Set<Integer> user2Friends = user2.getFriends();
@@ -79,7 +83,7 @@ public class UserService {
 
         List<User> mutualFriends = new ArrayList<>();
 
-        common.forEach(identifier -> mutualFriends.add(userStorage.getUserById(identifier)));
+        common.forEach(identifier -> mutualFriends.add(userStorage.getById(identifier)));
 
         log.info("Возвращен список общих друзей: {}", mutualFriends);
         return mutualFriends;

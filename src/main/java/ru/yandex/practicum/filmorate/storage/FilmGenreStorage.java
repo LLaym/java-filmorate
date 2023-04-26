@@ -3,9 +3,9 @@ package ru.yandex.practicum.filmorate.storage;
 import java.util.List;
 
 public interface FilmGenreStorage {
-    List<Integer> getGenresIdByFilmId(Integer filmId);
+    void save(int filmId, int genreId);
 
-    void save(int filmId, Integer genreId);
+    void deleteAllByFilmId(int filmId);
 
-    void delete(int filmId);
+    List<Integer> getAllByFilmId(int filmId);
 }

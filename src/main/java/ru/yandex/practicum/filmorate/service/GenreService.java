@@ -19,11 +19,11 @@ public class GenreService {
 
     public List<Genre> findAllGenres() {
         log.info("Возвращен список всех жанров");
-        return genreStorage.getAllGenres();
+        return genreStorage.getAll();
     }
 
     public Genre findGenreById(Integer id) {
-        Genre genre = genreStorage.getGenreById(id)
+        Genre genre = genreStorage.getById(id)
                 .orElseThrow(() -> new GenreNotFoundException("Жанр с идентификатором " + id + " не найден"));
 
         log.info("Получен жанр: {}", genre);

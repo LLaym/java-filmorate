@@ -19,18 +19,18 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public List<Genre> getAllGenres() {
-        String sql = "SELECT * FROM genres ORDER BY id";
-
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeGenre(rs)));
-    }
-
-    @Override
-    public Optional<Genre> getGenreById(Integer id) {
+    public Optional<Genre> getById(int id) {
         String sql = "SELECT * FROM genres WHERE id = ?";
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeGenre(rs)), id)
                 .stream().findFirst();
+    }
+
+    @Override
+    public List<Genre> getAll() {
+        String sql = "SELECT * FROM genres ORDER BY id";
+
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeGenre(rs)));
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {

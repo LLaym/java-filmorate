@@ -30,7 +30,7 @@ public class Validator {
         if (id == null || id <= 0) {
             throw new ValidationException("параметр id не может быть меньше 0");
         }
-        if (filmStorage.getFilmById(id) == null) {
+        if (filmStorage.getById(id) == null) {
             throw new FilmNotFoundException("фильма с таким id не существует");
         }
     }
@@ -48,7 +48,7 @@ public class Validator {
                 throw new ValidationException("продолжительность фильма должна быть положительной");
             }
         } else {
-            if (filmStorage.getAllFilms().stream().noneMatch(film1 -> film1.getId() == film.getId())) {
+            if (filmStorage.getAll().stream().noneMatch(film1 -> film1.getId() == film.getId())) {
                 throw new FilmNotFoundException("фильма с таким id не существует");
             }
         }
@@ -58,7 +58,7 @@ public class Validator {
         if (id == null) {
             throw new ValidationException("требуется корректный id параметр");
         }
-        if (userStorage.getUserById(id) == null) {
+        if (userStorage.getById(id) == null) {
             throw new UserNotFoundException("пользователя с таким id не существует");
         }
     }
@@ -74,7 +74,7 @@ public class Validator {
                 throw new ValidationException("дата рождения не может быть в будущем.");
             }
         } else {
-            if (userStorage.getAllUsers().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
+            if (userStorage.getAll().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
                 throw new UserNotFoundException("пользователя с таким id не существует");
             }
         }

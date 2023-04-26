@@ -38,7 +38,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film saveFilm(Film film) {
+    public Film save(Film film) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
                 .usingGeneratedKeyColumns("id");
@@ -62,11 +62,11 @@ public class FilmDbStorage implements FilmStorage {
             film.getGenres().forEach(genre -> filmGenreStorage.save(generatedId, genre.getId()));
         }
 
-        return getFilmById(generatedId);
+        return getById(generatedId);
     }
 
     @Override
-    public Film updateFilm(Film film) {
+    public Film update(Film film) {
         String sql = "UPDATE films "
                 + "SET name = ?"
                 + ", description = ?"
@@ -82,7 +82,7 @@ public class FilmDbStorage implements FilmStorage {
         String duration = String.valueOf(film.getDuration());
         String mpa = String.valueOf(film.getMpa().getId());
 
-        filmGenreStorage.delete(film.getId());
+        filmGenreStorage.deleteAllByFilmId(film.getId());
 
         if (film.getGenres() != null) {
             film.getGenres().forEach(genre -> filmGenreStorage.save(film.getId(), genre.getId()));
@@ -90,18 +90,11 @@ public class FilmDbStorage implements FilmStorage {
 
         jdbcTemplate.update(sql, name, description, release_date, duration, mpa, id);
 
-        return getFilmById(film.getId());
+        return getById(film.getId());
     }
 
     @Override
-    public List<Film> getAllFilms() {
-        String sql = "SELECT * FROM films";
-
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)));
-    }
-
-    @Override
-    public Film getFilmById(Integer id) {
+    public Film getById(int id) {
         String sql = "SELECT * FROM films WHERE id = ?";
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), id)
@@ -110,18 +103,25 @@ public class FilmDbStorage implements FilmStorage {
                 .orElseThrow(() -> new FilmNotFoundException("Фильм с id " + id + " не найден"));
     }
 
+    @Override
+    public List<Film> getAll() {
+        String sql = "SELECT * FROM films";
+
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)));
+    }
+
     private Film makeFilm(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");
         String description = rs.getString("description");
         LocalDate release_date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
-        Mpa mpa = mpaStorage.getMpaById(rs.getInt("mpa_id")).orElse(null);
+        Mpa mpa = mpaStorage.getById(rs.getInt("mpa_id")).orElse(null);
 
-        List<Integer> filmGenres = filmGenreStorage.getGenresIdByFilmId(id);
+        List<Integer> filmGenres = filmGenreStorage.getAllByFilmId(id);
         List<Genre> genres = new ArrayList<>();
         for (Integer filmGenre : filmGenres) {
-            genres.add(genreStorage.getGenreById(filmGenre).get());
+            genres.add(genreStorage.getById(filmGenre).get());
         }
 
         return Film.builder()

@@ -19,18 +19,18 @@ public class MpaDbStorage implements MpaStorage {
     }
 
     @Override
-    public List<Mpa> getAllMpa() {
-        String sql = "SELECT * FROM mpas ORDER BY id";
-
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeMpa(rs)));
-    }
-
-    @Override
-    public Optional<Mpa> getMpaById(Integer id) {
+    public Optional<Mpa> getById(int id) {
         String sql = "SELECT * FROM mpas WHERE id = ?";
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeMpa(rs)), id)
                 .stream().findFirst();
+    }
+
+    @Override
+    public List<Mpa> getAll() {
+        String sql = "SELECT * FROM mpas ORDER BY id";
+
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeMpa(rs)));
     }
 
     private Mpa makeMpa(ResultSet rs) throws SQLException {

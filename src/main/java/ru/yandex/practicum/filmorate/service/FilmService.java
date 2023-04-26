@@ -7,8 +7,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -24,21 +22,21 @@ public class FilmService {
 
     public Film createFilm(Film film) {
         log.info("Добавлен фильм: {}", film);
-        return filmStorage.saveFilm(film);
+        return filmStorage.save(film);
     }
 
     public Film updateFilm(Film film) {
         log.info("Обновлён фильм: {}", film);
-        return filmStorage.updateFilm(film);
+        return filmStorage.update(film);
     }
 
     public List<Film> findAllFilms() {
         log.info("Возвращен список всех фильмов");
-        return filmStorage.getAllFilms();
+        return filmStorage.getAll();
     }
 
     public Film findFilmById(Integer id) {
-        Film film = filmStorage.getFilmById(id);
+        Film film = filmStorage.getById(id);
 
         log.info("Получен фильм: {}", film);
         return film;
@@ -46,22 +44,22 @@ public class FilmService {
 
     public void likeFilm(Integer filmId, Integer userId) {
         log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
-        likeStorage.saveLike(filmId, userId);
+        likeStorage.save(filmId, userId);
     }
 
     public void dislikeFilm(Integer filmId, Integer userId) {
         log.info("Пользователь с id {} убрал лайк с фильма с id {}", userId, filmId);
-        likeStorage.removeLike(filmId, userId);
+        likeStorage.delete(filmId, userId);
     }
 
-    public List<Film> findTopFilms(Integer count) {
-        List<Film> topFilms = new ArrayList<>();
-
-        Collection<Integer> films = likeStorage.getTopFilmsId(count);
-
-        films.forEach(integer -> topFilms.add(filmStorage.getFilmById(integer)));
-
-        log.info("Возвращен топ фильмов: ", topFilms);
-        return topFilms;
-    }
+//    public List<Film> findTopFilms(Integer count) {
+//        List<Film> topFilms = new ArrayList<>();
+//
+//        List<Integer> films = likeStorage.getTopFilmsId(count);
+//
+//        films.forEach(integer -> topFilms.add(filmStorage.getById(integer)));
+//
+//        log.info("Возвращен топ фильмов: ", topFilms);
+//        return topFilms;
+//    }
 }
