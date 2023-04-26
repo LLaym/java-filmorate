@@ -7,8 +7,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -54,11 +54,10 @@ public class FilmService {
     }
 
     public List<Film> findTopFilms(Integer count) {
-        List<Film> topFilms = new ArrayList<>();
-
-        List<Integer> top = likeStorage.getTop(count);
-
-        top.forEach(integer -> topFilms.add(filmStorage.getById(integer)));
+        List<Film> topFilms = likeStorage.getPopularFilmsIds(count)
+                .stream()
+                .map(filmStorage::getById)
+                .collect(Collectors.toList());
 
         log.info("Возвращен топ фильмов: ", topFilms);
         return topFilms;

@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -43,11 +42,11 @@ public class UserController {
     }
 
     @PutMapping("{id}/friends/{friendId}")
-    public Friendship makeTwoUsersFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
+    public void makeTwoUsersFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         Validator.validateUserId(id);
         Validator.validateUserId(friendId);
 
-        return userService.makeFriendship(id, friendId);
+        userService.makeFriendship(id, friendId);
     }
 
     @DeleteMapping("{id}/friends/{friendId}")

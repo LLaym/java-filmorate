@@ -9,9 +9,7 @@ public interface UserStorage {
 
     User update(User user);
 
-    User getById(int id);
+    User getById(int userId);
 
     List<User> getAll();
-//    void saveFriendship(Integer id, Integer friendId);
-//    void removeFriendship(Integer id, Integer friendId);
 }

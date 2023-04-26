@@ -85,7 +85,8 @@ public class FilmDbStorage implements FilmStorage {
 
         filmGenreStorage.deleteAllByFilmId(film.getId());
         if (film.getGenres() != null) {
-            film.getGenres().stream()
+            film.getGenres()
+                    .stream()
                     .map(Genre::getId)
                     .forEach(genreId -> filmGenreStorage.save(film.getId(), genreId));
         }
@@ -94,13 +95,13 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film getById(int id) {
+    public Film getById(int filmId) {
         String sql = "SELECT * FROM films WHERE id = ?";
 
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), id)
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), filmId)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new FilmNotFoundException("Фильм с id " + id + " не найден"));
+                .orElseThrow(() -> new FilmNotFoundException("Фильм с id " + filmId + " не найден"));
     }
 
     @Override

@@ -69,13 +69,13 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User getById(int id) {
+    public User getById(int userId) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), id)
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), userId)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + id + " не найден"));
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + userId + " не найден"));
     }
 
     @Override
@@ -100,18 +100,4 @@ public class UserDbStorage implements UserStorage {
                 .birthday(birthday)
                 .build();
     }
-
-//    private Set<Integer> getUserFriends(Integer userId) {
-//        String sql = "SELECT second_user_id FROM friendships WHERE first_user_id = ?";
-//
-//        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
-//
-//        Set<Integer> friends = new HashSet<>();
-//
-//        while (rowSet.next()) {
-//            friends.add(rowSet.getInt("second_user_id"));
-//        }
-//
-//        return friends;
-//    }
 }

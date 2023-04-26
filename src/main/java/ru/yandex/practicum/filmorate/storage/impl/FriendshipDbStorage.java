@@ -10,27 +10,25 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
-public class FrienshipDbStorage implements FriendshipStorage {
+public class FriendshipDbStorage implements FriendshipStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public FrienshipDbStorage(JdbcTemplate jdbcTemplate) {
+    public FriendshipDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Friendship save(int id, int friendId) {
+    public void save(int userId, int friendId) {
         String sql = "INSERT INTO friendships (first_user_id, second_user_id) VALUES (?, ?)";
 
-        jdbcTemplate.update(sql, id, friendId);
-
-        return new Friendship(id, friendId);
+        jdbcTemplate.update(sql, userId, friendId);
     }
 
     @Override
-    public boolean delete(int id, int friendId) {
+    public boolean delete(int userId, int friendId) {
         String sql = "DELETE FROM friendships WHERE first_user_id = ? AND second_user_id = ?";
 
-        jdbcTemplate.update(sql, id, friendId);
+        jdbcTemplate.update(sql, userId, friendId);
 
         return true;
     }

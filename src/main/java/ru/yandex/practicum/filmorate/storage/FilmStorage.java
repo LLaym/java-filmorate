@@ -9,7 +9,7 @@ public interface FilmStorage {
 
     Film update(Film film);
 
-    Film getById(int id);
+    Film getById(int filmId);
 
     List<Film> getAll();
 }

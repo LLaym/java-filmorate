@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Data
-@Builder(toBuilder = true)
+@Builder
 public class User {
     private int id;
     @Email

@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Data
-@Builder(toBuilder = true)
+@Builder
 public class Film {
     private int id;
     @NotBlank
@@ -21,5 +21,5 @@ public class Film {
     @Positive
     private int duration;
     private Mpa mpa;
-    private final Set<Genre> genres;
+    private Set<Genre> genres;
 }

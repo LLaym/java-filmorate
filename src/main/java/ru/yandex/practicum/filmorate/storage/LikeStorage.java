@@ -7,6 +7,6 @@ public interface LikeStorage {
 
     void delete(int filmId, int userId);
 
-    List<Integer> getTop(int count);
+    List<Integer> getPopularFilmsIds(int count);
 }
 

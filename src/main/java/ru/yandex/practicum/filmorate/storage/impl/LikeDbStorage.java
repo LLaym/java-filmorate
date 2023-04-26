@@ -32,7 +32,7 @@ public class LikeDbStorage implements LikeStorage {
     }
 
     @Override
-    public List<Integer> getTop(int count) {
+    public List<Integer> getPopularFilmsIds(int count) {
         String sql = "SELECT id " +
                 "FROM (SELECT films.id, COUNT(user_id) AS score" +
                 " FROM films" +

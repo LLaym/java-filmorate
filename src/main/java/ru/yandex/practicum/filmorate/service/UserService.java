@@ -50,9 +50,9 @@ public class UserService {
         return user;
     }
 
-    public Friendship makeFriendship(Integer id, Integer friendId) {
+    public void makeFriendship(Integer id, Integer friendId) {
         log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", id, friendId);
-        return friendshipStorage.save(id, friendId);
+        friendshipStorage.save(id, friendId);
     }
 
     public boolean dropFriendship(Integer id, Integer friendId) {
@@ -61,8 +61,7 @@ public class UserService {
     }
 
     public List<User> findUserFriends(Integer id) {
-        List<User> userFriends = friendshipStorage.getAllByUserId(id)
-                .stream()
+        List<User> userFriends = friendshipStorage.getAllByUserId(id).stream()
                 .map(Friendship::getFriendId)
                 .map(userStorage::getById)
                 .collect(Collectors.toList());
@@ -72,12 +71,10 @@ public class UserService {
     }
 
     public List<User> findUsersMutualFriends(Integer id, Integer otherId) {
-
         List<Integer> user1Friends = friendshipStorage.getAllByUserId(id)
                 .stream()
                 .map(Friendship::getFriendId)
                 .collect(Collectors.toList());
-
         List<Integer> user2Friends = friendshipStorage.getAllByUserId(otherId)
                 .stream()
                 .map(Friendship::getFriendId)
