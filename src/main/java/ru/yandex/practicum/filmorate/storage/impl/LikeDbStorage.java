@@ -1,8 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class LikeDbStorage implements LikeStorage {
@@ -14,36 +18,37 @@ public class LikeDbStorage implements LikeStorage {
     }
 
     @Override
-    public void save(Integer filmId, Integer userId) {
+    public void save(int filmId, int userId) {
         String sql = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
 
         jdbcTemplate.update(sql, filmId, userId);
     }
 
     @Override
-    public void delete(Integer filmId, Integer userId) {
+    public void delete(int filmId, int userId) {
         String sql = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
 
         jdbcTemplate.update(sql, filmId, userId);
     }
 
-//    @Override
-//    public List<Integer> getTopFilmsId(Integer count) {
-//        String sql = "SELECT film_id " +
-//                "FROM (SELECT film_id, COUNT(user_id) AS score " +
-//                "FROM likes " +
-//                "GROUP BY film_id " +
-//                "ORDER BY score DESC) " +
-//                "LIMIT ?;";
-//
-//        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, count);
-//
-//        List<Integer> films = new ArrayList<>();
-//
-//        while (rowSet.next()) {
-//            films.add(rowSet.getInt("film_id"));
-//        }
-//
-//        return films;
-//    }
+    @Override
+    public List<Integer> getTop(int count) {
+        String sql = "SELECT id " +
+                "FROM (SELECT films.id, COUNT(user_id) AS score" +
+                " FROM films" +
+                " LEFT JOIN likes l on films.id = l.film_id" +
+                " GROUP BY films.id" +
+                " ORDER BY score DESC)" +
+                " LIMIT ?;";
+
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, count);
+
+        List<Integer> top = new ArrayList<>();
+
+        while (rowSet.next()) {
+            top.add(rowSet.getInt("id"));
+        }
+
+        return top;
+    }
 }

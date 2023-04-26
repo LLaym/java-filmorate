@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -52,14 +53,14 @@ public class FilmService {
         likeStorage.delete(filmId, userId);
     }
 
-//    public List<Film> findTopFilms(Integer count) {
-//        List<Film> topFilms = new ArrayList<>();
-//
-//        List<Integer> films = likeStorage.getTopFilmsId(count);
-//
-//        films.forEach(integer -> topFilms.add(filmStorage.getById(integer)));
-//
-//        log.info("Возвращен топ фильмов: ", topFilms);
-//        return topFilms;
-//    }
+    public List<Film> findTopFilms(Integer count) {
+        List<Film> topFilms = new ArrayList<>();
+
+        List<Integer> top = likeStorage.getTop(count);
+
+        top.forEach(integer -> topFilms.add(filmStorage.getById(integer)));
+
+        log.info("Возвращен топ фильмов: ", topFilms);
+        return topFilms;
+    }
 }

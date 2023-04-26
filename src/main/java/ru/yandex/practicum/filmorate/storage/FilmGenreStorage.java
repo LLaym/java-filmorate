@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import ru.yandex.practicum.filmorate.model.FilmGenre;
+
 import java.util.List;
 
 public interface FilmGenreStorage {
     void save(int filmId, int genreId);
 
-    void deleteAllByFilmId(int filmId);
+    boolean deleteAllByFilmId(int filmId);
 
-    List<Integer> getAllByFilmId(int filmId);
+    List<FilmGenre> getAllByFilmId(int filmId);
 }

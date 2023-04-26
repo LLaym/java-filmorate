@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmGenreStorage;
@@ -17,10 +18,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @Qualifier("filmDbStorage")
@@ -82,13 +81,14 @@ public class FilmDbStorage implements FilmStorage {
         String duration = String.valueOf(film.getDuration());
         String mpa = String.valueOf(film.getMpa().getId());
 
-        filmGenreStorage.deleteAllByFilmId(film.getId());
-
-        if (film.getGenres() != null) {
-            film.getGenres().forEach(genre -> filmGenreStorage.save(film.getId(), genre.getId()));
-        }
-
         jdbcTemplate.update(sql, name, description, release_date, duration, mpa, id);
+
+        filmGenreStorage.deleteAllByFilmId(film.getId());
+        if (film.getGenres() != null) {
+            film.getGenres().stream()
+                    .map(Genre::getId)
+                    .forEach(genreId -> filmGenreStorage.save(film.getId(), genreId));
+        }
 
         return getById(film.getId());
     }
@@ -117,12 +117,12 @@ public class FilmDbStorage implements FilmStorage {
         LocalDate release_date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
         Mpa mpa = mpaStorage.getById(rs.getInt("mpa_id")).orElse(null);
-
-        List<Integer> filmGenres = filmGenreStorage.getAllByFilmId(id);
-        List<Genre> genres = new ArrayList<>();
-        for (Integer filmGenre : filmGenres) {
-            genres.add(genreStorage.getById(filmGenre).get());
-        }
+        Set<Genre> genres = filmGenreStorage.getAllByFilmId(id)
+                .stream()
+                .map(FilmGenre::getGenreId)
+                .map(genreStorage::getById)
+                .map(Optional::get)
+                .collect(Collectors.toSet());
 
         return Film.builder()
                 .id(id).name(name)

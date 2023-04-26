@@ -1,8 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
 
-public interface LikeStorage {
-    void save(Integer filmId, Integer userId);
+import java.util.List;
 
-    void delete(Integer filmId, Integer userId);
-//    List<Integer> getTopFilmsId(Integer count);
+public interface LikeStorage {
+    void save(int filmId, int userId);
+
+    void delete(int filmId, int userId);
+
+    List<Integer> getTop(int count);
 }
+

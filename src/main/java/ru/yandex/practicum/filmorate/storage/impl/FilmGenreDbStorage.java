@@ -1,11 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.storage.FilmGenreStorage;
 
-import java.util.ArrayList;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -21,34 +22,27 @@ public class FilmGenreDbStorage implements FilmGenreStorage {
         String sql = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
 
         jdbcTemplate.update(sql, filmId, genreId);
-
-        // TODO в ответку должено что то возвращаться
     }
 
     @Override
-    public List<Integer> getAllByFilmId(int filmId) {
-        String sql = "SELECT genre_id " +
-                "FROM (SELECT genre_id " +
+    public List<FilmGenre> getAllByFilmId(int filmId) {
+        String sql = "SELECT * " +
                 "FROM film_genre " +
-                "WHERE film_id = ?)";
+                "WHERE film_id = ?";
 
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, filmId);
-
-        List<Integer> genres = new ArrayList<>();
-
-        while (rowSet.next()) {
-            genres.add(rowSet.getInt("genre_id"));
-        }
-
-        return genres;
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilmGenre(rs)), filmId);
     }
 
     @Override
-    public void deleteAllByFilmId(int filmId) {
+    public boolean deleteAllByFilmId(int filmId) {
         String sql = "DELETE FROM film_genre WHERE film_id = ?";
 
         jdbcTemplate.update(sql, filmId);
 
-        // TODO в ответку должено что то возвращаться
+        return true;
+    }
+
+    private FilmGenre makeFilmGenre(ResultSet rs) throws SQLException {
+        return new FilmGenre(rs.getInt("film_id"), rs.getInt("genre_id"));
     }
 }
