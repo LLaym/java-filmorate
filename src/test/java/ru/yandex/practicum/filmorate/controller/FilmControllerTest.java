@@ -22,9 +22,14 @@ class FilmControllerTest {
 
     @Test
     void shouldAdd() {
-        Film film = Film.builder().name("Shining").description("Horror")
+        Film film = Film.builder()
+                .name("Shining")
+                .description("Horror")
                 .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(226).mpa(new Mpa(1, "test")).build();
+                .duration(226)
+                .mpa(new Mpa(1, "test"))
+                .build();
+
         filmController.createFilm(film);
 
         assertEquals(1, filmController.findAllFilms().size());
@@ -32,9 +37,12 @@ class FilmControllerTest {
 
     @Test
     void shouldSkipEmptyName() {
-        Film film = Film.builder().description("Horror")
+        Film film = Film.builder()
+                .description("Horror")
                 .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(226).mpa(new Mpa(1, "test")).build();
+                .duration(226)
+                .mpa(new Mpa(1, "test"))
+                .build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(1, filmController.findAllFilms().size());
@@ -42,12 +50,16 @@ class FilmControllerTest {
 
     @Test
     void shouldSkipTooLongDescription() {
-        Film film = Film.builder().name("Shining").description("HorrorHorrorHorrorHorrorHorror" +
+        Film film = Film.builder()
+                .name("Shining")
+                .description("HorrorHorrorHorrorHorrorHorror" +
                         "HorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorror" +
                         "HorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorror" +
                         "HorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorrorHorror")
                 .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(226).mpa(new Mpa(1, "test")).build();
+                .duration(226)
+                .mpa(new Mpa(1, "test"))
+                .build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(1, filmController.findAllFilms().size());
@@ -55,9 +67,13 @@ class FilmControllerTest {
 
     @Test
     void shouldSkipUnsupportedDate() {
-        Film film = Film.builder().name("Shining").description("Horror")
+        Film film = Film.builder()
+                .name("Shining")
+                .description("Horror")
                 .releaseDate(LocalDate.of(1790, Month.MAY, 23))
-                .duration(226).mpa(new Mpa(1, "test")).build();
+                .duration(226)
+                .mpa(new Mpa(1, "test"))
+                .build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(1, filmController.findAllFilms().size());
@@ -65,9 +81,13 @@ class FilmControllerTest {
 
     @Test
     void shouldSkipZeroDurationFilm() {
-        Film film = Film.builder().name("Shining").description("Horror")
+        Film film = Film.builder()
+                .name("Shining")
+                .description("Horror")
                 .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(0).mpa(new Mpa(1, "test")).build();
+                .duration(0)
+                .mpa(new Mpa(1, "test"))
+                .build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
         assertEquals(1, filmController.findAllFilms().size());

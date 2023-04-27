@@ -25,9 +25,13 @@ class FilmDbStorageTest {
 
     @Test
     void testSave() {
-        Film film = Film.builder().name("Shining").description("Horror")
+        Film film = Film.builder()
+                .name("Shining")
+                .description("Horror")
                 .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(226).mpa(new Mpa(1, "test")).build();
+                .duration(226)
+                .mpa(new Mpa(1, "test"))
+                .build();
 
         int generatedId = filmStorage.save(film);
 
@@ -36,9 +40,14 @@ class FilmDbStorageTest {
 
     @Test
     void testUpdate() {
-        Film updatedFilm = Film.builder().name("Updated Shining").description("Updated Horror")
+        Film updatedFilm = Film.builder()
+                .id(1)
+                .name("Updated Shining")
+                .description("Updated Horror")
                 .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(226).mpa(new Mpa(1, "test")).build();
+                .duration(226)
+                .mpa(new Mpa(1, "test"))
+                .build();
 
         boolean isUpdated = filmStorage.update(updatedFilm);
 

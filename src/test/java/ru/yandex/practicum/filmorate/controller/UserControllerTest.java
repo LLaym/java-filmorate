@@ -21,8 +21,13 @@ class UserControllerTest {
 
     @Test
     void shouldAdd() {
-        User user = User.builder().name("Vitaly").email("mail@yandex.ru")
-                .login("LLaym").birthday(LocalDate.of(1995, Month.MAY, 11)).build();
+        User user = User.builder()
+                .name("Vitaly")
+                .email("mail@yandex.ru")
+                .login("LLaym")
+                .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
+                .build();
+
         userController.createUser(user);
 
         assertEquals(1, userController.findAllUsers().size());
@@ -30,8 +35,11 @@ class UserControllerTest {
 
     @Test
     void shouldSkipEmptyEmail() {
-        User user = User.builder().name("Vitaly")
-                .login("LLaym").birthday(LocalDate.of(1995, Month.MAY, 11)).build();
+        User user = User.builder()
+                .name("Vitaly")
+                .login("LLaym")
+                .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
+                .build();
 
         assertThrows(RuntimeException.class, () -> userController.createUser(user));
         assertEquals(1, userController.findAllUsers().size());
@@ -39,8 +47,12 @@ class UserControllerTest {
 
     @Test
     void shouldSkipUnsupportedEmail() {
-        User user = User.builder().name("Vitaly").email("yandex.ru")
-                .login("LLaym").birthday(LocalDate.of(1995, Month.MAY, 11)).build();
+        User user = User.builder()
+                .name("Vitaly")
+                .email("yandex.ru")
+                .login("LLaym")
+                .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
+                .build();
 
         assertThrows(RuntimeException.class, () -> userController.createUser(user));
         assertEquals(1, userController.findAllUsers().size());
@@ -48,8 +60,11 @@ class UserControllerTest {
 
     @Test
     void shouldSkipEmptyLogin() {
-        User user = User.builder().name("Vitaly").email("mail@yandex.ru")
-                .birthday(LocalDate.of(1995, Month.MAY, 11)).build();
+        User user = User.builder()
+                .name("Vitaly")
+                .email("mail@yandex.ru")
+                .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
+                .build();
 
         assertThrows(RuntimeException.class, () -> userController.createUser(user));
         assertEquals(1, userController.findAllUsers().size());
@@ -57,8 +72,12 @@ class UserControllerTest {
 
     @Test
     void shouldSkipUnsupportedLogin() {
-        User user = User.builder().name("Vitaly").email("mail@yandex.ru")
-                .login("LLaym login").birthday(LocalDate.of(1995, Month.MAY, 11)).build();
+        User user = User.builder()
+                .name("Vitaly")
+                .email("mail@yandex.ru")
+                .login("LLaym login")
+                .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
+                .build();
 
         assertThrows(RuntimeException.class, () -> userController.createUser(user));
         assertEquals(1, userController.findAllUsers().size());
@@ -66,8 +85,12 @@ class UserControllerTest {
 
     @Test
     void shouldSkipUnsupportedBirthday() {
-        User user = User.builder().name("Vitaly").email("mail@yandex.ru")
-                .login("LLaym").birthday(LocalDate.of(2999, Month.MAY, 11)).build();
+        User user = User.builder()
+                .name("Vitaly")
+                .email("mail@yandex.ru")
+                .login("LLaym")
+                .birthday(LocalDate.of(2990, Month.OCTOBER, 25))
+                .build();
 
         assertThrows(RuntimeException.class, () -> userController.createUser(user));
         assertEquals(1, userController.findAllUsers().size());

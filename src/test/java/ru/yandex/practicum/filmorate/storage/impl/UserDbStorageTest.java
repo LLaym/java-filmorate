@@ -24,8 +24,12 @@ class UserDbStorageTest {
 
     @Test
     void testSave() {
-        User user = User.builder().name("Vitaly").email("mail@yandex.ru")
-                .login("LLaym").birthday(LocalDate.of(1995, Month.MAY, 11)).build();
+        User user = User.builder()
+                .name("Vitaly")
+                .email("mail@yandex.ru")
+                .login("LLaym")
+                .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
+                .build();
 
         int generatedId = userStorage.save(user);
 
@@ -34,8 +38,13 @@ class UserDbStorageTest {
 
     @Test
     void testUpdate() {
-        User updatedUser = User.builder().name("Updated Vitaly").email("mail@yandex.ru")
-                .login("LLaym").birthday(LocalDate.of(1995, Month.MAY, 11)).build();
+        User updatedUser = User.builder()
+                .id(1)
+                .name("Updated Vitaly")
+                .email("mail@yandex.ru")
+                .login("LLaym")
+                .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
+                .build();
 
         boolean isUpdated = userStorage.update(updatedUser);
 
