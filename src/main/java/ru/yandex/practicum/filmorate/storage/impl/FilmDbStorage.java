@@ -36,7 +36,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Integer save(Film film) {
+    public int save(Film film) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
                 .usingGeneratedKeyColumns("id");
@@ -64,7 +64,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Boolean update(Film film) {
+    public boolean update(Film film) {
         String sql = "UPDATE films "
                 + "SET name = ?"
                 + ", description = ?"

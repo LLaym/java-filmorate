@@ -31,13 +31,19 @@ public class UserService {
             user.setName(user.getLogin());
         }
 
-        log.info("Добавлен пользователь: {}", user);
-        return userStorage.save(user);
+        int generatedId = userStorage.save(user);
+        User createdUser = userStorage.getById(generatedId).get();
+
+        log.info("Добавлен пользователь: {}", createdUser);
+        return createdUser;
     }
 
     public User updateUser(User user) {
-        log.info("Обновлён пользователь: {}", user);
-        return userStorage.update(user);
+        userStorage.update(user);
+        User updatedUser = userStorage.getById(user.getId()).get();
+
+        log.info("Обновлён пользователь: {}", updatedUser);
+        return updatedUser;
     }
 
     public List<User> findAllUsers() {

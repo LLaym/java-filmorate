@@ -25,7 +25,6 @@ public class FilmService {
 
     public Film createFilm(Film film) {
         int generatedId = filmStorage.save(film);
-
         Film createdFilm = filmStorage.getById(generatedId).get();
 
         log.info("Добавлен фильм: {}", createdFilm);
@@ -34,7 +33,6 @@ public class FilmService {
 
     public Film updateFilm(Film film) {
         filmStorage.update(film);
-
         Film updatedFilm = filmStorage.getById(film.getId()).get();
 
         log.info("Обновлён фильм: {}", film);

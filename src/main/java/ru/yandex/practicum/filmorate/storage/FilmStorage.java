@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmStorage {
-    Integer save(Film film);
+    int save(Film film);
 
-    Boolean update(Film film);
+    boolean update(Film film);
 
     Optional<Film> getById(int filmId);
 

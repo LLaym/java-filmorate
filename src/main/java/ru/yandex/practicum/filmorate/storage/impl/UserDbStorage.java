@@ -27,7 +27,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User save(User user) {
+    public int save(User user) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");
@@ -43,13 +43,11 @@ public class UserDbStorage implements UserStorage {
         parameters.put("name", name);
         parameters.put("birthday", birthday);
 
-        int generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
-
-        return getById(generatedId).get();
+        return simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
     }
 
     @Override
-    public User update(User user) {
+    public boolean update(User user) {
         String sql = "UPDATE users " +
                 "SET email = ?" +
                 ", login = ?" +
@@ -65,7 +63,7 @@ public class UserDbStorage implements UserStorage {
 
         jdbcTemplate.update(sql, email, login, name, birthday, id);
 
-        return getById(user.getId()).get();
+        return true;
     }
 
     @Override
