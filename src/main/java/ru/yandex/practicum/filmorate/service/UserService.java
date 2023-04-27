@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
@@ -10,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,16 +45,17 @@ public class UserService {
         return userStorage.getAll();
     }
 
-    public User findUserById(Integer id) {
-        User user = userStorage.getById(id);
+    public User findUserById(Integer userId) {
+        User user = userStorage.getById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + userId + " не найден"));
 
         log.info("Получен пользователь: {}", user);
         return user;
     }
 
-    public void makeFriendship(Integer id, Integer friendId) {
-        log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", id, friendId);
-        friendshipStorage.save(id, friendId);
+    public void makeFriendship(Integer userId, Integer friendId) {
+        log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", userId, friendId);
+        friendshipStorage.save(userId, friendId);
     }
 
     public boolean dropFriendship(Integer id, Integer friendId) {
@@ -60,19 +63,20 @@ public class UserService {
         return friendshipStorage.delete(id, friendId);
     }
 
-    public List<User> findUserFriends(Integer id) {
-        List<User> userFriends = friendshipStorage.getAllByUserId(id)
+    public List<User> findUserFriends(Integer userId) {
+        List<User> userFriends = friendshipStorage.getAllByUserId(userId)
                 .stream()
                 .map(Friendship::getFriendId)
                 .map(userStorage::getById)
+                .map(Optional::get)
                 .collect(Collectors.toList());
 
         log.info("Возвращен список друзей пользователя: {}", userFriends);
         return userFriends;
     }
 
-    public List<User> findUsersMutualFriends(Integer id, Integer otherId) {
-        List<Integer> user1Friends = friendshipStorage.getAllByUserId(id)
+    public List<User> findUsersMutualFriends(Integer userId, Integer otherId) {
+        List<Integer> user1Friends = friendshipStorage.getAllByUserId(userId)
                 .stream()
                 .map(Friendship::getFriendId)
                 .collect(Collectors.toList());
@@ -86,6 +90,7 @@ public class UserService {
 
         List<User> mutualFriends = common.stream()
                 .map(userStorage::getById)
+                .map(Optional::get)
                 .collect(Collectors.toList());
 
         log.info("Возвращен список общих друзей: {}", mutualFriends);

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -15,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @Qualifier("userDbStorage")
@@ -45,7 +45,7 @@ public class UserDbStorage implements UserStorage {
 
         int generatedId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
 
-        return getById(generatedId);
+        return getById(generatedId).get();
     }
 
     @Override
@@ -65,17 +65,16 @@ public class UserDbStorage implements UserStorage {
 
         jdbcTemplate.update(sql, email, login, name, birthday, id);
 
-        return getById(user.getId());
+        return getById(user.getId()).get();
     }
 
     @Override
-    public User getById(int userId) {
+    public Optional<User> getById(int userId) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), userId)
                 .stream()
-                .findFirst()
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + userId + " не найден"));
+                .findFirst();
     }
 
     @Override
