@@ -1,22 +1,14 @@
--- TRUNCATE TABLE mpa_ratings;
--- TRUNCATE TABLE users;
--- TRUNCATE TABLE friendships;
--- TRUNCATE TABLE films;
--- TRUNCATE TABLE film_like;
--- TRUNCATE TABLE genres;
--- TRUNCATE TABLE film_genre;
+MERGE INTO mpas KEY (id)
+    VALUES (1, 'G'),
+           (2, 'PG'),
+           (3, 'PG-13'),
+           (4, 'R'),
+           (5, 'NC-17');
 
-INSERT INTO mpas (name)
-VALUES ('G'),
-       ('PG'),
-       ('PG-13'),
-       ('R'),
-       ('NC-17');
-
-INSERT INTO genres (name)
-VALUES ('Комедия'),
-       ('Драма'),
-       ('Мультфильм'),
-       ('Триллер'),
-       ('Документальный'),
-       ('Боевик');
+MERGE INTO genres KEY (id)
+    VALUES (1, 'Комедия'),
+           (2, 'Драма'),
+           (3, 'Мультфильм'),
+           (4, 'Триллер'),
+           (5, 'Документальный'),
+           (6, 'Боевик');
