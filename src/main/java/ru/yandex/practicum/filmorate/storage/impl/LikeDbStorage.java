@@ -21,18 +21,14 @@ public class LikeDbStorage implements LikeStorage {
     public boolean save(int filmId, int userId) {
         String sql = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
 
-        jdbcTemplate.update(sql, filmId, userId);
-
-        return true;
+        return jdbcTemplate.update(sql, filmId, userId) >= 1;
     }
 
     @Override
     public boolean delete(int filmId, int userId) {
         String sql = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
 
-        jdbcTemplate.update(sql, filmId, userId);
-
-        return true;
+        return jdbcTemplate.update(sql, filmId, userId) >= 1;
     }
 
     @Override

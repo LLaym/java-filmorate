@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -19,45 +18,43 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class FilmDbStorageTest {
+class UserDbStorageTest {
 
-    private final FilmDbStorage filmStorage;
+    private final UserDbStorage userStorage;
 
     @Test
     void testSave() {
-        Film film = Film.builder().name("Shining").description("Horror")
-                .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(226).mpa(new Mpa(1, "test")).build();
+        User user = User.builder().name("Vitaly").email("mail@yandex.ru")
+                .login("LLaym").birthday(LocalDate.of(1995, Month.MAY, 11)).build();
 
-        int generatedId = filmStorage.save(film);
+        int generatedId = userStorage.save(user);
 
         assertEquals(1, generatedId);
     }
 
     @Test
     void testUpdate() {
-        Film updatedFilm = Film.builder().name("Updated Shining").description("Updated Horror")
-                .releaseDate(LocalDate.of(1980, Month.MAY, 23))
-                .duration(226).mpa(new Mpa(1, "test")).build();
+        User updatedUser = User.builder().name("Updated Vitaly").email("mail@yandex.ru")
+                .login("LLaym").birthday(LocalDate.of(1995, Month.MAY, 11)).build();
 
-        boolean isUpdated = filmStorage.update(updatedFilm);
+        boolean isUpdated = userStorage.update(updatedUser);
 
         assertTrue(isUpdated);
     }
 
     @Test
     void testGetById() {
-        Optional<Film> filmOptional = filmStorage.getById(1);
+        Optional<User> userOptional = userStorage.getById(1);
 
-        assertThat(filmOptional)
+        assertThat(userOptional)
                 .isPresent()
-                .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("id", 1)
+                .hasValueSatisfying(user ->
+                        assertThat(user).hasFieldOrPropertyWithValue("id", 1)
                 );
     }
 
     @Test
     void testGetAll() {
-        assertEquals(1, filmStorage.getAll().size());
+        assertEquals(1, userStorage.getAll().size());
     }
 }

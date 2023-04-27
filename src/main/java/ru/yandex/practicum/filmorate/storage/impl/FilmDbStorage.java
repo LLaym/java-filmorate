@@ -80,7 +80,6 @@ public class FilmDbStorage implements FilmStorage {
         String duration = String.valueOf(film.getDuration());
         String mpa = String.valueOf(film.getMpa().getId());
 
-        jdbcTemplate.update(sql, name, description, release_date, duration, mpa, id);
 
         filmGenreStorage.deleteAllByFilmId(film.getId());
         if (film.getGenres() != null) {
@@ -90,7 +89,7 @@ public class FilmDbStorage implements FilmStorage {
                     .forEach(genreId -> filmGenreStorage.save(film.getId(), genreId));
         }
 
-        return true;
+        return jdbcTemplate.update(sql, name, description, release_date, duration, mpa, id) >= 1;
     }
 
     @Override
