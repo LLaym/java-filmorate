@@ -20,8 +20,8 @@ public class Validator {
     private static UserStorage userStorage;
 
     @Autowired
-    public Validator(@Qualifier("filmDbStorage") FilmStorage filmStorage
-            , @Qualifier("userDbStorage") UserStorage userStorage) {
+    public Validator(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                     @Qualifier("userDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -30,13 +30,14 @@ public class Validator {
         if (id == null || id <= 0) {
             throw new ValidationException("параметр id не может быть меньше 0");
         }
-        if (filmStorage.getById(id) == null) {
+        if (filmStorage.getById(id).isEmpty()) {
             throw new FilmNotFoundException("фильма с таким id не существует");
         }
     }
 
     public static void validateFilm(Film film) throws ValidationException {
         boolean isNewFilm = film.getId() == 0;
+
         if (isNewFilm) {
             if (film.getName() == null || film.getName().equals("")) {
                 throw new ValidationException("название не может быть пустым");
@@ -58,13 +59,14 @@ public class Validator {
         if (id == null) {
             throw new ValidationException("требуется корректный id параметр");
         }
-        if (userStorage.getById(id) == null) {
+        if (userStorage.getById(id).isEmpty()) {
             throw new UserNotFoundException("пользователя с таким id не существует");
         }
     }
 
     public static void validateUser(User user) throws ValidationException {
         boolean isNewUser = user.getId() == 0;
+
         if (isNewUser) {
             if (user.getEmail() == null || user.getEmail().equals("") || !user.getEmail().contains("@")) {
                 throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
