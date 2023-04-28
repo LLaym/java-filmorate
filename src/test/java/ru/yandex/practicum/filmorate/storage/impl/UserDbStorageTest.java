@@ -5,18 +5,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Optional;
+import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserDbStorageTest {
 
@@ -24,21 +24,36 @@ class UserDbStorageTest {
 
     @Test
     void testSave() {
-        User user = User.builder()
+        User expectedUser = User.builder()
                 .name("Vitaly")
                 .email("mail@yandex.ru")
                 .login("LLaym")
                 .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
                 .build();
 
-        int generatedId = userStorage.save(user);
+        userStorage.save(expectedUser);
 
-        assertEquals(1, generatedId);
+        User user = userStorage.getById(1).get();
+
+        assertEquals(user.getId(), 1);
+        assertEquals(user.getName(), expectedUser.getName());
+        assertEquals(user.getEmail(), expectedUser.getEmail());
+        assertEquals(user.getLogin(), expectedUser.getLogin());
+        assertEquals(user.getBirthday(), expectedUser.getBirthday());
     }
 
     @Test
     void testUpdate() {
-        User updatedUser = User.builder()
+        User oldUser = User.builder()
+                .name("Vitaly")
+                .email("mail@yandex.ru")
+                .login("LLaym")
+                .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
+                .build();
+
+        userStorage.save(oldUser);
+
+        User expectedUser = User.builder()
                 .id(1)
                 .name("Updated Vitaly")
                 .email("mail@yandex.ru")
@@ -46,24 +61,55 @@ class UserDbStorageTest {
                 .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
                 .build();
 
-        boolean isUpdated = userStorage.update(updatedUser);
+        userStorage.update(expectedUser);
 
-        assertTrue(isUpdated);
+        User updatedUser = userStorage.getById(1).get();
+
+        assertEquals(updatedUser.getId(), expectedUser.getId());
+        assertEquals(updatedUser.getName(), expectedUser.getName());
+        assertEquals(updatedUser.getEmail(), expectedUser.getEmail());
+        assertEquals(updatedUser.getLogin(), expectedUser.getLogin());
+        assertEquals(updatedUser.getBirthday(), expectedUser.getBirthday());
     }
 
     @Test
     void testGetById() {
-        Optional<User> userOptional = userStorage.getById(1);
+        User expectedUser = User.builder()
+                .name("Vitaly")
+                .email("mail@yandex.ru")
+                .login("LLaym")
+                .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
+                .build();
 
-        assertThat(userOptional)
-                .isPresent()
-                .hasValueSatisfying(user ->
-                        assertThat(user).hasFieldOrPropertyWithValue("id", 1)
-                );
+        userStorage.save(expectedUser);
+
+        User user = userStorage.getById(1).get();
+
+        assertEquals(user.getId(), 1);
+        assertEquals(user.getName(), expectedUser.getName());
+        assertEquals(user.getEmail(), expectedUser.getEmail());
+        assertEquals(user.getLogin(), expectedUser.getLogin());
+        assertEquals(user.getBirthday(), expectedUser.getBirthday());
     }
 
     @Test
     void testGetAll() {
-        assertEquals(1, userStorage.getAll().size());
+        User expectedUser = User.builder()
+                .name("Vitaly")
+                .email("mail@yandex.ru")
+                .login("LLaym")
+                .birthday(LocalDate.of(1990, Month.OCTOBER, 25))
+                .build();
+
+        userStorage.save(expectedUser);
+
+        List<User> users = userStorage.getAll();
+
+        assertEquals(1, users.size());
+        assertEquals(users.get(0).getId(), 1);
+        assertEquals(users.get(0).getName(), expectedUser.getName());
+        assertEquals(users.get(0).getEmail(), expectedUser.getEmail());
+        assertEquals(users.get(0).getLogin(), expectedUser.getLogin());
+        assertEquals(users.get(0).getBirthday(), expectedUser.getBirthday());
     }
 }
