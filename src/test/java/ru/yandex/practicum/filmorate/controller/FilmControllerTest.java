@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmControllerTest {
     private final FilmController filmController;
@@ -47,7 +47,7 @@ class FilmControllerTest {
                 .build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
-        assertEquals(1, filmController.findAllFilms().size());
+        assertEquals(0, filmController.findAllFilms().size());
     }
 
     @Test
@@ -64,7 +64,7 @@ class FilmControllerTest {
                 .build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
-        assertEquals(1, filmController.findAllFilms().size());
+        assertEquals(0, filmController.findAllFilms().size());
     }
 
     @Test
@@ -78,7 +78,7 @@ class FilmControllerTest {
                 .build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
-        assertEquals(1, filmController.findAllFilms().size());
+        assertEquals(0, filmController.findAllFilms().size());
     }
 
     @Test
@@ -92,6 +92,6 @@ class FilmControllerTest {
                 .build();
 
         assertThrows(RuntimeException.class, () -> filmController.createFilm(film));
-        assertEquals(1, filmController.findAllFilms().size());
+        assertEquals(0, filmController.findAllFilms().size());
     }
 }

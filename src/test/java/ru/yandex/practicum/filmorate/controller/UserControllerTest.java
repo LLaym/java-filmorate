@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserControllerTest {
     private final UserController userController;
@@ -44,7 +44,7 @@ class UserControllerTest {
                 .build();
 
         assertThrows(RuntimeException.class, () -> userController.createUser(user));
-        assertEquals(1, userController.findAllUsers().size());
+        assertEquals(0, userController.findAllUsers().size());
     }
 
     @Test
@@ -57,7 +57,7 @@ class UserControllerTest {
                 .build();
 
         assertThrows(RuntimeException.class, () -> userController.createUser(user));
-        assertEquals(1, userController.findAllUsers().size());
+        assertEquals(0, userController.findAllUsers().size());
     }
 
     @Test
@@ -69,7 +69,7 @@ class UserControllerTest {
                 .build();
 
         assertThrows(RuntimeException.class, () -> userController.createUser(user));
-        assertEquals(1, userController.findAllUsers().size());
+        assertEquals(0, userController.findAllUsers().size());
     }
 
     @Test
@@ -82,7 +82,7 @@ class UserControllerTest {
                 .build();
 
         assertThrows(RuntimeException.class, () -> userController.createUser(user));
-        assertEquals(1, userController.findAllUsers().size());
+        assertEquals(0, userController.findAllUsers().size());
     }
 
     @Test
@@ -95,6 +95,6 @@ class UserControllerTest {
                 .build();
 
         assertThrows(RuntimeException.class, () -> userController.createUser(user));
-        assertEquals(1, userController.findAllUsers().size());
+        assertEquals(0, userController.findAllUsers().size());
     }
 }
