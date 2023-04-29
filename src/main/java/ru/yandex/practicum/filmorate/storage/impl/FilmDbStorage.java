@@ -43,14 +43,14 @@ public class FilmDbStorage implements FilmStorage {
 
         String name = film.getName();
         String description = film.getDescription();
-        String release_date = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String releaseDate = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String duration = String.valueOf(film.getDuration());
         String mpa = String.valueOf(film.getMpa().getId());
 
         final Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", name);
         parameters.put("description", description);
-        parameters.put("release_date", release_date);
+        parameters.put("release_date", releaseDate);
         parameters.put("duration", duration);
         parameters.put("mpa_id", mpa);
 
@@ -76,7 +76,7 @@ public class FilmDbStorage implements FilmStorage {
         String id = String.valueOf(film.getId());
         String name = film.getName();
         String description = film.getDescription();
-        String release_date = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String releaseDate = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String duration = String.valueOf(film.getDuration());
         String mpa = String.valueOf(film.getMpa().getId());
 
@@ -89,7 +89,7 @@ public class FilmDbStorage implements FilmStorage {
                     .forEach(genreId -> filmGenreStorage.save(film.getId(), genreId));
         }
 
-        return jdbcTemplate.update(sql, name, description, release_date, duration, mpa, id) >= 1;
+        return jdbcTemplate.update(sql, name, description, releaseDate, duration, mpa, id) >= 1;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class FilmDbStorage implements FilmStorage {
         int id = rs.getInt("id");
         String name = rs.getString("name");
         String description = rs.getString("description");
-        LocalDate release_date = rs.getDate("release_date").toLocalDate();
+        LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
         Mpa mpa = mpaStorage.getById(rs.getInt("mpa_id")).orElse(null);
         Set<Genre> genres = filmGenreStorage.getAllByFilmId(id)
@@ -125,7 +125,7 @@ public class FilmDbStorage implements FilmStorage {
         return Film.builder()
                 .id(id).name(name)
                 .description(description)
-                .releaseDate(release_date)
+                .releaseDate(releaseDate)
                 .duration(duration)
                 .mpa(mpa)
                 .genres(genres)
