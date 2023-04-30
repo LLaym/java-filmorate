@@ -13,8 +13,8 @@ import java.util.Optional;
 @Repository
 public class GenreDbStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final String GET_BY_ID_SQL = "SELECT * FROM genres WHERE id = ?";
-    private final String GET_ALL_SQL = "SELECT * FROM genres ORDER BY id";
+    private final String getByIdSql = "SELECT * FROM genres WHERE id = ?";
+    private final String getAllSql = "SELECT * FROM genres ORDER BY id";
 
     public GenreDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -22,13 +22,13 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public Optional<Genre> getById(int genreId) {
-        return jdbcTemplate.query(GET_BY_ID_SQL, ((rs, rowNum) -> makeGenre(rs)), genreId)
+        return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeGenre(rs)), genreId)
                 .stream().findFirst();
     }
 
     @Override
     public List<Genre> getAll() {
-        return jdbcTemplate.query(GET_ALL_SQL, ((rs, rowNum) -> makeGenre(rs)));
+        return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeGenre(rs)));
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {

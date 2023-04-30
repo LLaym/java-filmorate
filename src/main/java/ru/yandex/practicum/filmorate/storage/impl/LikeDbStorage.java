@@ -12,9 +12,9 @@ import java.util.List;
 public class LikeDbStorage implements LikeStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final String SAVE_SQL = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
-    private final String DELETE_SQL = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
-    private final String GET_POPULAR_FILMS_IDS_SQL = "SELECT id " +
+    private final String saveSql = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
+    private final String deleteSql = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
+    private final String getPopularFilmsIdsSql = "SELECT id " +
             "FROM (SELECT films.id, COUNT(user_id) AS score" +
             " FROM films" +
             " LEFT JOIN likes l on films.id = l.film_id" +
@@ -28,17 +28,17 @@ public class LikeDbStorage implements LikeStorage {
 
     @Override
     public boolean save(int filmId, int userId) {
-        return jdbcTemplate.update(SAVE_SQL, filmId, userId) > 1;
+        return jdbcTemplate.update(saveSql, filmId, userId) > 1;
     }
 
     @Override
     public boolean delete(int filmId, int userId) {
-        return jdbcTemplate.update(DELETE_SQL, filmId, userId) > 1;
+        return jdbcTemplate.update(deleteSql, filmId, userId) > 1;
     }
 
     @Override
     public List<Integer> getPopularFilmsIds(int count) {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(GET_POPULAR_FILMS_IDS_SQL, count);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(getPopularFilmsIdsSql, count);
         List<Integer> top = new ArrayList<>();
 
         while (rowSet.next()) {

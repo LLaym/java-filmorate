@@ -27,15 +27,15 @@ public class FilmDbStorage implements FilmStorage {
     private final MpaStorage mpaStorage;
     private final FilmGenreStorage filmGenreStorage;
     private final GenreStorage genreStorage;
-    private final String UPDATE_SQL = "UPDATE films "
+    private final String updateSql = "UPDATE films "
             + "SET name = ?"
             + ", description = ?"
             + ", release_date = ?"
             + ", duration = ? "
             + ", mpa_id = ? "
             + "WHERE id = ?";
-    private final String GET_BY_ID_SQL = "SELECT * FROM films WHERE id = ?";
-    private final String GET_ALL_SQL = "SELECT * FROM films";
+    private final String getByIdSql = "SELECT * FROM films WHERE id = ?";
+    private final String getAllSql = "SELECT * FROM films";
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, FilmGenreStorage filmGenreStorage, GenreStorage genreStorage) {
         this.jdbcTemplate = jdbcTemplate;
@@ -89,19 +89,19 @@ public class FilmDbStorage implements FilmStorage {
                     .forEach(genreId -> filmGenreStorage.save(film.getId(), genreId));
         }
 
-        return jdbcTemplate.update(UPDATE_SQL, name, description, releaseDate, duration, mpa, id) > 1;
+        return jdbcTemplate.update(updateSql, name, description, releaseDate, duration, mpa, id) > 1;
     }
 
     @Override
     public Optional<Film> getById(int filmId) {
-        return jdbcTemplate.query(GET_BY_ID_SQL, ((rs, rowNum) -> makeFilm(rs)), filmId)
+        return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeFilm(rs)), filmId)
                 .stream()
                 .findFirst();
     }
 
     @Override
     public List<Film> getAll() {
-        return jdbcTemplate.query(GET_ALL_SQL, ((rs, rowNum) -> makeFilm(rs)));
+        return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeFilm(rs)));
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
