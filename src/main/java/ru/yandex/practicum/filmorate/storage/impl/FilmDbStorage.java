@@ -27,6 +27,15 @@ public class FilmDbStorage implements FilmStorage {
     private final MpaStorage mpaStorage;
     private final FilmGenreStorage filmGenreStorage;
     private final GenreStorage genreStorage;
+    private final String UPDATE_SQL = "UPDATE films "
+            + "SET name = ?"
+            + ", description = ?"
+            + ", release_date = ?"
+            + ", duration = ? "
+            + ", mpa_id = ? "
+            + "WHERE id = ?";
+    private final String GET_BY_ID_SQL = "SELECT * FROM films WHERE id = ?";
+    private final String GET_ALL_SQL = "SELECT * FROM films";
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, FilmGenreStorage filmGenreStorage, GenreStorage genreStorage) {
         this.jdbcTemplate = jdbcTemplate;
@@ -65,21 +74,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public boolean update(Film film) {
-        String sql = "UPDATE films "
-                + "SET name = ?"
-                + ", description = ?"
-                + ", release_date = ?"
-                + ", duration = ? "
-                + ", mpa_id = ? "
-                + "WHERE id = ?";
-
         String id = String.valueOf(film.getId());
         String name = film.getName();
         String description = film.getDescription();
         String releaseDate = film.getReleaseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String duration = String.valueOf(film.getDuration());
         String mpa = String.valueOf(film.getMpa().getId());
-
 
         filmGenreStorage.deleteAllByFilmId(film.getId());
         if (film.getGenres() != null) {
@@ -89,23 +89,19 @@ public class FilmDbStorage implements FilmStorage {
                     .forEach(genreId -> filmGenreStorage.save(film.getId(), genreId));
         }
 
-        return jdbcTemplate.update(sql, name, description, releaseDate, duration, mpa, id) >= 1;
+        return jdbcTemplate.update(UPDATE_SQL, name, description, releaseDate, duration, mpa, id) > 1;
     }
 
     @Override
     public Optional<Film> getById(int filmId) {
-        String sql = "SELECT * FROM films WHERE id = ?";
-
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)), filmId)
+        return jdbcTemplate.query(GET_BY_ID_SQL, ((rs, rowNum) -> makeFilm(rs)), filmId)
                 .stream()
                 .findFirst();
     }
 
     @Override
     public List<Film> getAll() {
-        String sql = "SELECT * FROM films";
-
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeFilm(rs)));
+        return jdbcTemplate.query(GET_ALL_SQL, ((rs, rowNum) -> makeFilm(rs)));
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {

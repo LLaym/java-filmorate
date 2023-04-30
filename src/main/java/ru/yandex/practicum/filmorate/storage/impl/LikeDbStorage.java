@@ -12,6 +12,15 @@ import java.util.List;
 public class LikeDbStorage implements LikeStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final String SAVE_SQL = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
+    private final String DELETE_SQL = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
+    private final String GET_POPULAR_FILMS_IDS_SQL = "SELECT id " +
+            "FROM (SELECT films.id, COUNT(user_id) AS score" +
+            " FROM films" +
+            " LEFT JOIN likes l on films.id = l.film_id" +
+            " GROUP BY films.id" +
+            " ORDER BY score DESC)" +
+            " LIMIT ?;";
 
     public LikeDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -19,36 +28,22 @@ public class LikeDbStorage implements LikeStorage {
 
     @Override
     public boolean save(int filmId, int userId) {
-        String sql = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
-
-        return jdbcTemplate.update(sql, filmId, userId) >= 1;
+        return jdbcTemplate.update(SAVE_SQL, filmId, userId) > 1;
     }
 
     @Override
     public boolean delete(int filmId, int userId) {
-        String sql = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
-
-        return jdbcTemplate.update(sql, filmId, userId) >= 1;
+        return jdbcTemplate.update(DELETE_SQL, filmId, userId) > 1;
     }
 
     @Override
     public List<Integer> getPopularFilmsIds(int count) {
-        String sql = "SELECT id " +
-                "FROM (SELECT films.id, COUNT(user_id) AS score" +
-                " FROM films" +
-                " LEFT JOIN likes l on films.id = l.film_id" +
-                " GROUP BY films.id" +
-                " ORDER BY score DESC)" +
-                " LIMIT ?;";
-
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, count);
-
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(GET_POPULAR_FILMS_IDS_SQL, count);
         List<Integer> top = new ArrayList<>();
 
         while (rowSet.next()) {
             top.add(rowSet.getInt("id"));
         }
-
         return top;
     }
 }

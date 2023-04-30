@@ -21,6 +21,14 @@ import java.util.Optional;
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final String UPDATE_SQL = "UPDATE users " +
+            "SET email = ?" +
+            ", login = ?" +
+            ", name = ?" +
+            ", birthday = ? " +
+            "WHERE id = ?";
+    private final String GET_BY_ID_SQL = "SELECT * FROM users WHERE id = ?";
+    private final String GET_ALL_SQL = "SELECT * FROM users";
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -48,36 +56,25 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public boolean update(User user) {
-        String sql = "UPDATE users " +
-                "SET email = ?" +
-                ", login = ?" +
-                ", name = ?" +
-                ", birthday = ? " +
-                "WHERE id = ?";
-
         String id = String.valueOf(user.getId());
         String email = user.getEmail();
         String login = user.getLogin();
         String name = user.getName();
         String birthday = user.getBirthday().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        return jdbcTemplate.update(sql, email, login, name, birthday, id) >= 1;
+        return jdbcTemplate.update(UPDATE_SQL, email, login, name, birthday, id) > 1;
     }
 
     @Override
     public Optional<User> getById(int userId) {
-        String sql = "SELECT * FROM users WHERE id = ?";
-
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)), userId)
+        return jdbcTemplate.query(GET_BY_ID_SQL, ((rs, rowNum) -> makeUser(rs)), userId)
                 .stream()
                 .findFirst();
     }
 
     @Override
     public List<User> getAll() {
-        String sql = "SELECT * FROM users";
-
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeUser(rs)));
+        return jdbcTemplate.query(GET_ALL_SQL, ((rs, rowNum) -> makeUser(rs)));
     }
 
     private User makeUser(ResultSet rs) throws SQLException {

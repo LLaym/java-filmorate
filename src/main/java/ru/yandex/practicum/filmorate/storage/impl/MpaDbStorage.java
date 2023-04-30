@@ -13,6 +13,8 @@ import java.util.Optional;
 @Repository
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final String GET_BY_ID_SQL = "SELECT * FROM mpas WHERE id = ?";
+    private final String GET_ALL_SQL = "SELECT * FROM mpas ORDER BY id";
 
     public MpaDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -20,17 +22,13 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public Optional<Mpa> getById(int mpaId) {
-        String sql = "SELECT * FROM mpas WHERE id = ?";
-
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeMpa(rs)), mpaId)
+        return jdbcTemplate.query(GET_BY_ID_SQL, ((rs, rowNum) -> makeMpa(rs)), mpaId)
                 .stream().findFirst();
     }
 
     @Override
     public List<Mpa> getAll() {
-        String sql = "SELECT * FROM mpas ORDER BY id";
-
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> makeMpa(rs)));
+        return jdbcTemplate.query(GET_ALL_SQL, ((rs, rowNum) -> makeMpa(rs)));
     }
 
     private Mpa makeMpa(ResultSet rs) throws SQLException {
