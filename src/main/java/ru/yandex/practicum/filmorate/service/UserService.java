@@ -32,7 +32,7 @@ public class UserService {
         }
 
         int generatedId = userStorage.save(user);
-        User createdUser = userStorage.getById(generatedId).get();
+        User createdUser = userStorage.getById(generatedId).orElse(null);
 
         log.info("Добавлен пользователь: {}", createdUser);
         return createdUser;
@@ -40,7 +40,7 @@ public class UserService {
 
     public User updateUser(User user) {
         userStorage.update(user);
-        User updatedUser = userStorage.getById(user.getId()).get();
+        User updatedUser = userStorage.getById(user.getId()).orElse(null);
 
         log.info("Обновлён пользователь: {}", updatedUser);
         return updatedUser;
