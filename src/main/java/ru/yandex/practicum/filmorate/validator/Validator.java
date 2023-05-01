@@ -1,14 +1,15 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -19,7 +20,8 @@ public class Validator {
     private static UserStorage userStorage;
 
     @Autowired
-    public Validator(FilmStorage filmStorage, UserStorage userStorage) {
+    public Validator(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                     @Qualifier("userDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -28,13 +30,14 @@ public class Validator {
         if (id == null || id <= 0) {
             throw new ValidationException("параметр id не может быть меньше 0");
         }
-        if (filmStorage.getFilmById(id) == null) {
+        if (filmStorage.getById(id).isEmpty()) {
             throw new FilmNotFoundException("фильма с таким id не существует");
         }
     }
 
     public static void validateFilm(Film film) throws ValidationException {
         boolean isNewFilm = film.getId() == 0;
+
         if (isNewFilm) {
             if (film.getName() == null || film.getName().equals("")) {
                 throw new ValidationException("название не может быть пустым");
@@ -46,7 +49,7 @@ public class Validator {
                 throw new ValidationException("продолжительность фильма должна быть положительной");
             }
         } else {
-            if (filmStorage.getAllFilms().stream().noneMatch(film1 -> film1.getId() == film.getId())) {
+            if (filmStorage.getAll().stream().noneMatch(film1 -> film1.getId() == film.getId())) {
                 throw new FilmNotFoundException("фильма с таким id не существует");
             }
         }
@@ -56,13 +59,14 @@ public class Validator {
         if (id == null) {
             throw new ValidationException("требуется корректный id параметр");
         }
-        if (userStorage.getUserById(id) == null) {
+        if (userStorage.getById(id).isEmpty()) {
             throw new UserNotFoundException("пользователя с таким id не существует");
         }
     }
 
     public static void validateUser(User user) throws ValidationException {
         boolean isNewUser = user.getId() == 0;
+
         if (isNewUser) {
             if (user.getEmail() == null || user.getEmail().equals("") || !user.getEmail().contains("@")) {
                 throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
@@ -72,7 +76,7 @@ public class Validator {
                 throw new ValidationException("дата рождения не может быть в будущем.");
             }
         } else {
-            if (userStorage.getAllUsers().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
+            if (userStorage.getAll().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
                 throw new UserNotFoundException("пользователя с таким id не существует");
             }
         }
