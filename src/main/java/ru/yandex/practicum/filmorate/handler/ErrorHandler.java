@@ -60,4 +60,12 @@ public class ErrorHandler {
         log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
         return new ErrorResponse(error, e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleDirectorNotFoundException(final DirectorNotFoundException e) {
+        String error = "ошибка поиска";
+        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
+        return new ErrorResponse(error, e.getMessage());
+    }
 }
