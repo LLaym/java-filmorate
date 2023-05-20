@@ -29,11 +29,11 @@ public class Validator {
                      DirectorStorage directorStorage,
                      MpaStorage mpaStorage,
                      GenreStorage genreStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-        this.directorStorage = directorStorage;
-        this.mpaStorage = mpaStorage;
-        this.genreStorage = genreStorage;
+        Validator.filmStorage = filmStorage;
+        Validator.userStorage = userStorage;
+        Validator.directorStorage = directorStorage;
+        Validator.mpaStorage = mpaStorage;
+        Validator.genreStorage = genreStorage;
     }
 
     public static void validateFilmId(Integer id) {

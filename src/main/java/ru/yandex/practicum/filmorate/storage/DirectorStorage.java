@@ -13,5 +13,6 @@ public interface DirectorStorage {
     Optional<Director> getById(int directorId);
 
     List<Director> getAll();
+
     boolean delete(int directorId);
 }
