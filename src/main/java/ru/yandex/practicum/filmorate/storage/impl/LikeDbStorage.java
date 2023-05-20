@@ -3,8 +3,11 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +24,8 @@ public class LikeDbStorage implements LikeStorage {
             " GROUP BY films.id" +
             " ORDER BY score DESC)" +
             " LIMIT ?;";
+
+    private final String getAllByFilmSql = "SELECT * FROM likes WHERE film_id = ?";
 
     public LikeDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -45,5 +50,14 @@ public class LikeDbStorage implements LikeStorage {
             top.add(rowSet.getInt("id"));
         }
         return top;
+    }
+
+    @Override
+    public List<Like> getAllByFilmId(int filmId) {
+        return jdbcTemplate.query(getAllByFilmSql, ((rs, rowNum) -> makeLike(rs)), filmId);
+    }
+
+    private Like makeLike(ResultSet rs) throws SQLException {
+        return new Like(rs.getInt("film_id"), rs.getInt("user_id"));
     }
 }
