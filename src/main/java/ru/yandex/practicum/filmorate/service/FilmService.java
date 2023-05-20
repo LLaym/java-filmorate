@@ -87,10 +87,10 @@ public class FilmService {
 
         if (sortBy.equals("year")) {
             directorFilms.sort((film1, film2) ->
-                    film2.getReleaseDate().compareTo(film1.getReleaseDate()));
+                    film1.getReleaseDate().compareTo(film2.getReleaseDate()));
         } else if (sortBy.equals("likes")) {
             directorFilms.sort((film1, film2) ->
-                    likeStorage.getAllByFilmId(film2.getId()).size() - likeStorage.getAllByFilmId(film1.getId()).size());
+                    likeStorage.getAllByFilmId(film1.getId()).size() - likeStorage.getAllByFilmId(film2.getId()).size());
         } else {
             throw new RuntimeException("Укажите параметр сортировки year/likes");
         }

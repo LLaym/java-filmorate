@@ -3,7 +3,10 @@ package ru.yandex.practicum.filmorate.validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.*;
+import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
 
@@ -63,7 +66,7 @@ public class Validator {
 
         if (film.getMpa() != null) checkMpa(film.getMpa());
         if (film.getGenres() != null) checkGenres(film.getGenres());
-        if (film.getDirector() != null) checkDirector(film.getDirector());
+        if (film.getDirectors() != null) checkDirector(film.getDirectors());
     }
 
     public static void validateUserId(Integer id) {

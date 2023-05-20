@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
+import javax.validation.Valid;
 import java.util.Collection;
 
 @RestController
@@ -15,9 +16,7 @@ public class DirectorController {
     private final DirectorService directorService;
 
     @PostMapping
-    public Director createDirector(@RequestBody Director director) {
-        Validator.validateDirector(director);
-
+    public Director createDirector(@RequestBody @Valid Director director) {
         return directorService.createDirector(director);
     }
 

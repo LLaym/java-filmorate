@@ -66,8 +66,8 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getGenres() != null) {
             film.getGenres().forEach(genre -> filmGenreStorage.save(generatedId, genre.getId()));
         }
-        if (film.getDirector() != null) {
-            film.getDirector().forEach(director -> filmDirectorStorage.save(generatedId, director.getId()));
+        if (film.getDirectors() != null) {
+            film.getDirectors().forEach(director -> filmDirectorStorage.save(generatedId, director.getId()));
         }
 
         return generatedId;
@@ -90,8 +90,8 @@ public class FilmDbStorage implements FilmStorage {
                     .forEach(genreId -> filmGenreStorage.save(film.getId(), genreId));
         }
         filmDirectorStorage.deleteAllByFilmId(film.getId());
-        if (film.getDirector() != null) {
-            film.getDirector()
+        if (film.getDirectors() != null) {
+            film.getDirectors()
                     .stream()
                     .map(Director::getId)
                     .forEach(directorId -> filmDirectorStorage.save(film.getId(), directorId));
@@ -125,7 +125,7 @@ public class FilmDbStorage implements FilmStorage {
                 .map(genreStorage::getById)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
-        List<Director> director = filmDirectorStorage.getAllByFilmId(id)
+        List<Director> directors = filmDirectorStorage.getAllByFilmId(id)
                 .stream()
                 .map(FilmDirector::getDirectorId)
                 .map(directorStorage::getById)
@@ -139,7 +139,7 @@ public class FilmDbStorage implements FilmStorage {
                 .duration(duration)
                 .mpa(mpa)
                 .genres(genres)
-                .director(director)
+                .directors(directors)
                 .build();
     }
 }
