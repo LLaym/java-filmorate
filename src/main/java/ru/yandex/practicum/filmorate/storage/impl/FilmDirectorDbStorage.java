@@ -18,6 +18,10 @@ public class FilmDirectorDbStorage implements FilmDirectorStorage {
             "WHERE film_id = ?";
     private final String deleteSql = "DELETE FROM film_director WHERE film_id = ?";
 
+    private final String getAllByDirectorSql = "SELECT * " +
+            "FROM film_director " +
+            "WHERE director_id = ?";
+
     public FilmDirectorDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -30,6 +34,11 @@ public class FilmDirectorDbStorage implements FilmDirectorStorage {
     @Override
     public List<FilmDirector> getAllByFilmId(int filmId) {
         return jdbcTemplate.query(getAllByFilmSql, ((rs, rowNum) -> makeFilmDirector(rs)), filmId);
+    }
+
+    @Override
+    public List<FilmDirector> getAllByDirector(Integer directorId) {
+        return jdbcTemplate.query(getAllByDirectorSql, ((rs, rowNum) -> makeFilmDirector(rs)), directorId);
     }
 
     @Override
