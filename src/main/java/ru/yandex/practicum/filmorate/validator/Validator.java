@@ -3,33 +3,34 @@ package ru.yandex.practicum.filmorate.validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.exception.*;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class Validator {
     private static FilmStorage filmStorage;
     private static UserStorage userStorage;
     private static DirectorStorage directorStorage;
+    private static MpaStorage mpaStorage;
+    private static GenreStorage genreStorage;
 
     @Autowired
     public Validator(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                      @Qualifier("userDbStorage") UserStorage userStorage,
-                     DirectorStorage directorStorage) {
+                     DirectorStorage directorStorage,
+                     MpaStorage mpaStorage,
+                     GenreStorage genreStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
+        this.mpaStorage = mpaStorage;
+        this.genreStorage = genreStorage;
     }
 
     public static void validateFilmId(Integer id) {
@@ -59,6 +60,10 @@ public class Validator {
                 throw new FilmNotFoundException("фильма с таким id не существует");
             }
         }
+
+        if (film.getMpa() != null) checkMpa(film.getMpa());
+        if (film.getGenres() != null) checkGenres(film.getGenres());
+        if (film.getDirector() != null) checkDirector(film.getDirector());
     }
 
     public static void validateUserId(Integer id) {
@@ -108,6 +113,25 @@ public class Validator {
             if (directorStorage.getAll().stream().noneMatch(director1 -> director1.getId() == director.getId())) {
                 throw new DirectorNotFoundException("режисёра с таким id не существует");
             }
+        }
+    }
+
+    private static void checkMpa(Mpa mpa) {
+        mpaStorage.getById(mpa.getId())
+                .orElseThrow(() -> new ValidationException("Mpa с id " + mpa.getId() + " не существует"));
+    }
+
+    private static void checkGenres(Set<Genre> genres) {
+        for (Genre genre : genres) {
+            genreStorage.getById(genre.getId())
+                    .orElseThrow(() -> new ValidationException("Жанра с id " + genre.getId() + " не существует"));
+        }
+    }
+
+    private static void checkDirector(List<Director> director) {
+        for (Director director1 : director) {
+            directorStorage.getById(director1.getId())
+                    .orElseThrow(() -> new ValidationException("Режисёра с id " + director1.getId() + " не существует"));
         }
     }
 }
