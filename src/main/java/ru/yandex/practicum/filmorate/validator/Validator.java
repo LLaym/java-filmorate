@@ -3,11 +3,14 @@ package ru.yandex.practicum.filmorate.validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -18,12 +21,15 @@ import java.time.Month;
 public class Validator {
     private static FilmStorage filmStorage;
     private static UserStorage userStorage;
+    private static DirectorStorage directorStorage;
 
     @Autowired
     public Validator(@Qualifier("filmDbStorage") FilmStorage filmStorage,
-                     @Qualifier("userDbStorage") UserStorage userStorage) {
+                     @Qualifier("userDbStorage") UserStorage userStorage,
+                     DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.directorStorage = directorStorage;
     }
 
     public static void validateFilmId(Integer id) {
@@ -78,6 +84,29 @@ public class Validator {
         } else {
             if (userStorage.getAll().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
                 throw new UserNotFoundException("пользователя с таким id не существует");
+            }
+        }
+    }
+
+    public static void validateDirectorId(Integer id) {
+        if (id == null || id < 1) {
+            throw new ValidationException("требуется корректный id параметр");
+        }
+        if (directorStorage.getById(id).isEmpty()) {
+            throw new DirectorNotFoundException("режисёра с таким id не существует");
+        }
+    }
+
+    public static void validateDirector(Director director) throws ValidationException {
+        boolean isNewDirector = director.getId() == null;
+
+        if (isNewDirector) {
+            if (director.getName() == null || director.getName().equals("")) {
+                throw new ValidationException("имя режисёра не может быть пустым");
+            }
+        } else {
+            if (directorStorage.getAll().stream().noneMatch(director1 -> director1.getId() == director.getId())) {
+                throw new DirectorNotFoundException("режисёра с таким id не существует");
             }
         }
     }

@@ -16,14 +16,14 @@ public class DirectorController {
 
     @PostMapping
     public Director createDirector(@RequestBody Director director) {
-//        Validator.validateDirector(director); TODO реализовать валидацию
+        Validator.validateDirector(director);
 
         return directorService.createDirector(director);
     }
 
     @PutMapping
     public Director updateDirector(@RequestBody Director director) {
-//        Validator.validateDirector(director); TODO реализовать валидацию
+        Validator.validateDirector(director);
 
         return directorService.updateDirector(director);
     }
@@ -35,14 +35,14 @@ public class DirectorController {
 
     @GetMapping("{id}")
     public Director findDirectorById(@PathVariable Integer id) {
-//        Validator.validateDirectorId(id); TODO реализовать валидацию
+        Validator.validateDirectorId(id);
 
         return directorService.findDirectorById(id);
     }
 
     @DeleteMapping("{id}")
     public boolean deleteDirector(@PathVariable Integer id) {
-//        Validator.validateDirectorId(id); TODO реализовать валидацию
+        Validator.validateDirectorId(id);
 
         return directorService.deleteDirector(id);
     }
