@@ -10,7 +10,8 @@ import ru.yandex.practicum.filmorate.storage.FilmDirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -94,7 +95,7 @@ public class FilmService {
             throw new RuntimeException("Укажите параметр сортировки year/likes");
         }
 
-        log.info("Возвращен список фильмов режисёра: {} ", directorFilms);
+        log.info("Возвращен список фильмов режиссёра: {} ", directorFilms);
         return directorFilms;
     }
 }

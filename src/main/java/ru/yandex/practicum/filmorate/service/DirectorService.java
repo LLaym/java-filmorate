@@ -21,7 +21,7 @@ public class DirectorService {
         int generatedId = directorStorage.save(director);
         Director createdDirector = directorStorage.getById(generatedId).orElse(null);
 
-        log.info("Добавлен режисёр: {}", createdDirector);
+        log.info("Добавлен режиссёр: {}", createdDirector);
         return createdDirector;
     }
 
@@ -29,25 +29,25 @@ public class DirectorService {
         directorStorage.update(director);
         Director updatedDirector = directorStorage.getById(director.getId()).orElse(null);
 
-        log.info("Обновлён режисёр: {}", updatedDirector);
+        log.info("Обновлён режиссёр: {}", updatedDirector);
         return updatedDirector;
     }
 
     public List<Director> findAllDirectors() {
-        log.info("Возвращен список всех режисёров");
+        log.info("Возвращен список всех режиссёров");
         return directorStorage.getAll();
     }
 
     public Director findDirectorById(Integer directorId) {
         Director director = directorStorage.getById(directorId)
-                .orElseThrow(() -> new DirectorNotFoundException("Режисёр с id " + directorId + " не найден"));
+                .orElseThrow(() -> new DirectorNotFoundException("Режиссёр с id " + directorId + " не найден"));
 
-        log.info("Получен режисёр: {}", director);
+        log.info("Получен режиссёр: {}", director);
         return director;
     }
 
     public boolean deleteDirector(Integer directorId) {
-        log.info("Режисёр с id {} удалён.", directorId);
+        log.info("Режиссёр с id {} удалён.", directorId);
         return directorStorage.delete(directorId);
     }
 }
