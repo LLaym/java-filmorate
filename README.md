@@ -26,6 +26,7 @@
 
 ## :floppy_disk: База данных сервиса
 ### ER-диаграмма базы данных Filmorate:
+Ссылка на диаграмму: https://dbdiagram.io/d/6435ac038615191cfa8d1c5a
 ![ERD](src/main/resources/ERD_Filmorate.png)
 
 ## :scroll: Описание
