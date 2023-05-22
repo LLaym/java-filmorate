@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
@@ -22,23 +23,27 @@ public class Validator {
     private static DirectorStorage directorStorage;
     private static MpaStorage mpaStorage;
     private static GenreStorage genreStorage;
+    private static ReviewStorage reviewStorage;
 
     @Autowired
     public Validator(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                      @Qualifier("userDbStorage") UserStorage userStorage,
                      DirectorStorage directorStorage,
                      MpaStorage mpaStorage,
-                     GenreStorage genreStorage) {
+                     GenreStorage genreStorage,
+                     ReviewStorage reviewStorage) {
         Validator.filmStorage = filmStorage;
         Validator.userStorage = userStorage;
         Validator.directorStorage = directorStorage;
         Validator.mpaStorage = mpaStorage;
         Validator.genreStorage = genreStorage;
+        Validator.reviewStorage = reviewStorage;
     }
 
     public static void validateFilmId(Integer id) {
-        if (id == null || id <= 0) {
-            throw new ValidationException("параметр id не может быть меньше 0");
+        // Исправил по подобию validateUserId - тесты не рушатся
+        if (id == null) {
+            throw new ValidationException("требуется корректный id параметр");
         }
         if (filmStorage.getById(id).isEmpty()) {
             throw new FilmNotFoundException("фильма с таким id не существует");
@@ -101,7 +106,7 @@ public class Validator {
             throw new ValidationException("требуется корректный id параметр");
         }
         if (directorStorage.getById(id).isEmpty()) {
-            throw new DirectorNotFoundException("режисёра с таким id не существует");
+            throw new DirectorNotFoundException("режиссёра с таким id не существует");
         }
     }
 
@@ -110,11 +115,11 @@ public class Validator {
 
         if (isNewDirector) {
             if (director.getName() == null || director.getName().equals("")) {
-                throw new ValidationException("имя режисёра не может быть пустым");
+                throw new ValidationException("имя режиссёра не может быть пустым");
             }
         } else {
             if (directorStorage.getAll().stream().noneMatch(director1 -> director1.getId() == director.getId())) {
-                throw new DirectorNotFoundException("режисёра с таким id не существует");
+                throw new DirectorNotFoundException("режиссёра с таким id не существует");
             }
         }
     }
@@ -134,7 +139,34 @@ public class Validator {
     private static void checkDirector(List<Director> director) {
         for (Director director1 : director) {
             directorStorage.getById(director1.getId())
-                    .orElseThrow(() -> new ValidationException("Режисёра с id " + director1.getId() + " не существует"));
+                    .orElseThrow(() -> new ValidationException("Режиссёра с id " + director1.getId() + " не существует"));
+        }
+    }
+
+    public static void validateReviewId(Integer id) {
+        if (id == null) {
+            throw new ValidationException("требуется корректный id параметр");
+        }
+        if (filmStorage.getById(id).isEmpty()) {
+            throw new ReviewNotFoundException("отзыва с таким id не существует");
+        }
+    }
+
+    public static void validateReview(Review review) throws ValidationException {
+        boolean isNewReview = review.getReviewId() == null;
+
+        if (isNewReview) {
+            validateUserId(review.getUserId());
+            validateFilmId(review.getFilmId());
+            if (review.getContent() == null || review.getContent().length() > 500) {
+                throw new ValidationException("максимальная длина описания — 500 символов");
+            } else if (review.getIsPositive() == null) {
+                throw new ValidationException("требуется корректный параметр is_positive");
+            }
+        } else {
+            if (reviewStorage.getById(review.getReviewId()).isEmpty()) {
+                throw new ReviewNotFoundException("отзыва с таким id не существует");
+            }
         }
     }
 }
