@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmDirector;
+import ru.yandex.practicum.filmorate.storage.FilmDirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
@@ -17,10 +19,12 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final LikeStorage likeStorage;
+    private final FilmDirectorStorage filmDirectorStorage;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, LikeStorage likeStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, LikeStorage likeStorage, FilmDirectorStorage filmDirectorStorage) {
         this.filmStorage = filmStorage;
         this.likeStorage = likeStorage;
+        this.filmDirectorStorage = filmDirectorStorage;
     }
 
     public Film createFilm(Film film) {
@@ -71,5 +75,27 @@ public class FilmService {
 
         log.info("Возвращен топ фильмов: {} ", topFilms);
         return topFilms;
+    }
+
+    public List<Film> findFilmsByDirector(Integer directorId, String sortBy) {
+        List<Film> directorFilms = filmDirectorStorage.getAllByDirector(directorId)
+                .stream()
+                .map(FilmDirector::getFilmId)
+                .map(filmStorage::getById)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        if (sortBy.equals("year")) {
+            directorFilms.sort((film1, film2) ->
+                    film1.getReleaseDate().compareTo(film2.getReleaseDate()));
+        } else if (sortBy.equals("likes")) {
+            directorFilms.sort((film1, film2) ->
+                    likeStorage.getAllByFilmId(film1.getId()).size() - likeStorage.getAllByFilmId(film2.getId()).size());
+        } else {
+            throw new RuntimeException("Укажите параметр сортировки year/likes");
+        }
+
+        log.info("Возвращен список фильмов режиссёра: {} ", directorFilms);
+        return directorFilms;
     }
 }

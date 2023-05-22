@@ -22,41 +22,21 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
-        String error = "ошибка поиска";
-        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
-        return new ErrorResponse(error, e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleFilmNotFoundException(final FilmNotFoundException e) {
-        String error = "ошибка поиска";
-        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
-        return new ErrorResponse(error, e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleGenreNotFoundException(final GenreNotFoundException e) {
-        String error = "ошибка поиска";
-        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
-        return new ErrorResponse(error, e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleMpaNotFoundException(final MpaNotFoundException e) {
-        String error = "ошибка поиска";
-        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
-        return new ErrorResponse(error, e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
         String error = "непредвиденная ошибка";
+        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
+        return new ErrorResponse(error, e.getMessage());
+    }
+
+    @ExceptionHandler({FilmNotFoundException.class,
+            UserNotFoundException.class,
+            MpaNotFoundException.class,
+            GenreNotFoundException.class,
+            DirectorNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFoundExceptions(final RuntimeException e) {
+        String error = "ошибка поиска";
         log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
         return new ErrorResponse(error, e.getMessage());
     }

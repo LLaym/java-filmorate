@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import ru.yandex.practicum.filmorate.model.Like;
+
 import java.util.List;
 
 public interface LikeStorage {
@@ -8,5 +10,7 @@ public interface LikeStorage {
     boolean delete(int filmId, int userId);
 
     List<Integer> getPopularFilmsIds(int count);
+
+    List<Like> getAllByFilmId(int filmId);
 }
 
