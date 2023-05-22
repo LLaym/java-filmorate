@@ -106,7 +106,7 @@ public class Validator {
             throw new ValidationException("требуется корректный id параметр");
         }
         if (directorStorage.getById(id).isEmpty()) {
-            throw new DirectorNotFoundException("режисёра с таким id не существует");
+            throw new DirectorNotFoundException("режиссёра с таким id не существует");
         }
     }
 
@@ -115,11 +115,11 @@ public class Validator {
 
         if (isNewDirector) {
             if (director.getName() == null || director.getName().equals("")) {
-                throw new ValidationException("имя режисёра не может быть пустым");
+                throw new ValidationException("имя режиссёра не может быть пустым");
             }
         } else {
             if (directorStorage.getAll().stream().noneMatch(director1 -> director1.getId() == director.getId())) {
-                throw new DirectorNotFoundException("режисёра с таким id не существует");
+                throw new DirectorNotFoundException("режиссёра с таким id не существует");
             }
         }
     }
@@ -139,7 +139,7 @@ public class Validator {
     private static void checkDirector(List<Director> director) {
         for (Director director1 : director) {
             directorStorage.getById(director1.getId())
-                    .orElseThrow(() -> new ValidationException("Режисёра с id " + director1.getId() + " не существует"));
+                    .orElseThrow(() -> new ValidationException("Режиссёра с id " + director1.getId() + " не существует"));
         }
     }
 
