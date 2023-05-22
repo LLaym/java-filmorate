@@ -77,6 +77,21 @@ public class FilmService {
         return topFilms;
     }
 
+    public List<Film> findTopFilmsByGenreAndYear(Integer count, Integer genreId, Integer year) {
+        List<Film> topFilms = likeStorage.getPopularFilmsIds(count)
+                .stream()
+                .map(filmStorage::getById)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        List<Film> topFilmsFiltered = topFilms.stream()
+                .filter(f -> (year == null || f.getReleaseDate().getYear() == year)
+                        && (genreId == null || f.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId))))
+                .collect(Collectors.toList());
+
+        log.info("Возвращен топ фильмов: {}", topFilmsFiltered);
+        return topFilmsFiltered;
+    }
+
     public List<Film> findFilmsByDirector(Integer directorId, String sortBy) {
         List<Film> directorFilms = filmDirectorStorage.getAllByDirector(directorId)
                 .stream()
