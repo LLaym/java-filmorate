@@ -33,7 +33,8 @@ public class ErrorHandler {
             UserNotFoundException.class,
             MpaNotFoundException.class,
             GenreNotFoundException.class,
-            DirectorNotFoundException.class})
+            DirectorNotFoundException.class,
+            ReviewNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundExceptions(final RuntimeException e) {
         String error = "ошибка поиска";
