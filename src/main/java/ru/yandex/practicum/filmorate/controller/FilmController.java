@@ -58,9 +58,24 @@ public class FilmController {
         return filmService.dislikeFilm(id, userId);
     }
 
-    @GetMapping("popular")
-    public List<Film> findTopFilms(@RequestParam(defaultValue = "10") Integer count) {
-        return filmService.findTopFilms(count);
+    @GetMapping("/popular")
+    public List<Film> findPopularFilms(
+            @RequestParam(defaultValue = "10") Integer count,
+            @RequestParam(required = false) Integer genreId,
+            @RequestParam(required = false) Integer year) {
+
+        if (genreId != null && year != null) {
+            return filmService.findTopFilmsByGenreAndYear(count, genreId, year);
+        } else if (genreId != null) {
+            // Возвращаем список фильмов только с учетом жанра
+            return filmService.findTopFilmsByGenreAndYear(count, genreId,null);
+        } else if (year != null) {
+            // Возвращаем список фильмов только с учетом года выпуска
+            return filmService.findTopFilmsByGenreAndYear(count, null,year);
+        } else {
+            // Возвращаем общий список популярных фильмов
+            return filmService.findTopFilms(count);
+        }
     }
 
     @GetMapping("director/{directorId}")
