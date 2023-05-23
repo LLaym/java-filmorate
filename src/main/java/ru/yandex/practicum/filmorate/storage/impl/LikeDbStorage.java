@@ -85,11 +85,11 @@ public class LikeDbStorage implements LikeStorage {
         Integer similarUserId = rowSet.getInt("user_id");
 
         rowSet = jdbcTemplate.queryForRowSet(getRecommendFilmsIdsSql, similarUserId, userId);
-        List<Integer> recommendFilms = new ArrayList<>();
+        List<Integer> recommendFilmsIds = new ArrayList<>();
         while (rowSet.next()) {
-            recommendFilms.add(rowSet.getInt("film_id"));
+            recommendFilmsIds.add(rowSet.getInt("film_id"));
         }
-        return recommendFilms;
+        return recommendFilmsIds;
     }
 
     @Override
