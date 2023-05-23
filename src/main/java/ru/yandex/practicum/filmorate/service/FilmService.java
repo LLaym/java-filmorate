@@ -84,7 +84,7 @@ public class FilmService {
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
-        log.info("Возвращены обшие фильмы для пользователей с id {} и {}: {} ", userId, friendId, films);
+        log.info("Возвращены общие фильмы для пользователей с id {} и {}: {} ", userId, friendId, films);
         return films;
     }
 

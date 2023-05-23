@@ -84,6 +84,7 @@ public class FilmController {
             @RequestParam Integer friendId) {
         Validator.validateUserId(userId);
         Validator.validateUserId(friendId);
+
         return filmService.findCommonFilms(userId, friendId);
     }
 
