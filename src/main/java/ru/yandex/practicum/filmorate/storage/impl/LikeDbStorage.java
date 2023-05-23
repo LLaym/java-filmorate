@@ -63,13 +63,7 @@ public class LikeDbStorage implements LikeStorage {
 
     @Override
     public List<Integer> getCommonFilmsIds(int userId, int friendId) {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(getCommonFilmsIdsSql, userId, friendId);
-        List<Integer> filmIds = new ArrayList<>();
-
-        while (rowSet.next()) {
-            filmIds.add(rowSet.getInt("film_id"));
-        }
-        return filmIds;
+        return jdbcTemplate.queryForList(getCommonFilmsIdsSql, Integer.class, userId, friendId);
     }
 
     @Override
