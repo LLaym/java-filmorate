@@ -29,6 +29,7 @@ public class UserDbStorage implements UserStorage {
             "WHERE id = ?";
     private final String getByIdSql = "SELECT * FROM users WHERE id = ?";
     private final String getAllSql = "SELECT * FROM users";
+    private final String deleteByIdSql = "DELETE FROM users WHERE id = ?";
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -70,6 +71,15 @@ public class UserDbStorage implements UserStorage {
         return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeUser(rs)), userId)
                 .stream()
                 .findFirst();
+    }
+
+    @Override
+    public Optional<User> deleteById(int userId) {
+        Optional<User> user = jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeUser(rs)), userId)
+                .stream()
+                .findFirst();
+        jdbcTemplate.update(deleteByIdSql, userId);
+        return user;
     }
 
     @Override

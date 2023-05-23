@@ -32,6 +32,7 @@ public class FilmDbStorage implements FilmStorage {
             + "WHERE id = ?";
     private final String getByIdSql = "SELECT * FROM films WHERE id = ?";
     private final String getAllSql = "SELECT * FROM films";
+    private final String deleteByIdSql = "DELETE FROM films WHERE id = ?";
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, FilmGenreStorage filmGenreStorage, GenreStorage genreStorage, FilmDirectorStorage filmDirectorStorage, DirectorStorage directorStorage) {
         this.jdbcTemplate = jdbcTemplate;
@@ -110,6 +111,15 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getAll() {
         return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeFilm(rs)));
+    }
+
+    @Override
+    public Optional<Film> deleteById(int filmId) {
+        Optional<Film> film = jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeFilm(rs)), filmId)
+                .stream()
+                .findFirst();
+        jdbcTemplate.update(deleteByIdSql, filmId);
+        return film;
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {

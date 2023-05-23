@@ -59,6 +59,13 @@ public class UserService {
         return user;
     }
 
+    public User deleteUserById(Integer userId) {
+        User user = userStorage.deleteById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + userId + " не найден"));
+        log.info("Пользователь удален: {}", user);
+        return user;
+    }
+
     public void makeFriendship(Integer userId, Integer friendId) {
         log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", userId, friendId);
         friendshipStorage.save(userId, friendId);
