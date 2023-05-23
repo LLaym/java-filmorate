@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
@@ -69,18 +70,12 @@ public class LikeDbStorage implements LikeStorage {
 
     @Override
     public List<Integer> getRecommendFilmsIds(int userId) {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(getSimilarUserIdSql, userId, userId);
-        if (!rowSet.next()) {
+        try {
+            Integer similarUserId = jdbcTemplate.queryForObject(getSimilarUserIdSql, Integer.class, userId, userId);
+            return jdbcTemplate.queryForList(getRecommendFilmsIdsSql, Integer.class, similarUserId, userId);
+        } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
-        Integer similarUserId = rowSet.getInt("user_id");
-
-        rowSet = jdbcTemplate.queryForRowSet(getRecommendFilmsIdsSql, similarUserId, userId);
-        List<Integer> recommendFilmsIds = new ArrayList<>();
-        while (rowSet.next()) {
-            recommendFilmsIds.add(rowSet.getInt("film_id"));
-        }
-        return recommendFilmsIds;
     }
 
     @Override
