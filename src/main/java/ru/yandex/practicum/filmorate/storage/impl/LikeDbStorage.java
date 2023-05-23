@@ -25,6 +25,15 @@ public class LikeDbStorage implements LikeStorage {
             " ORDER BY score DESC)" +
             " LIMIT ?;";
 
+    private final String getCommonFilmsIdsSql = "SELECT film_id " +
+            " FROM likes" +
+            " WHERE film_id IN" +
+            " ((SELECT film_id FROM likes WHERE user_id = ?)" +
+            " INTERSECT" +
+            " (SELECT film_id FROM likes WHERE user_id = ?))" +
+            " GROUP BY film_id" +
+            " ORDER BY COUNT(user_id) DESC;";
+
     private final String getAllByFilmSql = "SELECT * FROM likes WHERE film_id = ?";
 
     public LikeDbStorage(JdbcTemplate jdbcTemplate) {
@@ -50,6 +59,17 @@ public class LikeDbStorage implements LikeStorage {
             top.add(rowSet.getInt("id"));
         }
         return top;
+    }
+
+    @Override
+    public List<Integer> getCommonFilmsIds(int userId, int friendId) {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(getCommonFilmsIdsSql, userId, friendId);
+        List<Integer> filmIds = new ArrayList<>();
+
+        while (rowSet.next()) {
+            filmIds.add(rowSet.getInt("film_id"));
+        }
+        return filmIds;
     }
 
     @Override
