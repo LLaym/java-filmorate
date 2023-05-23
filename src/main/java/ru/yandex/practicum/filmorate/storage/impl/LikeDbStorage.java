@@ -25,6 +25,21 @@ public class LikeDbStorage implements LikeStorage {
             " ORDER BY score DESC)" +
             " LIMIT ?;";
 
+    private final String getSimilarUserIdSql = "SELECT user_id" +
+            " FROM likes" +
+            " WHERE film_id IN" +
+            " (SELECT film_id FROM likes WHERE user_id = ?)" +
+            " AND user_id <> ?" +
+            " GROUP BY user_id" +
+            " ORDER BY COUNT(film_id) DESC" +
+            " LIMIT 1;";
+
+    private final String getRecommendFilmsIdsSql = "SELECT film_id" +
+            " FROM likes" +
+            " WHERE  user_id = ?" +
+            " AND film_id NOT IN" +
+            " (SELECT film_id FROM likes WHERE user_id = ?);";
+
     private final String getAllByFilmSql = "SELECT * FROM likes WHERE film_id = ?";
 
     public LikeDbStorage(JdbcTemplate jdbcTemplate) {
@@ -50,6 +65,22 @@ public class LikeDbStorage implements LikeStorage {
             top.add(rowSet.getInt("id"));
         }
         return top;
+    }
+
+    @Override
+    public List<Integer> getRecommendFilmsIds(int userId) {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(getSimilarUserIdSql, userId, userId);
+        if (!rowSet.next()) {
+            return new ArrayList<>();
+        }
+        Integer similarUserId = rowSet.getInt("user_id");
+
+        rowSet = jdbcTemplate.queryForRowSet(getRecommendFilmsIdsSql, similarUserId, userId);
+        List<Integer> recommendFilms = new ArrayList<>();
+        while (rowSet.next()) {
+            recommendFilms.add(rowSet.getInt("film_id"));
+        }
+        return recommendFilms;
     }
 
     @Override

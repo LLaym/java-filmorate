@@ -12,5 +12,7 @@ public interface LikeStorage {
     List<Integer> getPopularFilmsIds(int count);
 
     List<Like> getAllByFilmId(int filmId);
+
+    List<Integer> getRecommendFilmsIds(int userId);
 }
 
