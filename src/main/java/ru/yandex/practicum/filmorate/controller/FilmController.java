@@ -78,6 +78,15 @@ public class FilmController {
         }
     }
 
+    @GetMapping("/common")
+    public List<Film> findCommonFilms(
+            @RequestParam Integer userId,
+            @RequestParam Integer friendId) {
+        Validator.validateUserId(userId);
+        Validator.validateUserId(friendId);
+        return filmService.findCommonFilms(userId, friendId);
+    }
+
     @GetMapping("director/{directorId}")
     public List<Film> findFilmsByDirector(@PathVariable Integer directorId, @RequestParam(defaultValue = "year") String sortBy) {
         Validator.validateDirectorId(directorId);
