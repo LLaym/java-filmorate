@@ -77,6 +77,17 @@ public class FilmService {
         return topFilms;
     }
 
+    public List<Film> getRecommendations(Integer userId) {
+        List<Film> recommendedFilms = likeStorage.getRecommendFilmsIds(userId)
+                .stream()
+                .map(filmStorage::getById)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        log.info("Возвращены рекомендации для пользователя с id {}: {} ", userId, recommendedFilms);
+        return recommendedFilms;
+    }
+
     public List<Film> findCommonFilms(Integer userId, Integer friendId) {
         List<Film> films = likeStorage.getCommonFilmsIds(userId, friendId)
                 .stream()

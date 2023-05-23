@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
@@ -24,6 +25,21 @@ public class LikeDbStorage implements LikeStorage {
             " GROUP BY films.id" +
             " ORDER BY score DESC)" +
             " LIMIT ?;";
+
+    private final String getSimilarUserIdSql = "SELECT user_id" +
+            " FROM likes" +
+            " WHERE film_id IN" +
+            " (SELECT film_id FROM likes WHERE user_id = ?)" +
+            " AND user_id <> ?" +
+            " GROUP BY user_id" +
+            " ORDER BY COUNT(film_id) DESC" +
+            " LIMIT 1;";
+
+    private final String getRecommendFilmsIdsSql = "SELECT film_id" +
+            " FROM likes" +
+            " WHERE  user_id = ?" +
+            " AND film_id NOT IN" +
+            " (SELECT film_id FROM likes WHERE user_id = ?);";
 
     private final String getCommonFilmsIdsSql = "SELECT film_id " +
             " FROM likes" +
@@ -59,6 +75,16 @@ public class LikeDbStorage implements LikeStorage {
             top.add(rowSet.getInt("id"));
         }
         return top;
+    }
+
+    @Override
+    public List<Integer> getRecommendFilmsIds(int userId) {
+        try {
+            Integer similarUserId = jdbcTemplate.queryForObject(getSimilarUserIdSql, Integer.class, userId, userId);
+            return jdbcTemplate.queryForList(getRecommendFilmsIdsSql, Integer.class, similarUserId, userId);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
     }
 
     @Override
