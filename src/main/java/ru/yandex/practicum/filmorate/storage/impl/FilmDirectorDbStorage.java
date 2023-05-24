@@ -43,7 +43,7 @@ public class FilmDirectorDbStorage implements FilmDirectorStorage {
 
     @Override
     public boolean deleteAllByFilmId(int filmId) {
-        return jdbcTemplate.update(deleteSql, filmId) > 1;
+        return jdbcTemplate.update(deleteSql, filmId) >= 1;
     }
 
     private FilmDirector makeFilmDirector(ResultSet rs) throws SQLException {

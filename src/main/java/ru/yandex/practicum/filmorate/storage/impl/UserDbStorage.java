@@ -62,7 +62,7 @@ public class UserDbStorage implements UserStorage {
         String name = user.getName();
         String birthday = user.getBirthday().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        return jdbcTemplate.update(updateSql, email, login, name, birthday, id) > 1;
+        return jdbcTemplate.update(updateSql, email, login, name, birthday, id) == 1;
     }
 
     @Override
