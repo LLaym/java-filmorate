@@ -32,6 +32,8 @@ public class ReviewDbStorage implements ReviewStorage {
             "ORDER BY useful DESC " +
             "LIMIT ?";
 
+    private final String getUserIdSql = "SELECT user_id FROM reviews WHERE id = ?";
+
     public ReviewDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -64,7 +66,7 @@ public class ReviewDbStorage implements ReviewStorage {
         String content = review.getContent();
         boolean isPositive = review.getIsPositive();
 
-        return jdbcTemplate.update(updateSql, content, isPositive, id) > 1;
+        return jdbcTemplate.update(updateSql, content, isPositive, id) == 1;
     }
 
     @Override
@@ -86,7 +88,11 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public boolean delete(int reviewId) {
-        return jdbcTemplate.update(deleteSql, reviewId) > 1;
+        return jdbcTemplate.update(deleteSql, reviewId) == 1;
+    }
+
+    public Integer getUserId(int reviewId) {
+        return jdbcTemplate.queryForObject(getUserIdSql, Integer.class, reviewId);
     }
 
     private Review makeReview(ResultSet rs) throws SQLException {
