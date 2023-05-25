@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS friendships
 (
     first_user_id  int     NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     second_user_id int     NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    status         boolean NOT NULL DEFAULT false,
     PRIMARY KEY (first_user_id, second_user_id)
 );
 
