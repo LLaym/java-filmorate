@@ -3,21 +3,31 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewRatingStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 
 import java.util.List;
+import java.util.Objects;
+
+import static ru.yandex.practicum.filmorate.model.EventOperation.*;
+import static ru.yandex.practicum.filmorate.model.EventType.REVIEW;
 
 @Slf4j
 @Service
 public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final ReviewRatingStorage reviewRatingStorage;
+    private final EventStorage eventStorage;
 
-    public ReviewService(ReviewStorage reviewStorage, ReviewRatingStorage reviewRatingStorage) {
+    public ReviewService(ReviewStorage reviewStorage,
+                         ReviewRatingStorage reviewRatingStorage,
+                         EventStorage eventStorage) {
         this.reviewStorage = reviewStorage;
         this.reviewRatingStorage = reviewRatingStorage;
+        this.eventStorage = eventStorage;
     }
 
     public Review createReview(Review review) {
@@ -25,6 +35,16 @@ public class ReviewService {
         Review createdReview = reviewStorage.getById(generatedId).orElse(null);
 
         log.info("Добавлен отзыв: {}", createdReview);
+
+        int userId = Objects.requireNonNull(createdReview).getUserId();
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(generatedId)
+                .eventType(REVIEW)
+                .operation(ADD)
+                .build();
+        eventStorage.save(event);
+
         return createdReview;
     }
 
@@ -33,6 +53,17 @@ public class ReviewService {
         Review updatedReview = reviewStorage.getById(review.getReviewId()).orElse(null);
 
         log.info("Обновлён отзыв: {}", updatedReview);
+
+        int userId = Objects.requireNonNull(updatedReview).getUserId();
+        int reviewId = Objects.requireNonNull(updatedReview).getReviewId();
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(reviewId)
+                .eventType(REVIEW)
+                .operation(UPDATE)
+                .build();
+        eventStorage.save(event);
+
         return updatedReview;
     }
 
@@ -55,8 +86,21 @@ public class ReviewService {
     }
 
     public boolean deleteReview(int reviewId) {
-        log.info("Удален отзыв с id {}", reviewId);
-        return reviewStorage.delete(reviewId);
+        int userId = reviewStorage.getUserId(reviewId);
+        if (reviewStorage.delete(reviewId)) {
+            log.info("Удален отзыв с id {}", reviewId);
+
+            Event event = Event.builder()
+                    .userId(userId)
+                    .entityId(reviewId)
+                    .eventType(REVIEW)
+                    .operation(REMOVE)
+                    .build();
+            eventStorage.save(event);
+
+            return true;
+        }
+        return false;
     }
 
     public boolean likeReview(Integer reviewId, Integer userId) {
