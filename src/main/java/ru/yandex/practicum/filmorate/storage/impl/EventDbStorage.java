@@ -17,6 +17,7 @@ import java.util.Map;
 public class EventDbStorage implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
     private final String getAllByUserId = "SELECT * FROM events WHERE user_id = ?";
+
     public EventDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
