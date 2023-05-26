@@ -32,6 +32,7 @@ public class FilmDbStorage implements FilmStorage {
             + "WHERE id = ?";
     private final String getByIdSql = "SELECT * FROM films WHERE id = ?";
     private final String getAllSql = "SELECT * FROM films";
+    private final String getAllByNameSubstringSql = "SELECT * FROM films WHERE LOWER(name) LIKE LOWER(?)";
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, FilmGenreStorage filmGenreStorage, GenreStorage genreStorage, FilmDirectorStorage filmDirectorStorage, DirectorStorage directorStorage) {
         this.jdbcTemplate = jdbcTemplate;
@@ -110,6 +111,11 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getAll() {
         return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeFilm(rs)));
+    }
+
+    @Override
+    public List<Film> getAllByNameSubstring(String query) {
+        return jdbcTemplate.query(getAllByNameSubstringSql, ((rs, rowNum) -> makeFilm(rs)), "%" + query + "%");
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {

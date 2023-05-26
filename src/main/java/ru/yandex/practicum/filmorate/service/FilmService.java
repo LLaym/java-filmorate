@@ -4,12 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.storage.EventStorage;
-import ru.yandex.practicum.filmorate.storage.FilmDirectorStorage;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.LikeStorage;
+import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmDirector;
+import ru.yandex.practicum.filmorate.storage.*;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -26,15 +27,18 @@ public class FilmService {
     private final LikeStorage likeStorage;
     private final FilmDirectorStorage filmDirectorStorage;
     private final EventStorage eventStorage;
+    private final DirectorStorage directorStorage;
 
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        LikeStorage likeStorage,
                        FilmDirectorStorage filmDirectorStorage,
-                       EventStorage eventStorage) {
+                       EventStorage eventStorage,
+                       DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
         this.likeStorage = likeStorage;
         this.filmDirectorStorage = filmDirectorStorage;
         this.eventStorage = eventStorage;
+        this.directorStorage = directorStorage;
     }
 
     public Film createFilm(Film film) {
@@ -172,5 +176,57 @@ public class FilmService {
 
         log.info("Возвращен список фильмов режиссёра: {} ", directorFilms);
         return directorFilms;
+    }
+
+    public List<Film> findFilmsByFilmName(String query) {
+        List<Film> films = filmStorage.getAllByNameSubstring(query);
+
+        films.sort((film1, film2) ->
+                likeStorage.getAllByFilmId(film2.getId()).size() - likeStorage.getAllByFilmId(film1.getId()).size());
+
+        log.info("Возвращен список найденных фильмов: {} ", films);
+        return films;
+    }
+
+    public List<Film> findFilmsByDirectorName(String query) {
+        List<Film> films = new ArrayList<>();
+        List<Director> directors = directorStorage.getAllByNameSubstring(query);
+
+        for (Director director : directors) {
+            films.addAll(filmDirectorStorage.getAllByDirector(director.getId())
+                    .stream()
+                    .map(FilmDirector::getFilmId)
+                    .map(filmStorage::getById)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList()));
+        }
+
+        films.sort((film1, film2) ->
+                likeStorage.getAllByFilmId(film2.getId()).size() - likeStorage.getAllByFilmId(film1.getId()).size());
+
+        log.info("Возвращен список найденных фильмов: {} ", films);
+        return films;
+    }
+
+    public List<Film> findFilmsByFilmNameAndDirectorName(String query) {
+        List<Film> films = filmStorage.getAllByNameSubstring(query);
+        List<Director> directors = directorStorage.getAllByNameSubstring(query);
+
+        for (Director director : directors) {
+            films.addAll(filmDirectorStorage.getAllByDirector(director.getId())
+                    .stream()
+                    .map(FilmDirector::getFilmId)
+                    .map(filmStorage::getById)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList()));
+        }
+
+        films.sort((film1, film2) ->
+                likeStorage.getAllByFilmId(film2.getId()).size() - likeStorage.getAllByFilmId(film1.getId()).size());
+
+        log.info("Возвращен список найденных фильмов: {} ", films);
+        return films;
     }
 }
