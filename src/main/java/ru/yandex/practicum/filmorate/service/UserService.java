@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -14,16 +16,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static ru.yandex.practicum.filmorate.model.EventOperation.ADD;
+import static ru.yandex.practicum.filmorate.model.EventOperation.REMOVE;
+import static ru.yandex.practicum.filmorate.model.EventType.FRIEND;
+
 @Slf4j
 @Service
 public class UserService {
 
     private final UserStorage userStorage;
     private final FriendshipStorage friendshipStorage;
+    private final EventStorage eventStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendshipStorage friendshipStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       FriendshipStorage friendshipStorage,
+                       EventStorage eventStorage) {
         this.userStorage = userStorage;
         this.friendshipStorage = friendshipStorage;
+        this.eventStorage = eventStorage;
     }
 
     public User createUser(User user) {
@@ -62,11 +72,31 @@ public class UserService {
     public void makeFriendship(Integer userId, Integer friendId) {
         log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", userId, friendId);
         friendshipStorage.save(userId, friendId);
+
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(friendId)
+                .eventType(FRIEND)
+                .operation(ADD)
+                .build();
+        eventStorage.save(event);
     }
 
     public boolean dropFriendship(Integer id, Integer friendId) {
-        log.info("Пользователь с id {} и пользователь с id {} больше не друзья.", id, friendId);
-        return friendshipStorage.delete(id, friendId);
+        if (friendshipStorage.delete(id, friendId)) {
+            log.info("Пользователь с id {} и пользователь с id {} больше не друзья.", id, friendId);
+
+            Event event = Event.builder()
+                    .userId(id)
+                    .entityId(friendId)
+                    .eventType(FRIEND)
+                    .operation(REMOVE)
+                    .build();
+            eventStorage.save(event);
+
+            return true;
+        }
+        return false;
     }
 
     public List<User> findUserFriends(Integer userId) {
@@ -74,6 +104,7 @@ public class UserService {
                 .stream()
                 .map(Friendship::getFriendId)
                 .map(userStorage::getById)
+                .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
@@ -96,10 +127,16 @@ public class UserService {
 
         List<User> mutualFriends = common.stream()
                 .map(userStorage::getById)
+                .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
         log.info("Возвращен список общих друзей: {}", mutualFriends);
         return mutualFriends;
     }
+
+    public List<Event> getFeed(Integer userId) {
+        return eventStorage.getAllByUserId(userId);
+    }
+
 }

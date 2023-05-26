@@ -17,16 +17,16 @@ public class ReviewRatingDbStorage implements ReviewRatingStorage {
 
     @Override
     public boolean save(int reviewId, int userId, boolean isLiked) {
-        if (jdbcTemplate.update(saveSql, reviewId, userId, isLiked) >= 1) {
-            return jdbcTemplate.update(updateReviewSql, isLiked ? 1 : -1, reviewId) >= 1;
+        if (jdbcTemplate.update(saveSql, reviewId, userId, isLiked) == 1) {
+            return jdbcTemplate.update(updateReviewSql, isLiked ? 1 : -1, reviewId) == 1;
         }
         return false;
     }
 
     @Override
     public boolean delete(int reviewId, int userId, boolean isLiked) {
-        if (jdbcTemplate.update(deleteSql, reviewId, userId, isLiked) >= 1) {
-            return jdbcTemplate.update(updateReviewSql, isLiked ? -1 : 1, reviewId) >= 1;
+        if (jdbcTemplate.update(deleteSql, reviewId, userId, isLiked) == 1) {
+            return jdbcTemplate.update(updateReviewSql, isLiked ? -1 : 1, reviewId) == 1;
         }
         return false;
     }

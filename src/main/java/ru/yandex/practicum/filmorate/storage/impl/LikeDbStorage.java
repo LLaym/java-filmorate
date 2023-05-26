@@ -58,12 +58,12 @@ public class LikeDbStorage implements LikeStorage {
 
     @Override
     public boolean save(int filmId, int userId) {
-        return jdbcTemplate.update(saveSql, filmId, userId) > 1;
+        return jdbcTemplate.update(saveSql, filmId, userId) == 1;
     }
 
     @Override
     public boolean delete(int filmId, int userId) {
-        return jdbcTemplate.update(deleteSql, filmId, userId) > 1;
+        return jdbcTemplate.update(deleteSql, filmId, userId) == 1;
     }
 
     @Override

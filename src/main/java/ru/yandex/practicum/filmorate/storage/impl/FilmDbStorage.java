@@ -97,7 +97,7 @@ public class FilmDbStorage implements FilmStorage {
                     .forEach(directorId -> filmDirectorStorage.save(film.getId(), directorId));
         }
 
-        return jdbcTemplate.update(updateSql, name, description, releaseDate, duration, mpa, id) > 1;
+        return jdbcTemplate.update(updateSql, name, description, releaseDate, duration, mpa, id) == 1;
     }
 
     @Override

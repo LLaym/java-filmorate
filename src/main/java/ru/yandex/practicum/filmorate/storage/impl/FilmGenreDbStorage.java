@@ -34,7 +34,7 @@ public class FilmGenreDbStorage implements FilmGenreStorage {
 
     @Override
     public boolean deleteAllByFilmId(int filmId) {
-        return jdbcTemplate.update(deleteSql, filmId) > 1;
+        return jdbcTemplate.update(deleteSql, filmId) >= 1;
     }
 
     private FilmGenre makeFilmGenre(ResultSet rs) throws SQLException {

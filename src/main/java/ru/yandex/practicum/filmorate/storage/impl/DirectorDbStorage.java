@@ -44,7 +44,7 @@ public class DirectorDbStorage implements DirectorStorage {
         String id = String.valueOf(director.getId());
         String name = director.getName();
 
-        return jdbcTemplate.update(updateSql, name, id) > 1;
+        return jdbcTemplate.update(updateSql, name, id) == 1;
     }
 
     @Override
