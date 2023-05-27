@@ -118,7 +118,7 @@ public class FilmDbStorage implements FilmStorage {
     public boolean deleteById(int filmId) {
         return jdbcTemplate.update(deleteByIdSql, filmId) == 1;
     }
-  
+
     @Override
     public List<Film> getAllByNameSubstring(String query) {
         return jdbcTemplate.query(getAllByNameSubstringSql, ((rs, rowNum) -> makeFilm(rs)), "%" + query + "%");
