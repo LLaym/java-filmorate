@@ -43,7 +43,7 @@ public class FilmController {
     }
 
     @DeleteMapping("{id}")
-    public Film deleteFilmById(@PathVariable Integer id) {
+    public boolean deleteFilmById(@PathVariable Integer id) {
         Validator.validateFilmId(id);
         return filmService.deleteFilmById(id);
     }

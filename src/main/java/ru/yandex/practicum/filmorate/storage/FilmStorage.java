@@ -12,7 +12,7 @@ public interface FilmStorage {
 
     Optional<Film> getById(int filmId);
 
-    Optional<Film> deleteById(int filmId);
+    boolean deleteById(int filmId);
 
     List<Film> getAll();
 }

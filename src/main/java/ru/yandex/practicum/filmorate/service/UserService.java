@@ -59,11 +59,9 @@ public class UserService {
         return user;
     }
 
-    public User deleteUserById(Integer userId) {
-        User user = userStorage.deleteById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + userId + " не найден"));
-        log.info("Пользователь удален: {}", user);
-        return user;
+    public boolean deleteUserById(Integer userId) {
+        log.info("Пользователь с id {} удален: ", userId);
+        return userStorage.deleteById(userId);
     }
 
     public void makeFriendship(Integer userId, Integer friendId) {

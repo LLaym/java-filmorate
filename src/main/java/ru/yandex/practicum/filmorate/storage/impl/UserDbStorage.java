@@ -74,12 +74,8 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Optional<User> deleteById(int userId) {
-        Optional<User> user = jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeUser(rs)), userId)
-                .stream()
-                .findFirst();
-        jdbcTemplate.update(deleteByIdSql, userId);
-        return user;
+    public boolean deleteById(int userId) {
+        return jdbcTemplate.update(deleteByIdSql, userId) == 1;
     }
 
     @Override

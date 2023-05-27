@@ -56,11 +56,9 @@ public class FilmService {
         return film;
     }
 
-    public Film deleteFilmById(Integer filmId) {
-        Film film = filmStorage.deleteById(filmId)
-                .orElseThrow(() -> new FilmNotFoundException("Фильм с id " + filmId + " не найден"));
-        log.info("Фильм удален: {}", film);
-        return film;
+    public boolean deleteFilmById(Integer filmId) {
+        log.info("Фильм с id {} удален: ", filmId);
+        return filmStorage.deleteById(filmId);
     }
 
     public boolean likeFilm(Integer filmId, Integer userId) {

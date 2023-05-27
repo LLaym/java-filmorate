@@ -114,12 +114,8 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Optional<Film> deleteById(int filmId) {
-        Optional<Film> film = jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeFilm(rs)), filmId)
-                .stream()
-                .findFirst();
-        jdbcTemplate.update(deleteByIdSql, filmId);
-        return film;
+    public boolean deleteById(int filmId) {
+        return jdbcTemplate.update(deleteByIdSql, filmId) == 1;
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {

@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
-    public User deleteUserById(@PathVariable Integer id) {
+    public boolean deleteUserById(@PathVariable Integer id) {
         Validator.validateUserId(id);
         return userService.deleteUserById(id);
     }
