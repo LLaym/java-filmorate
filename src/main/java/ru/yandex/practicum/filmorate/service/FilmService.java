@@ -10,10 +10,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmDirector;
 import ru.yandex.practicum.filmorate.storage.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.model.EventOperation.ADD;
@@ -210,7 +207,10 @@ public class FilmService {
     }
 
     public List<Film> findFilmsByFilmNameAndDirectorName(String query) {
-        List<Film> films = filmStorage.getAllByNameSubstring(query);
+        Set<Film> films = new TreeSet<>((film1, film2) ->
+                likeStorage.getAllByFilmId(film2.getId()).size() - likeStorage.getAllByFilmId(film1.getId()).size());
+        films.addAll(filmStorage.getAllByNameSubstring(query));
+
         List<Director> directors = directorStorage.getAllByNameSubstring(query);
 
         for (Director director : directors) {
@@ -223,10 +223,7 @@ public class FilmService {
                     .collect(Collectors.toList()));
         }
 
-        films.sort((film1, film2) ->
-                likeStorage.getAllByFilmId(film2.getId()).size() - likeStorage.getAllByFilmId(film1.getId()).size());
-
         log.info("Возвращен список найденных фильмов: {} ", films);
-        return films;
+        return new ArrayList<>(films);
     }
 }

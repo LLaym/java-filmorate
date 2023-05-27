@@ -98,13 +98,9 @@ public class FilmController {
     @GetMapping("search")
     public List<Film> findFilmsByNameAndDirector(@RequestParam String query,
                                                  @RequestParam(required = false) List<String> by) {
-        if (by == null) {
+        if (by == null || (by.contains("title") && by.contains("director"))) {
             return filmService.findFilmsByFilmNameAndDirectorName(query);
-        } else if (by.contains("title") && by.contains("director")) {
-            return filmService.findFilmsByFilmNameAndDirectorName(query);
-        } else if (!by.contains("title") && !by.contains("director")) {
-            return filmService.findFilmsByFilmName(query);
-        } else if (by.contains("title") && !by.contains("director")) {
+        } else if (by.contains("title") || (!by.contains("title") && !by.contains("director"))) {
             return filmService.findFilmsByFilmName(query);
         } else if (!by.contains("title") && by.contains("director")) {
             return filmService.findFilmsByDirectorName(query);
