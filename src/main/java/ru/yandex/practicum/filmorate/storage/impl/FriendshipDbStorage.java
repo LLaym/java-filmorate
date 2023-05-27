@@ -29,7 +29,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
 
     @Override
     public boolean delete(int userId, int friendId) {
-        return jdbcTemplate.update(deleteSql, userId, friendId) > 1;
+        return jdbcTemplate.update(deleteSql, userId, friendId) == 1;
     }
 
     @Override

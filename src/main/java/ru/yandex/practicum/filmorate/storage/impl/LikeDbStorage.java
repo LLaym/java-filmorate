@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
@@ -25,6 +26,30 @@ public class LikeDbStorage implements LikeStorage {
             " ORDER BY score DESC)" +
             " LIMIT ?;";
 
+    private final String getSimilarUserIdSql = "SELECT user_id" +
+            " FROM likes" +
+            " WHERE film_id IN" +
+            " (SELECT film_id FROM likes WHERE user_id = ?)" +
+            " AND user_id <> ?" +
+            " GROUP BY user_id" +
+            " ORDER BY COUNT(film_id) DESC" +
+            " LIMIT 1;";
+
+    private final String getRecommendFilmsIdsSql = "SELECT film_id" +
+            " FROM likes" +
+            " WHERE  user_id = ?" +
+            " AND film_id NOT IN" +
+            " (SELECT film_id FROM likes WHERE user_id = ?);";
+
+    private final String getCommonFilmsIdsSql = "SELECT film_id " +
+            " FROM likes" +
+            " WHERE film_id IN" +
+            " ((SELECT film_id FROM likes WHERE user_id = ?)" +
+            " INTERSECT" +
+            " (SELECT film_id FROM likes WHERE user_id = ?))" +
+            " GROUP BY film_id" +
+            " ORDER BY COUNT(user_id) DESC;";
+
     private final String getAllByFilmSql = "SELECT * FROM likes WHERE film_id = ?";
 
     public LikeDbStorage(JdbcTemplate jdbcTemplate) {
@@ -33,12 +58,12 @@ public class LikeDbStorage implements LikeStorage {
 
     @Override
     public boolean save(int filmId, int userId) {
-        return jdbcTemplate.update(saveSql, filmId, userId) > 1;
+        return jdbcTemplate.update(saveSql, filmId, userId) == 1;
     }
 
     @Override
     public boolean delete(int filmId, int userId) {
-        return jdbcTemplate.update(deleteSql, filmId, userId) > 1;
+        return jdbcTemplate.update(deleteSql, filmId, userId) == 1;
     }
 
     @Override
@@ -50,6 +75,21 @@ public class LikeDbStorage implements LikeStorage {
             top.add(rowSet.getInt("id"));
         }
         return top;
+    }
+
+    @Override
+    public List<Integer> getRecommendFilmsIds(int userId) {
+        try {
+            Integer similarUserId = jdbcTemplate.queryForObject(getSimilarUserIdSql, Integer.class, userId, userId);
+            return jdbcTemplate.queryForList(getRecommendFilmsIdsSql, Integer.class, similarUserId, userId);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Integer> getCommonFilmsIds(int userId, int friendId) {
+        return jdbcTemplate.queryForList(getCommonFilmsIdsSql, Integer.class, userId, friendId);
     }
 
     @Override

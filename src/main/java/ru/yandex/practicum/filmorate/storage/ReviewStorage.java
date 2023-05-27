@@ -17,4 +17,6 @@ public interface ReviewStorage {
     List<Review> getAllByFilmId(int reviewId, int limit);
 
     boolean delete(int reviewId);
+
+    Integer getUserId(int reviewId);
 }

@@ -20,6 +20,7 @@ public class DirectorDbStorage implements DirectorStorage {
     private final String getByIdSql = "SELECT * FROM directors WHERE id = ?";
     private final String getAllSql = "SELECT * FROM directors";
     private final String deleteSql = "DELETE FROM directors WHERE id = ?";
+    private final String getAllByNameSubstringSql = "SELECT * FROM directors WHERE LOWER(name) LIKE LOWER(?)";
 
     public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -44,7 +45,7 @@ public class DirectorDbStorage implements DirectorStorage {
         String id = String.valueOf(director.getId());
         String name = director.getName();
 
-        return jdbcTemplate.update(updateSql, name, id) > 1;
+        return jdbcTemplate.update(updateSql, name, id) == 1;
     }
 
     @Override
@@ -62,6 +63,11 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public boolean delete(int directorId) {
         return jdbcTemplate.update(deleteSql, directorId) == 1;
+    }
+
+    @Override
+    public List<Director> getAllByNameSubstring(String query) {
+        return jdbcTemplate.query(getAllByNameSubstringSql, ((rs, rowNum) -> makeDirector(rs)), "%" + query + "%");
     }
 
     private Director makeDirector(ResultSet rs) throws SQLException {

@@ -15,4 +15,6 @@ public interface FilmStorage {
     boolean deleteById(int filmId);
 
     List<Film> getAll();
+
+    List<Film> getAllByNameSubstring(String query);
 }
