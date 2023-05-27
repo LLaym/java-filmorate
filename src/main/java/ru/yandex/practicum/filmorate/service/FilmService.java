@@ -67,6 +67,11 @@ public class FilmService {
         return film;
     }
 
+    public boolean deleteFilmById(Integer filmId) {
+        log.info("Фильм с id {} удален: ", filmId);
+        return filmStorage.deleteById(filmId);
+    }
+
     public boolean likeFilm(Integer filmId, Integer userId) {
         if (likeStorage.save(filmId, userId)) {
             log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);

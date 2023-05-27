@@ -69,6 +69,11 @@ public class UserService {
         return user;
     }
 
+    public boolean deleteUserById(Integer userId) {
+        log.info("Пользователь с id {} удален: ", userId);
+        return userStorage.deleteById(userId);
+    }
+
     public void makeFriendship(Integer userId, Integer friendId) {
         log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", userId, friendId);
         friendshipStorage.save(userId, friendId);

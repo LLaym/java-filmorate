@@ -46,6 +46,12 @@ public class UserController {
         return userService.findUserById(id);
     }
 
+    @DeleteMapping("{id}")
+    public boolean deleteUserById(@PathVariable Integer id) {
+        Validator.validateUserId(id);
+        return userService.deleteUserById(id);
+    }
+
     @PutMapping("{id}/friends/{friendId}")
     public void makeTwoUsersFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         Validator.validateUserId(id);
