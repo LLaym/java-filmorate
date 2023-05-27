@@ -68,10 +68,10 @@ public class FilmController {
             return filmService.findTopFilmsByGenreAndYear(count, genreId, year);
         } else if (genreId != null) {
             // Возвращаем список фильмов только с учетом жанра
-            return filmService.findTopFilmsByGenreAndYear(count, genreId,null);
+            return filmService.findTopFilmsByGenreAndYear(count, genreId, null);
         } else if (year != null) {
             // Возвращаем список фильмов только с учетом года выпуска
-            return filmService.findTopFilmsByGenreAndYear(count, null,year);
+            return filmService.findTopFilmsByGenreAndYear(count, null, year);
         } else {
             // Возвращаем общий список популярных фильмов
             return filmService.findTopFilms(count);
@@ -93,5 +93,18 @@ public class FilmController {
         Validator.validateDirectorId(directorId);
 
         return filmService.findFilmsByDirector(directorId, sortBy);
+    }
+
+    @GetMapping("search")
+    public List<Film> findFilmsByNameAndDirector(@RequestParam String query,
+                                                 @RequestParam(required = false) List<String> by) {
+        if (by == null || (by.contains("title") && by.contains("director"))) {
+            return filmService.findFilmsByFilmNameAndDirectorName(query);
+        } else if (by.contains("title") || (!by.contains("title") && !by.contains("director"))) {
+            return filmService.findFilmsByFilmName(query);
+        } else if (!by.contains("title") && by.contains("director")) {
+            return filmService.findFilmsByDirectorName(query);
+        }
+        return filmService.findFilmsByFilmNameAndDirectorName(query);
     }
 }

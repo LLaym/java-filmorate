@@ -13,4 +13,6 @@ public interface FilmStorage {
     Optional<Film> getById(int filmId);
 
     List<Film> getAll();
+
+    List<Film> getAllByNameSubstring(String query);
 }

@@ -15,4 +15,6 @@ public interface DirectorStorage {
     List<Director> getAll();
 
     boolean delete(int directorId);
+
+    List<Director> getAllByNameSubstring(String query);
 }
