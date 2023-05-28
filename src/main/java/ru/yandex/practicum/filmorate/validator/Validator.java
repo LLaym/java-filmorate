@@ -42,7 +42,7 @@ public class Validator {
         if (id == null) {
             throw new ValidationException("требуется корректный id параметр");
         }
-        if (filmStorage.getById(id).isEmpty()) {
+        if (filmStorage.findById(id).isEmpty()) {
             throw new NotFoundException("фильма с таким id не существует");
         }
     }
@@ -61,7 +61,7 @@ public class Validator {
                 throw new ValidationException("продолжительность фильма должна быть положительной");
             }
         } else {
-            if (filmStorage.getAll().stream().noneMatch(film1 -> film1.getId() == film.getId())) {
+            if (filmStorage.findAll().stream().noneMatch(film1 -> film1.getId() == film.getId())) {
                 throw new NotFoundException("фильма с таким id не существует");
             }
         }
@@ -81,7 +81,7 @@ public class Validator {
         if (id == null) {
             throw new ValidationException("требуется корректный id параметр");
         }
-        if (userStorage.getById(id).isEmpty()) {
+        if (userStorage.findById(id).isEmpty()) {
             throw new NotFoundException("пользователя с таким id не существует");
         }
     }
@@ -98,7 +98,7 @@ public class Validator {
                 throw new ValidationException("дата рождения не может быть в будущем.");
             }
         } else {
-            if (userStorage.getAll().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
+            if (userStorage.findAll().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
                 throw new NotFoundException("пользователя с таким id не существует");
             }
         }
@@ -108,7 +108,7 @@ public class Validator {
         if (id == null || id < 1) {
             throw new ValidationException("требуется корректный id параметр");
         }
-        if (directorStorage.getById(id).isEmpty()) {
+        if (directorStorage.findById(id).isEmpty()) {
             throw new NotFoundException("режиссёра с таким id не существует");
         }
     }
@@ -121,27 +121,27 @@ public class Validator {
                 throw new ValidationException("имя режиссёра не может быть пустым");
             }
         } else {
-            if (directorStorage.getAll().stream().noneMatch(director1 -> director1.getId() == director.getId())) {
+            if (directorStorage.findAll().stream().noneMatch(director1 -> director1.getId() == director.getId())) {
                 throw new NotFoundException("режиссёра с таким id не существует");
             }
         }
     }
 
     private static void checkMpa(Mpa mpa) {
-        mpaStorage.getById(mpa.getId())
+        mpaStorage.findById(mpa.getId())
                 .orElseThrow(() -> new ValidationException("Mpa с id " + mpa.getId() + " не существует"));
     }
 
     private static void checkGenres(Set<Genre> genres) {
         for (Genre genre : genres) {
-            genreStorage.getById(genre.getId())
+            genreStorage.findById(genre.getId())
                     .orElseThrow(() -> new ValidationException("Жанра с id " + genre.getId() + " не существует"));
         }
     }
 
     private static void checkDirector(List<Director> director) {
         for (Director director1 : director) {
-            directorStorage.getById(director1.getId())
+            directorStorage.findById(director1.getId())
                     .orElseThrow(() -> new ValidationException("Режиссёра с id " + director1.getId() + " не существует"));
         }
     }
@@ -150,7 +150,7 @@ public class Validator {
         if (id == null) {
             throw new ValidationException("требуется корректный id параметр");
         }
-        if (filmStorage.getById(id).isEmpty()) {
+        if (filmStorage.findById(id).isEmpty()) {
             throw new NotFoundException("отзыва с таким id не существует");
         }
     }
@@ -167,7 +167,7 @@ public class Validator {
                 throw new ValidationException("требуется корректный параметр is_positive");
             }
         } else {
-            if (reviewStorage.getById(review.getReviewId()).isEmpty()) {
+            if (reviewStorage.findById(review.getReviewId()).isEmpty()) {
                 throw new NotFoundException("отзыва с таким id не существует");
             }
         }

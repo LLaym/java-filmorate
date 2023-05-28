@@ -29,14 +29,14 @@ public class DirectorController {
 
     @GetMapping
     public Collection<Director> findAllDirectors() {
-        return directorService.findAllDirectors();
+        return directorService.getAllDirectors();
     }
 
     @GetMapping("{id}")
     public Director findDirectorById(@PathVariable Integer id) {
         Validator.validateDirectorId(id);
 
-        return directorService.findDirectorById(id);
+        return directorService.getDirectorById(id);
     }
 
     @DeleteMapping("{id}")

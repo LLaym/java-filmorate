@@ -10,11 +10,11 @@ public interface FilmStorage {
 
     boolean update(Film film);
 
-    Optional<Film> getById(int filmId);
+    Optional<Film> findById(int filmId);
 
     boolean deleteById(int filmId);
 
-    List<Film> getAll();
+    List<Film> findAll();
 
-    List<Film> getAllByNameSubstring(String query);
+    List<Film> findAllByNameSubstring(String query);
 }

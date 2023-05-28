@@ -10,13 +10,13 @@ public interface ReviewStorage {
 
     boolean update(Review review);
 
-    Optional<Review> getById(int reviewId);
+    Optional<Review> findById(int reviewId);
 
-    List<Review> getAll(int limit);
+    List<Review> findAll(int limit);
 
-    List<Review> getAllByFilmId(int reviewId, int limit);
+    List<Review> findAllByFilmId(int reviewId, int limit);
 
     boolean delete(int reviewId);
 
-    Integer getUserId(int reviewId);
+    Integer findUserId(int reviewId);
 }

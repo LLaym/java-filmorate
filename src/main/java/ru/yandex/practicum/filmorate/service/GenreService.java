@@ -17,13 +17,13 @@ public class GenreService {
         this.genreStorage = genreStorage;
     }
 
-    public List<Genre> findAllGenres() {
+    public List<Genre> getAllGenres() {
         log.info("Возвращен список всех жанров");
-        return genreStorage.getAll();
+        return genreStorage.findAll();
     }
 
-    public Genre findGenreById(Integer id) {
-        Genre genre = genreStorage.getById(id)
+    public Genre getGenreById(Integer id) {
+        Genre genre = genreStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("Жанр с идентификатором " + id + " не найден"));
 
         log.info("Получен жанр: {}", genre);

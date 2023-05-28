@@ -17,13 +17,13 @@ public class MpaService {
         this.mpaStorage = mpaStorage;
     }
 
-    public List<Mpa> findAllMpas() {
+    public List<Mpa> getAllMpas() {
         log.info("Возвращен список всех Mpa рейтингов");
-        return mpaStorage.getAll();
+        return mpaStorage.findAll();
     }
 
-    public Mpa findMpaById(Integer id) {
-        Mpa mpa = mpaStorage.getById(id)
+    public Mpa getMpaById(Integer id) {
+        Mpa mpa = mpaStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("Mpa рейтинг с идентификатором " + id + " не найден"));
 
         log.info("Получен Mpa рейтинг: {}", mpa);

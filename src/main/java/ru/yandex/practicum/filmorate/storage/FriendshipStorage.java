@@ -9,5 +9,5 @@ public interface FriendshipStorage {
 
     boolean delete(int userId, int friendId);
 
-    List<Friendship> getAllByUserId(int userId);
+    List<Friendship> findAllByUserId(int userId);
 }

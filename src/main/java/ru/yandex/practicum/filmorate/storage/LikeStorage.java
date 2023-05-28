@@ -9,12 +9,12 @@ public interface LikeStorage {
 
     boolean delete(int filmId, int userId);
 
-    List<Integer> getPopularFilmsIds(int count);
+    List<Integer> findPopularFilmsIds(int count);
 
-    List<Integer> getCommonFilmsIds(int userId, int friendId);
+    List<Integer> findCommonFilmsIds(int userId, int friendId);
 
-    List<Like> getAllByFilmId(int filmId);
+    List<Like> findAllByFilmId(int filmId);
 
-    List<Integer> getRecommendFilmsIds(int userId);
+    List<Integer> findRecommendFilmsIds(int userId);
 }
 

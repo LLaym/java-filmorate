@@ -33,7 +33,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
     }
 
     @Override
-    public List<Friendship> getAllByUserId(int userId) {
+    public List<Friendship> findAllByUserId(int userId) {
         return jdbcTemplate.query(getAllByUserIdSql, ((rs, rowNum) -> makeFriendship(rs)), userId);
     }
 

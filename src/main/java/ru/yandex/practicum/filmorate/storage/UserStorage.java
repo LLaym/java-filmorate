@@ -10,9 +10,9 @@ public interface UserStorage {
 
     boolean update(User user);
 
-    Optional<User> getById(int userId);
+    Optional<User> findById(int userId);
 
-    List<User> getAll();
+    List<User> findAll();
 
     boolean deleteById(int userId);
 }

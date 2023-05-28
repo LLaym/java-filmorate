@@ -67,7 +67,7 @@ public class LikeDbStorage implements LikeStorage {
     }
 
     @Override
-    public List<Integer> getPopularFilmsIds(int count) {
+    public List<Integer> findPopularFilmsIds(int count) {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(getPopularFilmsIdsSql, count);
         List<Integer> top = new ArrayList<>();
 
@@ -78,7 +78,7 @@ public class LikeDbStorage implements LikeStorage {
     }
 
     @Override
-    public List<Integer> getRecommendFilmsIds(int userId) {
+    public List<Integer> findRecommendFilmsIds(int userId) {
         try {
             Integer similarUserId = jdbcTemplate.queryForObject(getSimilarUserIdSql, Integer.class, userId, userId);
             return jdbcTemplate.queryForList(getRecommendFilmsIdsSql, Integer.class, similarUserId, userId);
@@ -88,12 +88,12 @@ public class LikeDbStorage implements LikeStorage {
     }
 
     @Override
-    public List<Integer> getCommonFilmsIds(int userId, int friendId) {
+    public List<Integer> findCommonFilmsIds(int userId, int friendId) {
         return jdbcTemplate.queryForList(getCommonFilmsIdsSql, Integer.class, userId, friendId);
     }
 
     @Override
-    public List<Like> getAllByFilmId(int filmId) {
+    public List<Like> findAllByFilmId(int filmId) {
         return jdbcTemplate.query(getAllByFilmSql, ((rs, rowNum) -> makeLike(rs)), filmId);
     }
 

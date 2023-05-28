@@ -21,7 +21,7 @@ class GenreDbStorageTest {
 
     @Test
     void getById() {
-        Genre expectedGenre = genreStorage.getById(1).get();
+        Genre expectedGenre = genreStorage.findById(1).get();
 
         assertEquals(1, expectedGenre.getId());
         assertFalse(expectedGenre.getName().isBlank());
@@ -29,7 +29,7 @@ class GenreDbStorageTest {
 
     @Test
     void getAll() {
-        List<Genre> expectedGenres = genreStorage.getAll();
+        List<Genre> expectedGenres = genreStorage.findAll();
 
         assertTrue(expectedGenres.size() > 0);
     }

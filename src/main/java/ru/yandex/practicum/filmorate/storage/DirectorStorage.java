@@ -10,11 +10,11 @@ public interface DirectorStorage {
 
     boolean update(Director director);
 
-    Optional<Director> getById(int directorId);
+    Optional<Director> findById(int directorId);
 
-    List<Director> getAll();
+    List<Director> findAll();
 
     boolean delete(int directorId);
 
-    List<Director> getAllByNameSubstring(String query);
+    List<Director> findAllByNameSubstring(String query);
 }

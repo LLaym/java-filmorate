@@ -32,14 +32,14 @@ public class FilmController {
 
     @GetMapping
     public Collection<Film> findAllFilms() {
-        return filmService.findAllFilms();
+        return filmService.getAllFilms();
     }
 
     @GetMapping("{id}")
     public Film findFilmById(@PathVariable Integer id) {
         Validator.validateFilmId(id);
 
-        return filmService.findFilmById(id);
+        return filmService.getFilmById(id);
     }
 
     @DeleteMapping("{id}")
@@ -71,9 +71,9 @@ public class FilmController {
             @RequestParam(required = false) Integer year) {
 
         if (genreId == null && year == null) {
-            return filmService.findTopFilms(count);
+            return filmService.getTopFilms(count);
         } else {
-            return filmService.findTopFilmsByGenreAndYear(count, genreId, year);
+            return filmService.getTopFilmsByGenreAndYear(count, genreId, year);
         }
     }
 
@@ -84,26 +84,26 @@ public class FilmController {
         Validator.validateUserId(userId);
         Validator.validateUserId(friendId);
 
-        return filmService.findCommonFilms(userId, friendId);
+        return filmService.getCommonFilms(userId, friendId);
     }
 
     @GetMapping("director/{directorId}")
     public List<Film> findFilmsByDirector(@PathVariable Integer directorId, @RequestParam(defaultValue = "year") String sortBy) {
         Validator.validateDirectorId(directorId);
 
-        return filmService.findFilmsByDirector(directorId, sortBy);
+        return filmService.getFilmsByDirector(directorId, sortBy);
     }
 
     @GetMapping("search")
     public List<Film> findFilmsByNameAndDirector(@RequestParam String query,
                                                  @RequestParam(required = false) List<String> by) {
         if (by == null || (by.contains("title") && by.contains("director"))) {
-            return filmService.findFilmsByFilmNameAndDirectorName(query);
+            return filmService.getFilmsByFilmNameAndDirectorName(query);
         } else if (by.contains("title") || (!by.contains("title") && !by.contains("director"))) {
-            return filmService.findFilmsByFilmName(query);
+            return filmService.getFilmsByFilmName(query);
         } else if (!by.contains("title") && by.contains("director")) {
-            return filmService.findFilmsByDirectorName(query);
+            return filmService.getFilmsByDirectorName(query);
         }
-        return filmService.findFilmsByFilmNameAndDirectorName(query);
+        return filmService.getFilmsByFilmNameAndDirectorName(query);
     }
 }

@@ -49,14 +49,14 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public Optional<Director> getById(int directorId) {
+    public Optional<Director> findById(int directorId) {
         return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeDirector(rs)), directorId)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public List<Director> getAll() {
+    public List<Director> findAll() {
         return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeDirector(rs)));
     }
 
@@ -66,7 +66,7 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public List<Director> getAllByNameSubstring(String query) {
+    public List<Director> findAllByNameSubstring(String query) {
         return jdbcTemplate.query(getAllByNameSubstringSql, ((rs, rowNum) -> makeDirector(rs)), "%" + query + "%");
     }
 

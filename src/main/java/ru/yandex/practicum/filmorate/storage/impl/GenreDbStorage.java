@@ -21,13 +21,13 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public Optional<Genre> getById(int genreId) {
+    public Optional<Genre> findById(int genreId) {
         return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeGenre(rs)), genreId)
                 .stream().findFirst();
     }
 
     @Override
-    public List<Genre> getAll() {
+    public List<Genre> findAll() {
         return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeGenre(rs)));
     }
 

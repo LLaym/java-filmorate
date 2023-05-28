@@ -36,14 +36,14 @@ public class UserController {
 
     @GetMapping
     public Collection<User> findAllUsers() {
-        return userService.findAllUsers();
+        return userService.getAllUsers();
     }
 
     @GetMapping("{id}")
     public User findUserById(@PathVariable Integer id) {
         Validator.validateUserId(id);
 
-        return userService.findUserById(id);
+        return userService.getUserById(id);
     }
 
     @DeleteMapping("{id}")
@@ -72,7 +72,7 @@ public class UserController {
     public List<User> findUserFriends(@PathVariable Integer id) {
         Validator.validateUserId(id);
 
-        return userService.findUserFriends(id);
+        return userService.getUserFriends(id);
     }
 
     @GetMapping("{id}/friends/common/{otherId}")
@@ -80,7 +80,7 @@ public class UserController {
         Validator.validateUserId(id);
         Validator.validateUserId(otherId);
 
-        return userService.findUsersMutualFriends(id, otherId);
+        return userService.getUsersMutualFriends(id, otherId);
     }
 
     @GetMapping("{id}/recommendations")

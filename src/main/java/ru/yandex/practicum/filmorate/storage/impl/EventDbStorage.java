@@ -44,7 +44,7 @@ public class EventDbStorage implements EventStorage {
     }
 
     @Override
-    public List<Event> getAllByUserId(int userId) {
+    public List<Event> findAllByUserId(int userId) {
         return jdbcTemplate.query(getAllByUserId, (rs, rowNum) -> makeEvent(rs), userId);
     }
 

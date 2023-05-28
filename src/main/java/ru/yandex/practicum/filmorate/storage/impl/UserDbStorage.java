@@ -67,7 +67,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Optional<User> getById(int userId) {
+    public Optional<User> findById(int userId) {
         return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeUser(rs)), userId)
                 .stream()
                 .findFirst();
@@ -79,7 +79,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getAll() {
+    public List<User> findAll() {
         return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeUser(rs)));
     }
 

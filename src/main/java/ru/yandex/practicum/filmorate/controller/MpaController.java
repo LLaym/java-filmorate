@@ -18,11 +18,11 @@ public class MpaController {
 
     @GetMapping
     public List<Mpa> findAllMpas() {
-        return mpaService.findAllMpas();
+        return mpaService.getAllMpas();
     }
 
     @GetMapping("{id}")
     public Mpa findMpaById(@PathVariable Integer id) {
-        return mpaService.findMpaById(id);
+        return mpaService.getMpaById(id);
     }
 }

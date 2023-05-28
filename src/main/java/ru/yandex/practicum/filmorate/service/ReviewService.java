@@ -32,7 +32,7 @@ public class ReviewService {
 
     public Review createReview(Review review) {
         int generatedId = reviewStorage.save(review);
-        Review createdReview = reviewStorage.getById(generatedId).orElse(null);
+        Review createdReview = reviewStorage.findById(generatedId).orElse(null);
 
         log.info("Добавлен отзыв: {}", createdReview);
 
@@ -50,7 +50,7 @@ public class ReviewService {
 
     public Review updateReview(Review review) {
         reviewStorage.update(review);
-        Review updatedReview = reviewStorage.getById(review.getReviewId()).orElse(null);
+        Review updatedReview = reviewStorage.findById(review.getReviewId()).orElse(null);
 
         log.info("Обновлён отзыв: {}", updatedReview);
 
@@ -67,26 +67,26 @@ public class ReviewService {
         return updatedReview;
     }
 
-    public Review findReviewById(Integer reviewId) {
-        Review review = reviewStorage.getById(reviewId)
+    public Review getReviewById(Integer reviewId) {
+        Review review = reviewStorage.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Отзыв с id " + reviewId + " не найден"));
 
         log.info("Получен отзыв: {}", review);
         return review;
     }
 
-    public List<Review> findAllReviews(int limit) {
+    public List<Review> getAllReviews(int limit) {
         log.info("Возвращен список всех отзывов");
-        return reviewStorage.getAll(limit);
+        return reviewStorage.findAll(limit);
     }
 
-    public List<Review> findAllReviewsByFilmId(int filmId, int limit) {
+    public List<Review> getAllReviewsByFilmId(int filmId, int limit) {
         log.info("Возвращен список всех отзывов фильма с id {}", filmId);
-        return reviewStorage.getAllByFilmId(filmId, limit);
+        return reviewStorage.findAllByFilmId(filmId, limit);
     }
 
     public boolean deleteReview(int reviewId) {
-        int userId = reviewStorage.getUserId(reviewId);
+        int userId = reviewStorage.findUserId(reviewId);
         if (reviewStorage.delete(reviewId)) {
             log.info("Удален отзыв с id {}", reviewId);
 

@@ -103,14 +103,14 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Optional<Film> getById(int filmId) {
+    public Optional<Film> findById(int filmId) {
         return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeFilm(rs)), filmId)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public List<Film> getAll() {
+    public List<Film> findAll() {
         return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeFilm(rs)));
     }
 
@@ -120,7 +120,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getAllByNameSubstring(String query) {
+    public List<Film> findAllByNameSubstring(String query) {
         return jdbcTemplate.query(getAllByNameSubstringSql, ((rs, rowNum) -> makeFilm(rs)), "%" + query + "%");
     }
 
@@ -130,17 +130,17 @@ public class FilmDbStorage implements FilmStorage {
         String description = rs.getString("description");
         LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
-        Mpa mpa = mpaStorage.getById(rs.getInt("mpa_id")).orElse(null);
-        Set<Genre> genres = filmGenreStorage.getAllByFilmId(id)
+        Mpa mpa = mpaStorage.findById(rs.getInt("mpa_id")).orElse(null);
+        Set<Genre> genres = filmGenreStorage.findAllByFilmId(id)
                 .stream()
                 .map(FilmGenre::getGenreId)
-                .map(genreStorage::getById)
+                .map(genreStorage::findById)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
-        List<Director> directors = filmDirectorStorage.getAllByFilmId(id)
+        List<Director> directors = filmDirectorStorage.findAllByFilmId(id)
                 .stream()
                 .map(FilmDirector::getDirectorId)
-                .map(directorStorage::getById)
+                .map(directorStorage::findById)
                 .map(Optional::get)
                 .collect(Collectors.toList());
 

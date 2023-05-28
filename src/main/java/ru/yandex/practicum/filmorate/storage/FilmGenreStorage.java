@@ -9,5 +9,5 @@ public interface FilmGenreStorage {
 
     boolean deleteAllByFilmId(int filmId);
 
-    List<FilmGenre> getAllByFilmId(int filmId);
+    List<FilmGenre> findAllByFilmId(int filmId);
 }

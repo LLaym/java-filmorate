@@ -22,7 +22,7 @@ class MpaDbStorageTest {
 
     @Test
     void getById() {
-        Mpa expectedMpa = mpaStorage.getById(1).get();
+        Mpa expectedMpa = mpaStorage.findById(1).get();
 
         assertEquals(1, expectedMpa.getId());
         assertFalse(expectedMpa.getName().isBlank());
@@ -30,7 +30,7 @@ class MpaDbStorageTest {
 
     @Test
     void getAll() {
-        List<Mpa> expectedMpas = mpaStorage.getAll();
+        List<Mpa> expectedMpas = mpaStorage.findAll();
 
         assertTrue(expectedMpas.size() > 0);
     }

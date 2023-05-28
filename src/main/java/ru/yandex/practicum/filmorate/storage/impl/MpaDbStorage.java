@@ -21,13 +21,13 @@ public class MpaDbStorage implements MpaStorage {
     }
 
     @Override
-    public Optional<Mpa> getById(int mpaId) {
+    public Optional<Mpa> findById(int mpaId) {
         return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeMpa(rs)), mpaId)
                 .stream().findFirst();
     }
 
     @Override
-    public List<Mpa> getAll() {
+    public List<Mpa> findAll() {
         return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeMpa(rs)));
     }
 

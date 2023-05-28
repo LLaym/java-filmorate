@@ -28,7 +28,7 @@ public class FilmGenreDbStorage implements FilmGenreStorage {
     }
 
     @Override
-    public List<FilmGenre> getAllByFilmId(int filmId) {
+    public List<FilmGenre> findAllByFilmId(int filmId) {
         return jdbcTemplate.query(getAllByFilmSql, ((rs, rowNum) -> makeFilmGenre(rs)), filmId);
     }
 

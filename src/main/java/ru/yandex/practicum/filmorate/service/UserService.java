@@ -42,7 +42,7 @@ public class UserService {
         }
 
         int generatedId = userStorage.save(user);
-        User createdUser = userStorage.getById(generatedId).orElse(null);
+        User createdUser = userStorage.findById(generatedId).orElse(null);
 
         log.info("Добавлен пользователь: {}", createdUser);
         return createdUser;
@@ -50,19 +50,19 @@ public class UserService {
 
     public User updateUser(User user) {
         userStorage.update(user);
-        User updatedUser = userStorage.getById(user.getId()).orElse(null);
+        User updatedUser = userStorage.findById(user.getId()).orElse(null);
 
         log.info("Обновлён пользователь: {}", updatedUser);
         return updatedUser;
     }
 
-    public List<User> findAllUsers() {
+    public List<User> getAllUsers() {
         log.info("Возвращен список всех пользователей");
-        return userStorage.getAll();
+        return userStorage.findAll();
     }
 
-    public User findUserById(Integer userId) {
-        User user = userStorage.getById(userId)
+    public User getUserById(Integer userId) {
+        User user = userStorage.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
 
         log.info("Получен пользователь: {}", user);
@@ -104,11 +104,11 @@ public class UserService {
         return false;
     }
 
-    public List<User> findUserFriends(Integer userId) {
-        List<User> userFriends = friendshipStorage.getAllByUserId(userId)
+    public List<User> getUserFriends(Integer userId) {
+        List<User> userFriends = friendshipStorage.findAllByUserId(userId)
                 .stream()
                 .map(Friendship::getFriendId)
-                .map(userStorage::getById)
+                .map(userStorage::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -117,12 +117,12 @@ public class UserService {
         return userFriends;
     }
 
-    public List<User> findUsersMutualFriends(Integer userId, Integer otherId) {
-        List<Integer> user1Friends = friendshipStorage.getAllByUserId(userId)
+    public List<User> getUsersMutualFriends(Integer userId, Integer otherId) {
+        List<Integer> user1Friends = friendshipStorage.findAllByUserId(userId)
                 .stream()
                 .map(Friendship::getFriendId)
                 .collect(Collectors.toList());
-        List<Integer> user2Friends = friendshipStorage.getAllByUserId(otherId)
+        List<Integer> user2Friends = friendshipStorage.findAllByUserId(otherId)
                 .stream()
                 .map(Friendship::getFriendId)
                 .collect(Collectors.toList());
@@ -131,7 +131,7 @@ public class UserService {
         common.retainAll(user2Friends);
 
         List<User> mutualFriends = common.stream()
-                .map(userStorage::getById)
+                .map(userStorage::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -141,7 +141,7 @@ public class UserService {
     }
 
     public List<Event> getFeed(Integer userId) {
-        return eventStorage.getAllByUserId(userId);
+        return eventStorage.findAllByUserId(userId);
     }
 
 }

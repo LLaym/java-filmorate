@@ -40,18 +40,18 @@ public class ReviewController {
     public Review findReviewById(@PathVariable Integer id) {
         Validator.validateReviewId(id);
 
-        return reviewService.findReviewById(id);
+        return reviewService.getReviewById(id);
     }
 
     @GetMapping
     public List<Review> findReviews(@RequestParam(required = false) Integer filmId,
                                     @RequestParam(defaultValue = "10") int count) {
         if (filmId == null) {
-            return reviewService.findAllReviews(count);
+            return reviewService.getAllReviews(count);
         }
 
         Validator.validateFilmId(filmId);
-        return reviewService.findAllReviewsByFilmId(filmId, count);
+        return reviewService.getAllReviewsByFilmId(filmId, count);
     }
 
     @PutMapping("{id}/like/{userId}")

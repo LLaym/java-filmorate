@@ -41,7 +41,7 @@ public class FilmService {
 
     public Film createFilm(Film film) {
         int generatedId = filmStorage.save(film);
-        Film createdFilm = filmStorage.getById(generatedId).orElse(null);
+        Film createdFilm = filmStorage.findById(generatedId).orElse(null);
 
         log.info("Добавлен фильм: {}", createdFilm);
         return createdFilm;
@@ -49,19 +49,19 @@ public class FilmService {
 
     public Film updateFilm(Film film) {
         filmStorage.update(film);
-        Film updatedFilm = filmStorage.getById(film.getId()).orElse(null);
+        Film updatedFilm = filmStorage.findById(film.getId()).orElse(null);
 
         log.info("Обновлён фильм: {}", updatedFilm);
         return updatedFilm;
     }
 
-    public List<Film> findAllFilms() {
+    public List<Film> getAllFilms() {
         log.info("Возвращен список всех фильмов");
-        return filmStorage.getAll();
+        return filmStorage.findAll();
     }
 
-    public Film findFilmById(Integer filmId) {
-        Film film = filmStorage.getById(filmId)
+    public Film getFilmById(Integer filmId) {
+        Film film = filmStorage.findById(filmId)
                 .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден"));
 
         log.info("Получен фильм: {}", film);
@@ -110,10 +110,10 @@ public class FilmService {
         return false;
     }
 
-    public List<Film> findTopFilms(Integer count) {
-        List<Film> topFilms = likeStorage.getPopularFilmsIds(count)
+    public List<Film> getTopFilms(Integer count) {
+        List<Film> topFilms = likeStorage.findPopularFilmsIds(count)
                 .stream()
-                .map(filmStorage::getById)
+                .map(filmStorage::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -123,9 +123,9 @@ public class FilmService {
     }
 
     public List<Film> getRecommendations(Integer userId) {
-        List<Film> recommendedFilms = likeStorage.getRecommendFilmsIds(userId)
+        List<Film> recommendedFilms = likeStorage.findRecommendFilmsIds(userId)
                 .stream()
-                .map(filmStorage::getById)
+                .map(filmStorage::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -134,10 +134,10 @@ public class FilmService {
         return recommendedFilms;
     }
 
-    public List<Film> findCommonFilms(Integer userId, Integer friendId) {
-        List<Film> films = likeStorage.getCommonFilmsIds(userId, friendId)
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        List<Film> films = likeStorage.findCommonFilmsIds(userId, friendId)
                 .stream()
-                .map(filmStorage::getById)
+                .map(filmStorage::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -146,10 +146,10 @@ public class FilmService {
         return films;
     }
 
-    public List<Film> findTopFilmsByGenreAndYear(Integer count, Integer genreId, Integer year) {
-        List<Film> topFilms = likeStorage.getPopularFilmsIds(count)
+    public List<Film> getTopFilmsByGenreAndYear(Integer count, Integer genreId, Integer year) {
+        List<Film> topFilms = likeStorage.findPopularFilmsIds(count)
                 .stream()
-                .map(filmStorage::getById)
+                .map(filmStorage::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -162,11 +162,11 @@ public class FilmService {
         return topFilmsFiltered;
     }
 
-    public List<Film> findFilmsByDirector(Integer directorId, String sortBy) {
-        List<Film> directorFilms = filmDirectorStorage.getAllByDirector(directorId)
+    public List<Film> getFilmsByDirector(Integer directorId, String sortBy) {
+        List<Film> directorFilms = filmDirectorStorage.findAllByDirector(directorId)
                 .stream()
                 .map(FilmDirector::getFilmId)
-                .map(filmStorage::getById)
+                .map(filmStorage::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -175,7 +175,7 @@ public class FilmService {
             directorFilms.sort(Comparator.comparing(Film::getReleaseDate));
         } else if (sortBy.equals("likes")) {
             directorFilms.sort((film1, film2) ->
-                    likeStorage.getAllByFilmId(film1.getId()).size() - likeStorage.getAllByFilmId(film2.getId()).size());
+                    likeStorage.findAllByFilmId(film1.getId()).size() - likeStorage.findAllByFilmId(film2.getId()).size());
         } else {
             throw new RuntimeException("Укажите параметр сортировки year/likes");
         }
@@ -184,49 +184,49 @@ public class FilmService {
         return directorFilms;
     }
 
-    public List<Film> findFilmsByFilmName(String query) {
-        List<Film> films = filmStorage.getAllByNameSubstring(query);
+    public List<Film> getFilmsByFilmName(String query) {
+        List<Film> films = filmStorage.findAllByNameSubstring(query);
 
         films.sort((film1, film2) ->
-                likeStorage.getAllByFilmId(film2.getId()).size() - likeStorage.getAllByFilmId(film1.getId()).size());
+                likeStorage.findAllByFilmId(film2.getId()).size() - likeStorage.findAllByFilmId(film1.getId()).size());
 
         log.info("Возвращен список найденных фильмов: {} ", films);
         return films;
     }
 
-    public List<Film> findFilmsByDirectorName(String query) {
+    public List<Film> getFilmsByDirectorName(String query) {
         List<Film> films = new ArrayList<>();
-        List<Director> directors = directorStorage.getAllByNameSubstring(query);
+        List<Director> directors = directorStorage.findAllByNameSubstring(query);
 
         for (Director director : directors) {
-            films.addAll(filmDirectorStorage.getAllByDirector(director.getId())
+            films.addAll(filmDirectorStorage.findAllByDirector(director.getId())
                     .stream()
                     .map(FilmDirector::getFilmId)
-                    .map(filmStorage::getById)
+                    .map(filmStorage::findById)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList()));
         }
 
         films.sort((film1, film2) ->
-                likeStorage.getAllByFilmId(film2.getId()).size() - likeStorage.getAllByFilmId(film1.getId()).size());
+                likeStorage.findAllByFilmId(film2.getId()).size() - likeStorage.findAllByFilmId(film1.getId()).size());
 
         log.info("Возвращен список найденных фильмов: {} ", films);
         return films;
     }
 
-    public List<Film> findFilmsByFilmNameAndDirectorName(String query) {
+    public List<Film> getFilmsByFilmNameAndDirectorName(String query) {
         Set<Film> films = new TreeSet<>((film1, film2) ->
-                likeStorage.getAllByFilmId(film2.getId()).size() - likeStorage.getAllByFilmId(film1.getId()).size());
-        films.addAll(filmStorage.getAllByNameSubstring(query));
+                likeStorage.findAllByFilmId(film2.getId()).size() - likeStorage.findAllByFilmId(film1.getId()).size());
+        films.addAll(filmStorage.findAllByNameSubstring(query));
 
-        List<Director> directors = directorStorage.getAllByNameSubstring(query);
+        List<Director> directors = directorStorage.findAllByNameSubstring(query);
 
         for (Director director : directors) {
-            films.addAll(filmDirectorStorage.getAllByDirector(director.getId())
+            films.addAll(filmDirectorStorage.findAllByDirector(director.getId())
                     .stream()
                     .map(FilmDirector::getFilmId)
-                    .map(filmStorage::getById)
+                    .map(filmStorage::findById)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList()));

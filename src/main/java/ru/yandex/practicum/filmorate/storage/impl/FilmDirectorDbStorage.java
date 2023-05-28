@@ -32,12 +32,12 @@ public class FilmDirectorDbStorage implements FilmDirectorStorage {
     }
 
     @Override
-    public List<FilmDirector> getAllByFilmId(int filmId) {
+    public List<FilmDirector> findAllByFilmId(int filmId) {
         return jdbcTemplate.query(getAllByFilmSql, ((rs, rowNum) -> makeFilmDirector(rs)), filmId);
     }
 
     @Override
-    public List<FilmDirector> getAllByDirector(Integer directorId) {
+    public List<FilmDirector> findAllByDirector(Integer directorId) {
         return jdbcTemplate.query(getAllByDirectorSql, ((rs, rowNum) -> makeFilmDirector(rs)), directorId);
     }
 

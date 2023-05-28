@@ -70,19 +70,19 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public Optional<Review> getById(int reviewId) {
+    public Optional<Review> findById(int reviewId) {
         return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeReview(rs)), reviewId)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public List<Review> getAll(int limit) {
+    public List<Review> findAll(int limit) {
         return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeReview(rs)), limit);
     }
 
     @Override
-    public List<Review> getAllByFilmId(int reviewId, int limit) {
+    public List<Review> findAllByFilmId(int reviewId, int limit) {
         return jdbcTemplate.query(getAllByFilmIdSql, ((rs, rowNum) -> makeReview(rs)), reviewId, limit);
     }
 
@@ -91,7 +91,7 @@ public class ReviewDbStorage implements ReviewStorage {
         return jdbcTemplate.update(deleteSql, reviewId) == 1;
     }
 
-    public Integer getUserId(int reviewId) {
+    public Integer findUserId(int reviewId) {
         return jdbcTemplate.queryForObject(getUserIdSql, Integer.class, reviewId);
     }
 
