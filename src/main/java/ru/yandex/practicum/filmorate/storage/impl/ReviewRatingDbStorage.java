@@ -15,20 +15,24 @@ public class ReviewRatingDbStorage implements ReviewRatingStorage {
     @Override
     public void save(int reviewId, int userId, boolean isLiked) {
         String saveQuery = "INSERT INTO review_ratings (review_id, user_id, is_liked) VALUES (?, ?, ?)";
-        String updateReviewQuery = "UPDATE reviews SET useful = useful + ? WHERE id = ?";
 
-        if (jdbcTemplate.update(saveQuery, reviewId, userId, isLiked) == 1) {
-            jdbcTemplate.update(updateReviewQuery, isLiked ? 1 : -1, reviewId);
-        }
+        jdbcTemplate.update(saveQuery, reviewId, userId, isLiked);
+
+        updateReview(reviewId, isLiked);
     }
 
     @Override
     public void delete(int reviewId, int userId, boolean isLiked) {
         String deleteQuery = "DELETE FROM review_ratings WHERE review_id = ? AND user_id = ? AND is_liked = ?";
-        String updateReviewQuery = "UPDATE reviews SET useful = useful + ? WHERE id = ?";
 
-        if (jdbcTemplate.update(deleteQuery, reviewId, userId, isLiked) == 1) {
-            jdbcTemplate.update(updateReviewQuery, isLiked ? -1 : 1, reviewId);
-        }
+        jdbcTemplate.update(deleteQuery, reviewId, userId, isLiked);
+
+        updateReview(reviewId, !isLiked);
+    }
+
+    private void updateReview(int reviewId, boolean isLiked) {
+        String updateQuery = "UPDATE reviews SET useful = useful + ? WHERE id = ?";
+
+        jdbcTemplate.update(updateQuery, isLiked ? 1 : -1, reviewId);
     }
 }
