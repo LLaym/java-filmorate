@@ -55,34 +55,34 @@ public class ReviewController {
     }
 
     @PutMapping("{id}/like/{userId}")
-    public boolean likeReview(@PathVariable int id, @PathVariable int userId) {
+    public void likeReview(@PathVariable int id, @PathVariable int userId) {
         Validator.validateReviewId(id);
         Validator.validateUserId(userId);
 
-        return reviewService.likeReview(id, userId);
+        reviewService.likeReview(id, userId);
     }
 
     @PutMapping("{id}/dislike/{userId}")
-    public boolean dislikeReview(@PathVariable int id, @PathVariable int userId) {
+    public void dislikeReview(@PathVariable int id, @PathVariable int userId) {
         Validator.validateReviewId(id);
         Validator.validateUserId(userId);
 
-        return reviewService.dislikeReview(id, userId);
+        reviewService.dislikeReview(id, userId);
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public boolean deleteLike(@PathVariable int id, @PathVariable int userId) {
+    public void deleteLike(@PathVariable int id, @PathVariable int userId) {
         Validator.validateReviewId(id);
         Validator.validateUserId(userId);
 
-        return reviewService.deleteLike(id, userId);
+        reviewService.deleteLike(id, userId);
     }
 
     @DeleteMapping("{id}/dislike/{userId}")
-    public boolean deleteDislike(@PathVariable int id, @PathVariable int userId) {
+    public void deleteDislike(@PathVariable int id, @PathVariable int userId) {
         Validator.validateReviewId(id);
         Validator.validateUserId(userId);
 
-        return reviewService.deleteDislike(id, userId);
+        reviewService.deleteDislike(id, userId);
     }
 }

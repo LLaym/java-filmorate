@@ -8,13 +8,13 @@ import java.util.Optional;
 public interface DirectorStorage {
     int save(Director director);
 
-    boolean update(Director director);
+    void update(Director director);
 
     Optional<Director> findById(int directorId);
 
     List<Director> findAll();
 
-    boolean delete(int directorId);
+    void delete(int directorId);
 
     List<Director> findAllByNameSubstring(String query);
 }

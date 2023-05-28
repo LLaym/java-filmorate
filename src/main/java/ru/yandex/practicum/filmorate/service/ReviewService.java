@@ -103,24 +103,24 @@ public class ReviewService {
         return false;
     }
 
-    public boolean likeReview(Integer reviewId, Integer userId) {
+    public void likeReview(Integer reviewId, Integer userId) {
         log.info("Пользователь с id {} поставил лайк отзыву с id {}", userId, reviewId);
-        return reviewRatingStorage.save(reviewId, userId, true);
+        reviewRatingStorage.save(reviewId, userId, true);
     }
 
-    public boolean dislikeReview(Integer reviewId, Integer userId) {
+    public void dislikeReview(Integer reviewId, Integer userId) {
         log.info("Пользователь с id {} поставил дизлайк отзыву с id {}", userId, reviewId);
-        return reviewRatingStorage.save(reviewId, userId, false);
+        reviewRatingStorage.save(reviewId, userId, false);
     }
 
-    public boolean deleteLike(Integer reviewId, Integer userId) {
+    public void deleteLike(Integer reviewId, Integer userId) {
         log.info("Пользователь с id {} убрал лайк с отзыва с id {}", userId, reviewId);
-        return reviewRatingStorage.delete(reviewId, userId, true);
+        reviewRatingStorage.delete(reviewId, userId, true);
     }
 
-    public boolean deleteDislike(Integer reviewId, Integer userId) {
+    public void deleteDislike(Integer reviewId, Integer userId) {
         log.info("Пользователь с id {} убрал дизлайк с отзыва с id {}", userId, reviewId);
-        return reviewRatingStorage.delete(reviewId, userId, false);
+        reviewRatingStorage.delete(reviewId, userId, false);
     }
 
 }

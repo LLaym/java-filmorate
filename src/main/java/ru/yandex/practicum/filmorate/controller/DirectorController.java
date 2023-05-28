@@ -40,9 +40,9 @@ public class DirectorController {
     }
 
     @DeleteMapping("{id}")
-    public boolean deleteDirector(@PathVariable Integer id) {
+    public void deleteDirector(@PathVariable Integer id) {
         Validator.validateDirectorId(id);
 
-        return directorService.deleteDirector(id);
+        directorService.deleteDirector(id);
     }
 }

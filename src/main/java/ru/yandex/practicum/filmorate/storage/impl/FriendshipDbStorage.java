@@ -25,10 +25,10 @@ public class FriendshipDbStorage implements FriendshipStorage {
     }
 
     @Override
-    public boolean delete(int userId, int friendId) {
+    public void delete(int userId, int friendId) {
         String deleteQuery = "DELETE FROM friendships WHERE first_user_id = ? AND second_user_id = ?";
 
-        return jdbcTemplate.update(deleteQuery, userId, friendId) == 1;
+        jdbcTemplate.update(deleteQuery, userId, friendId);
     }
 
     @Override

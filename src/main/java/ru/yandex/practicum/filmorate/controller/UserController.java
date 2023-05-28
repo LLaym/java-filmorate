@@ -61,11 +61,11 @@ public class UserController {
     }
 
     @DeleteMapping("{id}/friends/{friendId}")
-    public boolean makeTwoUsersStopBeingFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
+    public void makeTwoUsersStopBeingFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         Validator.validateUserId(id);
         Validator.validateUserId(friendId);
 
-        return userService.dropFriendship(id, friendId);
+        userService.dropFriendship(id, friendId);
     }
 
     @GetMapping("{id}/friends")

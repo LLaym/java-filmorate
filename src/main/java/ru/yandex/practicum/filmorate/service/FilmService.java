@@ -68,9 +68,9 @@ public class FilmService {
         return film;
     }
 
-    public boolean deleteFilmById(Integer filmId) {
+    public void deleteFilmById(Integer filmId) {
         log.info("Фильм с id {} удален: ", filmId);
-        return filmStorage.deleteById(filmId);
+        filmStorage.deleteById(filmId);
     }
 
     public boolean likeFilm(Integer filmId, Integer userId) {
@@ -93,21 +93,17 @@ public class FilmService {
         }
     }
 
-    public boolean dislikeFilm(Integer filmId, Integer userId) {
-        if (likeStorage.delete(filmId, userId)) {
-            log.info("Пользователь с id {} убрал лайк с фильма с id {}", userId, filmId);
+    public void dislikeFilm(Integer filmId, Integer userId) {
+        likeStorage.delete(filmId, userId);
+        log.info("Пользователь с id {} убрал лайк с фильма с id {}", userId, filmId);
 
-            Event event = Event.builder()
-                    .userId(userId)
-                    .entityId(filmId)
-                    .eventType(LIKE)
-                    .operation(REMOVE)
-                    .build();
-            eventStorage.save(event);
-
-            return true;
-        }
-        return false;
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(filmId)
+                .eventType(LIKE)
+                .operation(REMOVE)
+                .build();
+        eventStorage.save(event);
     }
 
     public List<Film> getTopFilms(Integer count) {

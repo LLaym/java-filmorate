@@ -7,7 +7,7 @@ import java.util.List;
 public interface FilmDirectorStorage {
     void save(int filmId, int directorId);
 
-    boolean deleteAllByFilmId(int filmId);
+    void deleteAllByFilmId(int filmId);
 
     List<FilmDirector> findAllByFilmId(int filmId);
 

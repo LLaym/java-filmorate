@@ -34,10 +34,10 @@ public class FilmGenreDbStorage implements FilmGenreStorage {
     }
 
     @Override
-    public boolean deleteAllByFilmId(int filmId) {
+    public void deleteAllByFilmId(int filmId) {
         String deleteQuery = "DELETE FROM film_genre WHERE film_id = ?";
 
-        return jdbcTemplate.update(deleteQuery, filmId) >= 1;
+        jdbcTemplate.update(deleteQuery, filmId);
     }
 
     private FilmGenre makeFilmGenre(ResultSet rs) throws SQLException {

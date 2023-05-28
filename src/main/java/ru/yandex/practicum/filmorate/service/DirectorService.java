@@ -46,8 +46,8 @@ public class DirectorService {
         return director;
     }
 
-    public boolean deleteDirector(Integer directorId) {
+    public void deleteDirector(Integer directorId) {
         log.info("Режиссёр с id {} удалён.", directorId);
-        return directorStorage.delete(directorId);
+        directorStorage.delete(directorId);
     }
 }

@@ -65,7 +65,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public boolean update(Film film) {
+    public void update(Film film) {
         String updateQuery = "UPDATE films "
                 + "SET name = ?"
                 + ", description = ?"
@@ -95,7 +95,7 @@ public class FilmDbStorage implements FilmStorage {
                     .forEach(directorId -> filmDirectorStorage.save(film.getId(), directorId));
         }
 
-        return jdbcTemplate.update(updateQuery, name, description, releaseDate, duration, mpa, id) == 1;
+        jdbcTemplate.update(updateQuery, name, description, releaseDate, duration, mpa, id);
     }
 
     @Override
@@ -115,10 +115,10 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public boolean deleteById(int filmId) {
+    public void deleteById(int filmId) {
         String deleteByIdQuery = "DELETE FROM films WHERE id = ?";
 
-        return jdbcTemplate.update(deleteByIdQuery, filmId) == 1;
+        jdbcTemplate.update(deleteByIdQuery, filmId);
     }
 
     @Override

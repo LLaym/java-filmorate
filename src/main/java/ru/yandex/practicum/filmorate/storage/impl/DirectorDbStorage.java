@@ -36,12 +36,12 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public boolean update(Director director) {
+    public void update(Director director) {
         String updateQuery = "UPDATE directors SET name = ? WHERE id = ?";
         String id = String.valueOf(director.getId());
         String name = director.getName();
 
-        return jdbcTemplate.update(updateQuery, name, id) == 1;
+        jdbcTemplate.update(updateQuery, name, id);
     }
 
     @Override
@@ -61,10 +61,10 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public boolean delete(int directorId) {
+    public void delete(int directorId) {
         String deleteQuery = "DELETE FROM directors WHERE id = ?";
 
-        return jdbcTemplate.update(deleteQuery, directorId) == 1;
+        jdbcTemplate.update(deleteQuery, directorId);
     }
 
     @Override

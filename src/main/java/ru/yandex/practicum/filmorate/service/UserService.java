@@ -87,21 +87,17 @@ public class UserService {
         eventStorage.save(event);
     }
 
-    public boolean dropFriendship(Integer id, Integer friendId) {
-        if (friendshipStorage.delete(id, friendId)) {
-            log.info("Пользователь с id {} и пользователь с id {} больше не друзья.", id, friendId);
+    public void dropFriendship(Integer id, Integer friendId) {
+        friendshipStorage.delete(id, friendId);
+        log.info("Пользователь с id {} и пользователь с id {} больше не друзья.", id, friendId);
 
-            Event event = Event.builder()
-                    .userId(id)
-                    .entityId(friendId)
-                    .eventType(FRIEND)
-                    .operation(REMOVE)
-                    .build();
-            eventStorage.save(event);
-
-            return true;
-        }
-        return false;
+        Event event = Event.builder()
+                .userId(id)
+                .entityId(friendId)
+                .eventType(FRIEND)
+                .operation(REMOVE)
+                .build();
+        eventStorage.save(event);
     }
 
     public List<User> getUserFriends(Integer userId) {

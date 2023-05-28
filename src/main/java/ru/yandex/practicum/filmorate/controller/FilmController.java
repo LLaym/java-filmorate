@@ -43,9 +43,9 @@ public class FilmController {
     }
 
     @DeleteMapping("{id}")
-    public boolean deleteFilmById(@PathVariable Integer id) {
+    public void deleteFilmById(@PathVariable Integer id) {
         Validator.validateFilmId(id);
-        return filmService.deleteFilmById(id);
+        filmService.deleteFilmById(id);
     }
 
     @PutMapping("{id}/like/{userId}")
@@ -57,11 +57,11 @@ public class FilmController {
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public boolean dislikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void dislikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         Validator.validateFilmId(id);
         Validator.validateUserId(userId);
 
-        return filmService.dislikeFilm(id, userId);
+        filmService.dislikeFilm(id, userId);
     }
 
     @GetMapping("popular")
