@@ -66,9 +66,15 @@ public class Validator {
             }
         }
 
-        if (film.getMpa() != null) checkMpa(film.getMpa());
-        if (film.getGenres() != null) checkGenres(film.getGenres());
-        if (film.getDirectors() != null) checkDirector(film.getDirectors());
+        if (film.getMpa() != null) {
+            checkMpa(film.getMpa());
+        }
+        if (film.getGenres() != null) {
+            checkGenres(film.getGenres());
+        }
+        if (film.getDirectors() != null) {
+            checkDirector(film.getDirectors());
+        }
     }
 
     public static void validateUserId(Integer id) {
