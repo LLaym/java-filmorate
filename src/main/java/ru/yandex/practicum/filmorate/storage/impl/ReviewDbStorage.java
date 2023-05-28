@@ -16,7 +16,6 @@ import java.util.Optional;
 @Repository
 public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
-    // Обновлять нужно только поле is_positive, иначе тесты не проходят
 
     public ReviewDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -97,10 +96,10 @@ public class ReviewDbStorage implements ReviewStorage {
         return jdbcTemplate.update(deleteQuery, reviewId) == 1;
     }
 
-    public Integer findUserId(int reviewId) {
-        String findUserIdQuery = "SELECT user_id FROM reviews WHERE id = ?";
+    public Integer findReviewer(int reviewId) {
+        String findReviewerQuery = "SELECT user_id FROM reviews WHERE id = ?";
 
-        return jdbcTemplate.queryForObject(findUserIdQuery, Integer.class, reviewId);
+        return jdbcTemplate.queryForObject(findReviewerQuery, Integer.class, reviewId);
     }
 
     private Review makeReview(ResultSet rs) throws SQLException {

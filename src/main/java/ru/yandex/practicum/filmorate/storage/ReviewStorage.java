@@ -18,5 +18,5 @@ public interface ReviewStorage {
 
     boolean delete(int reviewId);
 
-    Integer findUserId(int reviewId);
+    Integer findReviewer(int reviewId);
 }

@@ -86,12 +86,12 @@ public class ReviewService {
     }
 
     public boolean deleteReview(int reviewId) {
-        int userId = reviewStorage.findUserId(reviewId);
+        int reviewerId = reviewStorage.findReviewer(reviewId);
         if (reviewStorage.delete(reviewId)) {
             log.info("Удален отзыв с id {}", reviewId);
 
             Event event = Event.builder()
-                    .userId(userId)
+                    .userId(reviewerId)
                     .entityId(reviewId)
                     .eventType(REVIEW)
                     .operation(REMOVE)
