@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -62,7 +62,7 @@ public class FilmService {
 
     public Film findFilmById(Integer filmId) {
         Film film = filmStorage.getById(filmId)
-                .orElseThrow(() -> new FilmNotFoundException("Фильм с id " + filmId + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден"));
 
         log.info("Получен фильм: {}", film);
         return film;

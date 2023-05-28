@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
@@ -40,7 +40,7 @@ public class DirectorService {
 
     public Director findDirectorById(Integer directorId) {
         Director director = directorStorage.getById(directorId)
-                .orElseThrow(() -> new DirectorNotFoundException("Режиссёр с id " + directorId + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Режиссёр с id " + directorId + " не найден"));
 
         log.info("Получен режиссёр: {}", director);
         return director;

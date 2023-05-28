@@ -3,10 +3,7 @@ package ru.yandex.practicum.filmorate.validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
@@ -46,7 +43,7 @@ public class Validator {
             throw new ValidationException("требуется корректный id параметр");
         }
         if (filmStorage.getById(id).isEmpty()) {
-            throw new FilmNotFoundException("фильма с таким id не существует");
+            throw new NotFoundException("фильма с таким id не существует");
         }
     }
 
@@ -65,7 +62,7 @@ public class Validator {
             }
         } else {
             if (filmStorage.getAll().stream().noneMatch(film1 -> film1.getId() == film.getId())) {
-                throw new FilmNotFoundException("фильма с таким id не существует");
+                throw new NotFoundException("фильма с таким id не существует");
             }
         }
 
@@ -79,7 +76,7 @@ public class Validator {
             throw new ValidationException("требуется корректный id параметр");
         }
         if (userStorage.getById(id).isEmpty()) {
-            throw new UserNotFoundException("пользователя с таким id не существует");
+            throw new NotFoundException("пользователя с таким id не существует");
         }
     }
 
@@ -96,7 +93,7 @@ public class Validator {
             }
         } else {
             if (userStorage.getAll().stream().noneMatch(user1 -> user1.getId() == user.getId())) {
-                throw new UserNotFoundException("пользователя с таким id не существует");
+                throw new NotFoundException("пользователя с таким id не существует");
             }
         }
     }
@@ -106,7 +103,7 @@ public class Validator {
             throw new ValidationException("требуется корректный id параметр");
         }
         if (directorStorage.getById(id).isEmpty()) {
-            throw new DirectorNotFoundException("режиссёра с таким id не существует");
+            throw new NotFoundException("режиссёра с таким id не существует");
         }
     }
 
@@ -119,7 +116,7 @@ public class Validator {
             }
         } else {
             if (directorStorage.getAll().stream().noneMatch(director1 -> director1.getId() == director.getId())) {
-                throw new DirectorNotFoundException("режиссёра с таким id не существует");
+                throw new NotFoundException("режиссёра с таким id не существует");
             }
         }
     }
@@ -148,7 +145,7 @@ public class Validator {
             throw new ValidationException("требуется корректный id параметр");
         }
         if (filmStorage.getById(id).isEmpty()) {
-            throw new ReviewNotFoundException("отзыва с таким id не существует");
+            throw new NotFoundException("отзыва с таким id не существует");
         }
     }
 
@@ -165,7 +162,7 @@ public class Validator {
             }
         } else {
             if (reviewStorage.getById(review.getReviewId()).isEmpty()) {
-                throw new ReviewNotFoundException("отзыва с таким id не существует");
+                throw new NotFoundException("отзыва с таким id не существует");
             }
         }
     }

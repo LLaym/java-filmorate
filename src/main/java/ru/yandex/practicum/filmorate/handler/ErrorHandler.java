@@ -6,7 +6,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.*;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 @Slf4j
@@ -29,12 +30,7 @@ public class ErrorHandler {
         return new ErrorResponse(error, e.getMessage());
     }
 
-    @ExceptionHandler({FilmNotFoundException.class,
-            UserNotFoundException.class,
-            MpaNotFoundException.class,
-            GenreNotFoundException.class,
-            DirectorNotFoundException.class,
-            ReviewNotFoundException.class})
+    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundExceptions(final RuntimeException e) {
         String error = "ошибка поиска";
