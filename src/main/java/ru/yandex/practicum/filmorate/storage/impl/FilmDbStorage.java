@@ -23,17 +23,6 @@ public class FilmDbStorage implements FilmStorage {
     private final GenreStorage genreStorage;
     private final FilmDirectorStorage filmDirectorStorage;
     private final DirectorStorage directorStorage;
-    private final String updateSql = "UPDATE films "
-            + "SET name = ?"
-            + ", description = ?"
-            + ", release_date = ?"
-            + ", duration = ? "
-            + ", mpa_id = ? "
-            + "WHERE id = ?";
-    private final String getByIdSql = "SELECT * FROM films WHERE id = ?";
-    private final String getAllSql = "SELECT * FROM films";
-    private final String deleteByIdSql = "DELETE FROM films WHERE id = ?";
-    private final String getAllByNameSubstringSql = "SELECT * FROM films WHERE LOWER(name) LIKE LOWER(?)";
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, FilmGenreStorage filmGenreStorage, GenreStorage genreStorage, FilmDirectorStorage filmDirectorStorage, DirectorStorage directorStorage) {
         this.jdbcTemplate = jdbcTemplate;
@@ -77,6 +66,13 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public boolean update(Film film) {
+        String updateQuery = "UPDATE films "
+                + "SET name = ?"
+                + ", description = ?"
+                + ", release_date = ?"
+                + ", duration = ? "
+                + ", mpa_id = ? "
+                + "WHERE id = ?";
         String id = String.valueOf(film.getId());
         String name = film.getName();
         String description = film.getDescription();
@@ -99,29 +95,37 @@ public class FilmDbStorage implements FilmStorage {
                     .forEach(directorId -> filmDirectorStorage.save(film.getId(), directorId));
         }
 
-        return jdbcTemplate.update(updateSql, name, description, releaseDate, duration, mpa, id) == 1;
+        return jdbcTemplate.update(updateQuery, name, description, releaseDate, duration, mpa, id) == 1;
     }
 
     @Override
     public Optional<Film> findById(int filmId) {
-        return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeFilm(rs)), filmId)
+        String findByIdQuery = "SELECT * FROM films WHERE id = ?";
+
+        return jdbcTemplate.query(findByIdQuery, ((rs, rowNum) -> makeFilm(rs)), filmId)
                 .stream()
                 .findFirst();
     }
 
     @Override
     public List<Film> findAll() {
-        return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeFilm(rs)));
+        String findAllQuery = "SELECT * FROM films";
+
+        return jdbcTemplate.query(findAllQuery, ((rs, rowNum) -> makeFilm(rs)));
     }
 
     @Override
     public boolean deleteById(int filmId) {
-        return jdbcTemplate.update(deleteByIdSql, filmId) == 1;
+        String deleteByIdQuery = "DELETE FROM films WHERE id = ?";
+
+        return jdbcTemplate.update(deleteByIdQuery, filmId) == 1;
     }
 
     @Override
     public List<Film> findAllByNameSubstring(String query) {
-        return jdbcTemplate.query(getAllByNameSubstringSql, ((rs, rowNum) -> makeFilm(rs)), "%" + query + "%");
+        String findAllByNameSubstringQuery = "SELECT * FROM films WHERE LOWER(name) LIKE LOWER(?)";
+
+        return jdbcTemplate.query(findAllByNameSubstringQuery, ((rs, rowNum) -> makeFilm(rs)), "%" + query + "%");
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {

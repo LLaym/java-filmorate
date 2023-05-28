@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.storage.EventStorage;
 
 import java.sql.ResultSet;
@@ -16,7 +18,6 @@ import java.util.Map;
 @Repository
 public class EventDbStorage implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final String getAllByUserId = "SELECT * FROM events WHERE user_id = ?";
 
     public EventDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -45,7 +46,9 @@ public class EventDbStorage implements EventStorage {
 
     @Override
     public List<Event> findAllByUserId(int userId) {
-        return jdbcTemplate.query(getAllByUserId, (rs, rowNum) -> makeEvent(rs), userId);
+        String findAllByUserIdQuery = "SELECT * FROM events WHERE user_id = ?";
+
+        return jdbcTemplate.query(findAllByUserIdQuery, (rs, rowNum) -> makeEvent(rs), userId);
     }
 
     private Event makeEvent(ResultSet rs) throws SQLException {
