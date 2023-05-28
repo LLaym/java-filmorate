@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -73,20 +74,23 @@ public class FilmService {
     }
 
     public boolean likeFilm(Integer filmId, Integer userId) {
-        if (likeStorage.save(filmId, userId)) {
+        try {
+            likeStorage.save(filmId, userId);
             log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
 
+            return true;
+        } catch (DataAccessException e) {
+            return false;
+        } finally {
             Event event = Event.builder()
                     .userId(userId)
                     .entityId(filmId)
                     .eventType(LIKE)
                     .operation(ADD)
                     .build();
-            eventStorage.save(event);
 
-            return true;
+            eventStorage.save(event);
         }
-        return false;
     }
 
     public boolean dislikeFilm(Integer filmId, Integer userId) {
