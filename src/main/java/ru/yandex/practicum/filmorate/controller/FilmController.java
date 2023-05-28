@@ -64,7 +64,7 @@ public class FilmController {
         return filmService.dislikeFilm(id, userId);
     }
 
-    @GetMapping("/popular")
+    @GetMapping("popular")
     public List<Film> findPopularFilms(
             @RequestParam(defaultValue = "10") Integer count,
             @RequestParam(required = false) Integer genreId,
@@ -77,7 +77,7 @@ public class FilmController {
         }
     }
 
-    @GetMapping("/common")
+    @GetMapping("common")
     public List<Film> findCommonFilms(
             @RequestParam Integer userId,
             @RequestParam Integer friendId) {
