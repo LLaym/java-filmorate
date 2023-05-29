@@ -12,6 +12,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FilmReleaseDateConstraint {
     String message() default "Дата релиза — не раньше 28 декабря 1895 года";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }
