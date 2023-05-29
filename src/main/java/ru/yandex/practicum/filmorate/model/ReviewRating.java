@@ -8,8 +8,8 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class ReviewRating {
-    private int reviewId;
-    private int userId;
+    private Integer reviewId;
+    private Integer userId;
     @NotNull
     private boolean isLiked;
 }

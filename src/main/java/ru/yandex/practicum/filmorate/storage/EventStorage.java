@@ -7,5 +7,5 @@ import java.util.List;
 public interface EventStorage {
     int save(Event event);
 
-    List<Event> getAllByUserId(int userId);
+    List<Event> findAllByUserId(int userId);
 }

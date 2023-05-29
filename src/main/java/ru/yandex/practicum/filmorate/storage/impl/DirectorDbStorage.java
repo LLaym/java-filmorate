@@ -16,11 +16,6 @@ import java.util.Optional;
 @Repository
 public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final String updateSql = "UPDATE directors SET name = ? WHERE id = ?";
-    private final String getByIdSql = "SELECT * FROM directors WHERE id = ?";
-    private final String getAllSql = "SELECT * FROM directors";
-    private final String deleteSql = "DELETE FROM directors WHERE id = ?";
-    private final String getAllByNameSubstringSql = "SELECT * FROM directors WHERE LOWER(name) LIKE LOWER(?)";
 
     public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -41,33 +36,51 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public boolean update(Director director) {
+    public void update(Director director) {
+        String updateQuery = "UPDATE directors SET name = ? WHERE id = ?";
         String id = String.valueOf(director.getId());
         String name = director.getName();
 
-        return jdbcTemplate.update(updateSql, name, id) == 1;
+        jdbcTemplate.update(updateQuery, name, id);
     }
 
     @Override
-    public Optional<Director> getById(int directorId) {
-        return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeDirector(rs)), directorId)
+    public Optional<Director> findById(int directorId) {
+        String findByIdQuery = "SELECT * FROM directors WHERE id = ?";
+
+        return jdbcTemplate.query(findByIdQuery, ((rs, rowNum) -> makeDirector(rs)), directorId)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public List<Director> getAll() {
-        return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeDirector(rs)));
+    public List<Director> findAll() {
+        String findAllQuery = "SELECT * FROM directors";
+
+        return jdbcTemplate.query(findAllQuery, ((rs, rowNum) -> makeDirector(rs)));
     }
 
     @Override
-    public boolean delete(int directorId) {
-        return jdbcTemplate.update(deleteSql, directorId) == 1;
+    public void delete(int directorId) {
+        String deleteQuery = "DELETE FROM directors WHERE id = ?";
+
+        jdbcTemplate.update(deleteQuery, directorId);
     }
 
     @Override
-    public List<Director> getAllByNameSubstring(String query) {
-        return jdbcTemplate.query(getAllByNameSubstringSql, ((rs, rowNum) -> makeDirector(rs)), "%" + query + "%");
+    public List<Director> findAllByNameSubstring(String query) {
+        String findAllByNameSubstringQuery = "SELECT * FROM directors WHERE LOWER(name) LIKE LOWER(?)";
+
+        return jdbcTemplate.query(findAllByNameSubstringQuery, ((rs, rowNum) -> makeDirector(rs)), "%" + query + "%");
+    }
+
+    @Override
+    public boolean existsById(Integer id) {
+        String existsByIdQuery = "SELECT COUNT(*) FROM directors WHERE id = ?";
+
+        Integer count = jdbcTemplate.queryForObject(existsByIdQuery, Integer.class, id);
+
+        return count != null && count > 0;
     }
 
     private Director makeDirector(ResultSet rs) throws SQLException {

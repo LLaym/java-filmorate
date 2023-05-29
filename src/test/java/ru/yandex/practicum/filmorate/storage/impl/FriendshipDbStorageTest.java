@@ -44,7 +44,7 @@ class FriendshipDbStorageTest {
 
         friendshipStorage.save(1, 2);
 
-        List<Friendship> user1Friends = friendshipStorage.getAllByUserId(1);
+        List<Friendship> user1Friends = friendshipStorage.findAllByUserId(1);
 
         assertFalse(user1Friends.isEmpty());
         assertEquals(1, user1Friends.get(0).getId());
@@ -52,7 +52,7 @@ class FriendshipDbStorageTest {
 
         friendshipStorage.delete(1, 2);
 
-        List<Friendship> user1Friends2 = friendshipStorage.getAllByUserId(1);
+        List<Friendship> user1Friends2 = friendshipStorage.findAllByUserId(1);
 
         assertTrue(user1Friends2.isEmpty());
     }

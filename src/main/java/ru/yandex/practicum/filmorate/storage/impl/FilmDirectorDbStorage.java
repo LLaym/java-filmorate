@@ -12,15 +12,6 @@ import java.util.List;
 @Repository
 public class FilmDirectorDbStorage implements FilmDirectorStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final String saveSql = "INSERT INTO film_director (film_id, director_id) VALUES (?, ?)";
-    private final String getAllByFilmSql = "SELECT * " +
-            "FROM film_director " +
-            "WHERE film_id = ?";
-    private final String deleteSql = "DELETE FROM film_director WHERE film_id = ?";
-
-    private final String getAllByDirectorSql = "SELECT * " +
-            "FROM film_director " +
-            "WHERE director_id = ?";
 
     public FilmDirectorDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -28,22 +19,34 @@ public class FilmDirectorDbStorage implements FilmDirectorStorage {
 
     @Override
     public void save(int filmId, int directorId) {
-        jdbcTemplate.update(saveSql, filmId, directorId);
+        String saveQuery = "INSERT INTO film_director (film_id, director_id) VALUES (?, ?)";
+
+        jdbcTemplate.update(saveQuery, filmId, directorId);
     }
 
     @Override
-    public List<FilmDirector> getAllByFilmId(int filmId) {
-        return jdbcTemplate.query(getAllByFilmSql, ((rs, rowNum) -> makeFilmDirector(rs)), filmId);
+    public List<FilmDirector> findAllByFilmId(int filmId) {
+        String findAllByFilmQuery = "SELECT * " +
+                "FROM film_director " +
+                "WHERE film_id = ?";
+
+        return jdbcTemplate.query(findAllByFilmQuery, ((rs, rowNum) -> makeFilmDirector(rs)), filmId);
     }
 
     @Override
-    public List<FilmDirector> getAllByDirector(Integer directorId) {
-        return jdbcTemplate.query(getAllByDirectorSql, ((rs, rowNum) -> makeFilmDirector(rs)), directorId);
+    public List<FilmDirector> findAllByDirector(Integer directorId) {
+        String findAllByDirectorQuery = "SELECT * " +
+                "FROM film_director " +
+                "WHERE director_id = ?";
+
+        return jdbcTemplate.query(findAllByDirectorQuery, ((rs, rowNum) -> makeFilmDirector(rs)), directorId);
     }
 
     @Override
-    public boolean deleteAllByFilmId(int filmId) {
-        return jdbcTemplate.update(deleteSql, filmId) >= 1;
+    public void deleteAllByFilmId(int filmId) {
+        String deleteQuery = "DELETE FROM film_director WHERE film_id = ?";
+
+        jdbcTemplate.update(deleteQuery, filmId);
     }
 
     private FilmDirector makeFilmDirector(ResultSet rs) throws SQLException {

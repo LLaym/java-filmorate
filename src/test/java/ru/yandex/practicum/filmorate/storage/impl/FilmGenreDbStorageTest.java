@@ -37,7 +37,7 @@ class FilmGenreDbStorageTest {
         filmStorage.save(film);
 
         filmGenreStorage.save(1, 1);
-        List<FilmGenre> filmGenres = filmGenreStorage.getAllByFilmId(1);
+        List<FilmGenre> filmGenres = filmGenreStorage.findAllByFilmId(1);
 
         assertFalse(filmGenres.isEmpty());
         assertEquals(1, filmGenres.get(0).getFilmId());
@@ -45,7 +45,7 @@ class FilmGenreDbStorageTest {
 
         filmGenreStorage.deleteAllByFilmId(1);
 
-        List<FilmGenre> filmGenres2 = filmGenreStorage.getAllByFilmId(1);
+        List<FilmGenre> filmGenres2 = filmGenreStorage.findAllByFilmId(1);
 
         assertTrue(filmGenres2.isEmpty());
     }

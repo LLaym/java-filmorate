@@ -7,7 +7,7 @@ import java.util.List;
 public interface FilmGenreStorage {
     void save(int filmId, int genreId);
 
-    boolean deleteAllByFilmId(int filmId);
+    void deleteAllByFilmId(int filmId);
 
-    List<FilmGenre> getAllByFilmId(int filmId);
+    List<FilmGenre> findAllByFilmId(int filmId);
 }

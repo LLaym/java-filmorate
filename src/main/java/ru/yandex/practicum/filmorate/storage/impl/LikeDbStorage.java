@@ -16,59 +16,37 @@ import java.util.List;
 public class LikeDbStorage implements LikeStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final String saveSql = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
-    private final String deleteSql = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
-    private final String getPopularFilmsIdsSql = "SELECT id " +
-            "FROM (SELECT films.id, COUNT(user_id) AS score" +
-            " FROM films" +
-            " LEFT JOIN likes l on films.id = l.film_id" +
-            " GROUP BY films.id" +
-            " ORDER BY score DESC)" +
-            " LIMIT ?;";
 
-    private final String getSimilarUserIdSql = "SELECT user_id" +
-            " FROM likes" +
-            " WHERE film_id IN" +
-            " (SELECT film_id FROM likes WHERE user_id = ?)" +
-            " AND user_id <> ?" +
-            " GROUP BY user_id" +
-            " ORDER BY COUNT(film_id) DESC" +
-            " LIMIT 1;";
-
-    private final String getRecommendFilmsIdsSql = "SELECT film_id" +
-            " FROM likes" +
-            " WHERE  user_id = ?" +
-            " AND film_id NOT IN" +
-            " (SELECT film_id FROM likes WHERE user_id = ?);";
-
-    private final String getCommonFilmsIdsSql = "SELECT film_id " +
-            " FROM likes" +
-            " WHERE film_id IN" +
-            " ((SELECT film_id FROM likes WHERE user_id = ?)" +
-            " INTERSECT" +
-            " (SELECT film_id FROM likes WHERE user_id = ?))" +
-            " GROUP BY film_id" +
-            " ORDER BY COUNT(user_id) DESC;";
-
-    private final String getAllByFilmSql = "SELECT * FROM likes WHERE film_id = ?";
+    private final String findAllByFilmQuery = "SELECT * FROM likes WHERE film_id = ?";
 
     public LikeDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public boolean save(int filmId, int userId) {
-        return jdbcTemplate.update(saveSql, filmId, userId) == 1;
+    public void save(int filmId, int userId) {
+        String saveQuery = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
+
+        jdbcTemplate.update(saveQuery, filmId, userId);
     }
 
     @Override
-    public boolean delete(int filmId, int userId) {
-        return jdbcTemplate.update(deleteSql, filmId, userId) == 1;
+    public void delete(int filmId, int userId) {
+        String deleteQuery = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
+
+        jdbcTemplate.update(deleteQuery, filmId, userId);
     }
 
     @Override
-    public List<Integer> getPopularFilmsIds(int count) {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(getPopularFilmsIdsSql, count);
+    public List<Integer> findPopularFilmsIds(int count) {
+        String findPopularFilmsIdsQuery = "SELECT id " +
+                "FROM (SELECT films.id, COUNT(user_id) AS score" +
+                " FROM films" +
+                " LEFT JOIN likes l on films.id = l.film_id" +
+                " GROUP BY films.id" +
+                " ORDER BY score DESC)" +
+                " LIMIT ?;";
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(findPopularFilmsIdsQuery, count);
         List<Integer> top = new ArrayList<>();
 
         while (rowSet.next()) {
@@ -78,23 +56,46 @@ public class LikeDbStorage implements LikeStorage {
     }
 
     @Override
-    public List<Integer> getRecommendFilmsIds(int userId) {
+    public List<Integer> findRecommendFilmsIds(int userId) {
+        String findSimilarUserIdQuery = "SELECT user_id" +
+                " FROM likes" +
+                " WHERE film_id IN" +
+                " (SELECT film_id FROM likes WHERE user_id = ?)" +
+                " AND user_id <> ?" +
+                " GROUP BY user_id" +
+                " ORDER BY COUNT(film_id) DESC" +
+                " LIMIT 1;";
+        String findRecommendFilmsIdsQuery = "SELECT film_id" +
+                " FROM likes" +
+                " WHERE  user_id = ?" +
+                " AND film_id NOT IN" +
+                " (SELECT film_id FROM likes WHERE user_id = ?);";
+
         try {
-            Integer similarUserId = jdbcTemplate.queryForObject(getSimilarUserIdSql, Integer.class, userId, userId);
-            return jdbcTemplate.queryForList(getRecommendFilmsIdsSql, Integer.class, similarUserId, userId);
+            Integer similarUserId = jdbcTemplate.queryForObject(findSimilarUserIdQuery, Integer.class, userId, userId);
+            return jdbcTemplate.queryForList(findRecommendFilmsIdsQuery, Integer.class, similarUserId, userId);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
     }
 
     @Override
-    public List<Integer> getCommonFilmsIds(int userId, int friendId) {
-        return jdbcTemplate.queryForList(getCommonFilmsIdsSql, Integer.class, userId, friendId);
+    public List<Integer> findCommonFilmsIds(int userId, int friendId) {
+        String findCommonFilmsIdsQuery = "SELECT film_id " +
+                " FROM likes" +
+                " WHERE film_id IN" +
+                " ((SELECT film_id FROM likes WHERE user_id = ?)" +
+                " INTERSECT" +
+                " (SELECT film_id FROM likes WHERE user_id = ?))" +
+                " GROUP BY film_id" +
+                " ORDER BY COUNT(user_id) DESC;";
+
+        return jdbcTemplate.queryForList(findCommonFilmsIdsQuery, Integer.class, userId, friendId);
     }
 
     @Override
-    public List<Like> getAllByFilmId(int filmId) {
-        return jdbcTemplate.query(getAllByFilmSql, ((rs, rowNum) -> makeLike(rs)), filmId);
+    public List<Like> findAllByFilmId(int filmId) {
+        return jdbcTemplate.query(findAllByFilmQuery, ((rs, rowNum) -> makeLike(rs)), filmId);
     }
 
     private Like makeLike(ResultSet rs) throws SQLException {

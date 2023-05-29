@@ -3,36 +3,19 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
-    // Обновлять нужно только поле is_positive, иначе тесты не проходят
-    private final String updateSql = "UPDATE reviews "
-            + "SET content = ?"
-            + ", is_positive = ? "
-            + "WHERE id = ?";
-    private final String deleteSql = "DELETE FROM reviews WHERE id = ?";
-    private final String getByIdSql = "SELECT * " +
-            "FROM reviews " +
-            "WHERE id = ?";
-    private final String getAllSql = "SELECT * " +
-            "FROM reviews " +
-            "ORDER BY useful DESC " +
-            "LIMIT ?";
-    private final String getAllByFilmIdSql = "SELECT * " +
-            "FROM reviews " +
-            "WHERE film_id = ? " +
-            "ORDER BY useful DESC " +
-            "LIMIT ?";
-
-    private final String getUserIdSql = "SELECT user_id FROM reviews WHERE id = ?";
 
     public ReviewDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -62,37 +45,70 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public boolean update(Review review) {
+        String updateQuery = "UPDATE reviews "
+                + "SET content = ?"
+                + ", is_positive = ? "
+                + "WHERE id = ?";
+
         int id = review.getReviewId();
         String content = review.getContent();
         boolean isPositive = review.getIsPositive();
 
-        return jdbcTemplate.update(updateSql, content, isPositive, id) == 1;
+        return jdbcTemplate.update(updateQuery, content, isPositive, id) == 1;
     }
 
     @Override
-    public Optional<Review> getById(int reviewId) {
-        return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeReview(rs)), reviewId)
+    public Optional<Review> findById(int reviewId) {
+        String findByIdQuery = "SELECT * " +
+                "FROM reviews " +
+                "WHERE id = ?";
+
+        return jdbcTemplate.query(findByIdQuery, ((rs, rowNum) -> makeReview(rs)), reviewId)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public List<Review> getAll(int limit) {
-        return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeReview(rs)), limit);
+    public List<Review> findAll(int limit) {
+        String findAllQuery = "SELECT * " +
+                "FROM reviews " +
+                "ORDER BY useful DESC " +
+                "LIMIT ?";
+
+        return jdbcTemplate.query(findAllQuery, ((rs, rowNum) -> makeReview(rs)), limit);
     }
 
     @Override
-    public List<Review> getAllByFilmId(int reviewId, int limit) {
-        return jdbcTemplate.query(getAllByFilmIdSql, ((rs, rowNum) -> makeReview(rs)), reviewId, limit);
+    public List<Review> findAllByFilmId(int reviewId, int limit) {
+        String findAllByFilmIdQuery = "SELECT * " +
+                "FROM reviews " +
+                "WHERE film_id = ? " +
+                "ORDER BY useful DESC " +
+                "LIMIT ?";
+
+        return jdbcTemplate.query(findAllByFilmIdQuery, ((rs, rowNum) -> makeReview(rs)), reviewId, limit);
     }
 
     @Override
     public boolean delete(int reviewId) {
-        return jdbcTemplate.update(deleteSql, reviewId) == 1;
+        String deleteQuery = "DELETE FROM reviews WHERE id = ?";
+
+        return jdbcTemplate.update(deleteQuery, reviewId) == 1;
     }
 
-    public Integer getUserId(int reviewId) {
-        return jdbcTemplate.queryForObject(getUserIdSql, Integer.class, reviewId);
+    public Integer findReviewer(int reviewId) {
+        String findReviewerQuery = "SELECT user_id FROM reviews WHERE id = ?";
+
+        return jdbcTemplate.queryForObject(findReviewerQuery, Integer.class, reviewId);
+    }
+
+    @Override
+    public boolean existsById(Integer id) {
+        String existsByIdQuery = "SELECT COUNT(*) FROM reviews WHERE id = ?";
+
+        Integer count = jdbcTemplate.queryForObject(existsByIdQuery, Integer.class, id);
+
+        return count != null && count > 0;
     }
 
     private Review makeReview(ResultSet rs) throws SQLException {

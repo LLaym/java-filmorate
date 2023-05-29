@@ -7,27 +7,32 @@ import ru.yandex.practicum.filmorate.storage.ReviewRatingStorage;
 @Repository
 public class ReviewRatingDbStorage implements ReviewRatingStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final String saveSql = "INSERT INTO review_ratings (review_id, user_id, is_liked) VALUES (?, ?, ?)";
-    private final String updateReviewSql = "UPDATE reviews SET useful = useful + ? WHERE id = ?";
-    private final String deleteSql = "DELETE FROM review_ratings WHERE review_id = ? AND user_id = ? AND is_liked = ?";
 
     public ReviewRatingDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public boolean save(int reviewId, int userId, boolean isLiked) {
-        if (jdbcTemplate.update(saveSql, reviewId, userId, isLiked) == 1) {
-            return jdbcTemplate.update(updateReviewSql, isLiked ? 1 : -1, reviewId) == 1;
-        }
-        return false;
+    public void save(int reviewId, int userId, boolean isLiked) {
+        String saveQuery = "INSERT INTO review_ratings (review_id, user_id, is_liked) VALUES (?, ?, ?)";
+
+        jdbcTemplate.update(saveQuery, reviewId, userId, isLiked);
+
+        updateReview(reviewId, isLiked);
     }
 
     @Override
-    public boolean delete(int reviewId, int userId, boolean isLiked) {
-        if (jdbcTemplate.update(deleteSql, reviewId, userId, isLiked) == 1) {
-            return jdbcTemplate.update(updateReviewSql, isLiked ? -1 : 1, reviewId) == 1;
-        }
-        return false;
+    public void delete(int reviewId, int userId, boolean isLiked) {
+        String deleteQuery = "DELETE FROM review_ratings WHERE review_id = ? AND user_id = ? AND is_liked = ?";
+
+        jdbcTemplate.update(deleteQuery, reviewId, userId, isLiked);
+
+        updateReview(reviewId, !isLiked);
+    }
+
+    private void updateReview(int reviewId, boolean isLiked) {
+        String updateQuery = "UPDATE reviews SET useful = useful + ? WHERE id = ?";
+
+        jdbcTemplate.update(updateQuery, isLiked ? 1 : -1, reviewId);
     }
 }
