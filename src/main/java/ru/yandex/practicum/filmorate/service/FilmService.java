@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmDirector;
 import ru.yandex.practicum.filmorate.storage.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,17 +24,20 @@ import static ru.yandex.practicum.filmorate.model.EventType.LIKE;
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
     private final LikeStorage likeStorage;
     private final FilmDirectorStorage filmDirectorStorage;
     private final EventStorage eventStorage;
     private final DirectorStorage directorStorage;
 
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                       UserStorage userStorage,
                        LikeStorage likeStorage,
                        FilmDirectorStorage filmDirectorStorage,
                        EventStorage eventStorage,
                        DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
         this.likeStorage = likeStorage;
         this.filmDirectorStorage = filmDirectorStorage;
         this.eventStorage = eventStorage;
@@ -48,6 +53,13 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
+        Integer filmId = film.getId();
+        if (filmId == null) {
+            throw new ValidationException("Требуется корректный id параметр");
+        } else if (!filmStorage.existsById(filmId)) {
+            throw new NotFoundException("Фильм с id " + filmId + " не найден");
+        }
+
         filmStorage.update(film);
         Film updatedFilm = filmStorage.findById(film.getId()).orElse(null);
 
@@ -69,12 +81,22 @@ public class FilmService {
     }
 
     public void deleteFilmById(Integer filmId) {
+        if (!filmStorage.existsById(filmId)) {
+            throw new NotFoundException("Фильм с id " + filmId + " не найден");
+        }
+
         log.info("Фильм с id {} удален: ", filmId);
         filmStorage.deleteById(filmId);
     }
 
     public boolean likeFilm(Integer filmId, Integer userId) {
         try {
+            if (!filmStorage.existsById(filmId)) {
+                throw new NotFoundException("Фильм с id " + filmId + " не найден");
+            } else if (!userStorage.existsById(userId)) {
+                throw new NotFoundException("Пользователь с id " + userId + " не найден");
+            }
+
             likeStorage.save(filmId, userId);
             log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
 
@@ -93,7 +115,13 @@ public class FilmService {
         }
     }
 
-    public void dislikeFilm(Integer filmId, Integer userId) {
+    public void dislikeFilm(@NotNull Integer filmId, @NotNull Integer userId) {
+        if (!filmStorage.existsById(filmId)) {
+            throw new NotFoundException("Фильм с id " + filmId + " не найден");
+        } else if (!userStorage.existsById(userId)) {
+            throw new NotFoundException("Пользователь с id " + userId + " не найден");
+        }
+
         likeStorage.delete(filmId, userId);
         log.info("Пользователь с id {} убрал лайк с фильма с id {}", userId, filmId);
 
@@ -119,6 +147,10 @@ public class FilmService {
     }
 
     public List<Film> getRecommendations(Integer userId) {
+        if (!userStorage.existsById(userId)) {
+            throw new NotFoundException("Пользователь с id " + userId + " не найден");
+        }
+
         List<Film> recommendedFilms = likeStorage.findRecommendFilmsIds(userId)
                 .stream()
                 .map(filmStorage::findById)
@@ -131,6 +163,12 @@ public class FilmService {
     }
 
     public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        if (!userStorage.existsById(userId)) {
+            throw new NotFoundException("Пользователь с id " + userId + " не найден");
+        } else if (!userStorage.existsById(friendId)) {
+            throw new NotFoundException("Пользователь с id " + friendId + " не найден");
+        }
+
         List<Film> films = likeStorage.findCommonFilmsIds(userId, friendId)
                 .stream()
                 .map(filmStorage::findById)
@@ -159,6 +197,10 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByDirector(Integer directorId, String sortBy) {
+        if (!directorStorage.existsById(directorId)) {
+            throw new NotFoundException("Режиссёр с id " + directorId + " не найден");
+        }
+
         List<Film> directorFilms = filmDirectorStorage.findAllByDirector(directorId)
                 .stream()
                 .map(FilmDirector::getFilmId)

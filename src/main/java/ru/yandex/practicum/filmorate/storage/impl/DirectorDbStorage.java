@@ -74,6 +74,15 @@ public class DirectorDbStorage implements DirectorStorage {
         return jdbcTemplate.query(findAllByNameSubstringQuery, ((rs, rowNum) -> makeDirector(rs)), "%" + query + "%");
     }
 
+    @Override
+    public boolean existsById(Integer id) {
+        String existsByIdQuery = "SELECT COUNT(*) FROM directors WHERE id = ?";
+
+        Integer count = jdbcTemplate.queryForObject(existsByIdQuery, Integer.class, id);
+
+        return count != null && count > 0;
+    }
+
     private Director makeDirector(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");

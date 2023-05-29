@@ -15,4 +15,6 @@ public interface UserStorage {
     List<User> findAll();
 
     boolean deleteById(int userId);
+
+    boolean existsById(Integer id);
 }

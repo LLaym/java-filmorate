@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
-import ru.yandex.practicum.filmorate.validator.Validator;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 @RestController
@@ -21,9 +21,7 @@ public class DirectorController {
     }
 
     @PutMapping
-    public Director updateDirector(@RequestBody Director director) {
-        Validator.validateDirector(director);
-
+    public Director updateDirector(@RequestBody @Valid Director director) {
         return directorService.updateDirector(director);
     }
 
@@ -32,17 +30,13 @@ public class DirectorController {
         return directorService.getAllDirectors();
     }
 
-    @GetMapping("{id}")
-    public Director findDirectorById(@PathVariable Integer id) {
-        Validator.validateDirectorId(id);
-
+    @GetMapping("/{id}")
+    public Director findDirectorById(@PathVariable @NotNull Integer id) {
         return directorService.getDirectorById(id);
     }
 
-    @DeleteMapping("{id}")
-    public void deleteDirector(@PathVariable Integer id) {
-        Validator.validateDirectorId(id);
-
+    @DeleteMapping("/{id}")
+    public void deleteDirector(@PathVariable @NotNull Integer id) {
         directorService.deleteDirector(id);
     }
 }

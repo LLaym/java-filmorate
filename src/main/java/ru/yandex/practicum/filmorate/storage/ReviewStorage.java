@@ -19,4 +19,6 @@ public interface ReviewStorage {
     boolean delete(int reviewId);
 
     Integer findReviewer(int reviewId);
+
+    boolean existsById(Integer id);
 }

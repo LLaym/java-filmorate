@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.MpaService;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -21,8 +22,8 @@ public class MpaController {
         return mpaService.getAllMpas();
     }
 
-    @GetMapping("{id}")
-    public Mpa findMpaById(@PathVariable Integer id) {
+    @GetMapping("/{id}")
+    public Mpa findMpaById(@PathVariable @NotNull Integer id) {
         return mpaService.getMpaById(id);
     }
 }

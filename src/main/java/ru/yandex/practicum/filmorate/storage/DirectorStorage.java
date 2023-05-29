@@ -17,4 +17,6 @@ public interface DirectorStorage {
     void delete(int directorId);
 
     List<Director> findAllByNameSubstring(String query);
+
+    boolean existsById(Integer id);
 }

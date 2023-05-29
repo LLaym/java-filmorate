@@ -128,6 +128,15 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(findAllByNameSubstringQuery, ((rs, rowNum) -> makeFilm(rs)), "%" + query + "%");
     }
 
+    @Override
+    public boolean existsById(Integer id) {
+        String existsByIdQuery = "SELECT COUNT(*) FROM films WHERE id = ?";
+
+        Integer count = jdbcTemplate.queryForObject(existsByIdQuery, Integer.class, id);
+
+        return count != null && count > 0;
+    }
+
     private Film makeFilm(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");
@@ -139,12 +148,14 @@ public class FilmDbStorage implements FilmStorage {
                 .stream()
                 .map(FilmGenre::getGenreId)
                 .map(genreStorage::findById)
+                .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
         List<Director> directors = filmDirectorStorage.findAllByFilmId(id)
                 .stream()
                 .map(FilmDirector::getDirectorId)
                 .map(directorStorage::findById)
+                .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
 

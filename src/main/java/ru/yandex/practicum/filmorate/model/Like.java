@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Like {
-    private int filmId;
-    private int userId;
+    private Integer filmId;
+    private Integer userId;
 }

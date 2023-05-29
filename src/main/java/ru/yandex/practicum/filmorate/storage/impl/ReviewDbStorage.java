@@ -102,6 +102,15 @@ public class ReviewDbStorage implements ReviewStorage {
         return jdbcTemplate.queryForObject(findReviewerQuery, Integer.class, reviewId);
     }
 
+    @Override
+    public boolean existsById(Integer id) {
+        String existsByIdQuery = "SELECT COUNT(*) FROM reviews WHERE id = ?";
+
+        Integer count = jdbcTemplate.queryForObject(existsByIdQuery, Integer.class, id);
+
+        return count != null && count > 0;
+    }
+
     private Review makeReview(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         int filmId = rs.getInt("film_id");

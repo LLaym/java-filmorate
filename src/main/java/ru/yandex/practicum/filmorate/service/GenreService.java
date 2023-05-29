@@ -24,7 +24,7 @@ public class GenreService {
 
     public Genre getGenreById(Integer id) {
         Genre genre = genreStorage.findById(id)
-                .orElseThrow(() -> new NotFoundException("Жанр с идентификатором " + id + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Жанр с id " + id + " не найден"));
 
         log.info("Получен жанр: {}", genre);
         return genre;
