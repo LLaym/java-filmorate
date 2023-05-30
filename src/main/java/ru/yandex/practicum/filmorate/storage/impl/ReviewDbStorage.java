@@ -103,12 +103,12 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public boolean existsById(Integer id) {
-        String existsByIdQuery = "SELECT COUNT(*) FROM reviews WHERE id = ?";
+    public boolean notExists(Integer id) {
+        String notExistsQuery = "SELECT COUNT(*) FROM reviews WHERE id = ?";
 
-        Integer count = jdbcTemplate.queryForObject(existsByIdQuery, Integer.class, id);
+        Integer count = jdbcTemplate.queryForObject(notExistsQuery, Integer.class, id);
 
-        return count != null && count > 0;
+        return count == null || count == 0;
     }
 
     private Review makeReview(ResultSet rs) throws SQLException {

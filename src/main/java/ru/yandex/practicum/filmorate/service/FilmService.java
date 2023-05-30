@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -54,9 +53,8 @@ public class FilmService {
 
     public Film updateFilm(Film film) {
         Integer filmId = film.getId();
-        if (filmId == null) {
-            throw new ValidationException("Требуется корректный id параметр");
-        } else if (!filmStorage.existsById(filmId)) {
+
+        if (filmStorage.notExists(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
         }
 
@@ -68,8 +66,10 @@ public class FilmService {
     }
 
     public List<Film> getAllFilms() {
+        List<Film> films = filmStorage.findAll();
+
         log.info("Возвращен список всех фильмов");
-        return filmStorage.findAll();
+        return films;
     }
 
     public Film getFilmById(Integer filmId) {
@@ -81,19 +81,19 @@ public class FilmService {
     }
 
     public void deleteFilmById(Integer filmId) {
-        if (!filmStorage.existsById(filmId)) {
+        if (filmStorage.notExists(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
         }
 
-        log.info("Фильм с id {} удален: ", filmId);
         filmStorage.deleteById(filmId);
+        log.info("Фильм с id {} удален: ", filmId);
     }
 
     public boolean likeFilm(Integer filmId, Integer userId) {
         try {
-            if (!filmStorage.existsById(filmId)) {
+            if (filmStorage.notExists(filmId)) {
                 throw new NotFoundException("Фильм с id " + filmId + " не найден");
-            } else if (!userStorage.existsById(userId)) {
+            } else if (userStorage.notExists(userId)) {
                 throw new NotFoundException("Пользователь с id " + userId + " не найден");
             }
 
@@ -116,9 +116,9 @@ public class FilmService {
     }
 
     public void dislikeFilm(@NotNull Integer filmId, @NotNull Integer userId) {
-        if (!filmStorage.existsById(filmId)) {
+        if (filmStorage.notExists(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
-        } else if (!userStorage.existsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -147,7 +147,7 @@ public class FilmService {
     }
 
     public List<Film> getRecommendations(Integer userId) {
-        if (!userStorage.existsById(userId)) {
+        if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -163,9 +163,9 @@ public class FilmService {
     }
 
     public List<Film> getCommonFilms(Integer userId, Integer friendId) {
-        if (!userStorage.existsById(userId)) {
+        if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
-        } else if (!userStorage.existsById(friendId)) {
+        } else if (userStorage.notExists(friendId)) {
             throw new NotFoundException("Пользователь с id " + friendId + " не найден");
         }
 
@@ -197,7 +197,7 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByDirector(Integer directorId, String sortBy) {
-        if (!directorStorage.existsById(directorId)) {
+        if (directorStorage.notExists(directorId)) {
             throw new NotFoundException("Режиссёр с id " + directorId + " не найден");
         }
 

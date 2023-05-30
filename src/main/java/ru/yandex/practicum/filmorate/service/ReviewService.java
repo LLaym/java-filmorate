@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.*;
@@ -38,9 +37,9 @@ public class ReviewService {
     public Review createReview(Review review) {
         Integer filmId = review.getFilmId();
         Integer userId = review.getUserId();
-        if (!filmStorage.existsById(filmId)) {
+        if (filmStorage.notExists(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
-        } else if (!userStorage.existsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -62,9 +61,7 @@ public class ReviewService {
 
     public Review updateReview(Review review) {
         Integer reviewId = review.getReviewId();
-        if (reviewId == null) {
-            throw new ValidationException("Требуется корректный id параметр");
-        } else if (!reviewStorage.existsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
         }
 
@@ -95,12 +92,14 @@ public class ReviewService {
     }
 
     public List<Review> getAllReviews(Integer limit) {
+        List<Review> reviews = reviewStorage.findAll(limit);
+
         log.info("Возвращен список всех отзывов");
-        return reviewStorage.findAll(limit);
+        return reviews;
     }
 
     public List<Review> getAllReviewsByFilmId(Integer filmId, Integer limit) {
-        if (!filmStorage.existsById(filmId)) {
+        if (filmStorage.notExists(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
         }
 
@@ -109,7 +108,7 @@ public class ReviewService {
     }
 
     public boolean deleteReview(Integer reviewId) {
-        if (!reviewStorage.existsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
         }
 
@@ -131,47 +130,46 @@ public class ReviewService {
     }
 
     public void likeReview(Integer reviewId, Integer userId) {
-        if (!reviewStorage.existsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (!userStorage.existsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
-        log.info("Пользователь с id {} поставил лайк отзыву с id {}", userId, reviewId);
         reviewRatingStorage.save(reviewId, userId, true);
+        log.info("Пользователь с id {} поставил лайк отзыву с id {}", userId, reviewId);
     }
 
     public void dislikeReview(Integer reviewId, Integer userId) {
-        if (!reviewStorage.existsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (!userStorage.existsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
-        log.info("Пользователь с id {} поставил дизлайк отзыву с id {}", userId, reviewId);
         reviewRatingStorage.save(reviewId, userId, false);
+        log.info("Пользователь с id {} поставил дизлайк отзыву с id {}", userId, reviewId);
     }
 
     public void deleteLike(Integer reviewId, Integer userId) {
-        if (!reviewStorage.existsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (!userStorage.existsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
-        log.info("Пользователь с id {} убрал лайк с отзыва с id {}", userId, reviewId);
         reviewRatingStorage.delete(reviewId, userId, true);
+        log.info("Пользователь с id {} убрал лайк с отзыва с id {}", userId, reviewId);
     }
 
     public void deleteDislike(Integer reviewId, Integer userId) {
-        if (!reviewStorage.existsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (!userStorage.existsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
-        log.info("Пользователь с id {} убрал дизлайк с отзыва с id {}", userId, reviewId);
         reviewRatingStorage.delete(reviewId, userId, false);
+        log.info("Пользователь с id {} убрал дизлайк с отзыва с id {}", userId, reviewId);
     }
-
 }

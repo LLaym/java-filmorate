@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
@@ -49,10 +48,13 @@ public class UserService {
     }
 
     public User updateUser(User user) {
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
+
         Integer userId = user.getId();
-        if (userId == null) {
-            throw new ValidationException("Требуется корректный id параметр");
-        } else if (!userStorage.existsById(userId)) {
+
+        if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -64,8 +66,10 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
+        List<User> users = userStorage.findAll();
+
         log.info("Возвращен список всех пользователей");
-        return userStorage.findAll();
+        return users;
     }
 
     public User getUserById(Integer userId) {
@@ -76,24 +80,24 @@ public class UserService {
         return user;
     }
 
-    public boolean deleteUserById(Integer userId) {
-        if (!userStorage.existsById(userId)) {
+    public void deleteUserById(Integer userId) {
+        if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
+        userStorage.deleteById(userId);
         log.info("Пользователь с id {} удален: ", userId);
-        return userStorage.deleteById(userId);
     }
 
     public void makeFriendship(Integer userId, Integer friendId) {
-        if (!userStorage.existsById(userId)) {
+        if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
-        } else if (!userStorage.existsById(friendId)) {
+        } else if (userStorage.notExists(friendId)) {
             throw new NotFoundException("Пользователь с id " + friendId + " не найден");
         }
 
-        log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", userId, friendId);
         friendshipStorage.save(userId, friendId);
+        log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", userId, friendId);
 
         Event event = Event.builder()
                 .userId(userId)
@@ -105,9 +109,9 @@ public class UserService {
     }
 
     public void dropFriendship(Integer userId, Integer friendId) {
-        if (!userStorage.existsById(userId)) {
+        if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
-        } else if (!userStorage.existsById(friendId)) {
+        } else if (userStorage.notExists(friendId)) {
             throw new NotFoundException("Пользователь с id " + friendId + " не найден");
         }
 
@@ -124,7 +128,7 @@ public class UserService {
     }
 
     public List<User> getUserFriends(Integer userId) {
-        if (!userStorage.existsById(userId)) {
+        if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -141,9 +145,9 @@ public class UserService {
     }
 
     public List<User> getUsersMutualFriends(Integer userId, Integer otherId) {
-        if (!userStorage.existsById(userId)) {
+        if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
-        } else if (!userStorage.existsById(otherId)) {
+        } else if (userStorage.notExists(otherId)) {
             throw new NotFoundException("Пользователь с id " + otherId + " не найден");
         }
 
@@ -170,11 +174,8 @@ public class UserService {
     }
 
     public List<Event> getFeed(Integer userId) {
-        if (!userStorage.existsById(userId)) {
-            throw new NotFoundException("Пользователь с id " + userId + " не найден");
-        }
-
-        return eventStorage.findAllByUserId(userId);
+        return userStorage.findById(userId)
+                .map(user -> eventStorage.findAllByUserId(userId))
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
     }
-
 }

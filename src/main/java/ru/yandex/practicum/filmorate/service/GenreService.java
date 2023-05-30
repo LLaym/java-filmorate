@@ -18,8 +18,10 @@ public class GenreService {
     }
 
     public List<Genre> getAllGenres() {
+        List<Genre> genres = genreStorage.findAll();
+
         log.info("Возвращен список всех жанров");
-        return genreStorage.findAll();
+        return genres;
     }
 
     public Genre getGenreById(Integer id) {

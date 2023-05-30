@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 
@@ -22,6 +23,9 @@ public class DirectorController {
 
     @PutMapping
     public Director updateDirector(@RequestBody @Valid Director director) {
+        if (director.getId() == null) {
+            throw new ValidationException("Требуется корректный id параметр");
+        }
         return directorService.updateDirector(director);
     }
 

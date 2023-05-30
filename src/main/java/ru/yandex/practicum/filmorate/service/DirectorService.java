@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
@@ -28,9 +27,8 @@ public class DirectorService {
 
     public Director updateDirector(Director director) {
         Integer directorId = director.getId();
-        if (directorId == null) {
-            throw new ValidationException("Требуется корректный id параметр");
-        } else if (!directorStorage.existsById(directorId)) {
+
+        if (directorStorage.notExists(directorId)) {
             throw new NotFoundException("Режиссёр с id " + directorId + " не найден");
         }
 
@@ -42,8 +40,10 @@ public class DirectorService {
     }
 
     public List<Director> getAllDirectors() {
+        List<Director> directors = directorStorage.findAll();
+
         log.info("Возвращен список всех режиссёров");
-        return directorStorage.findAll();
+        return directors;
     }
 
     public Director getDirectorById(Integer directorId) {
@@ -55,11 +55,11 @@ public class DirectorService {
     }
 
     public void deleteDirector(Integer directorId) {
-        if (!directorStorage.existsById(directorId)) {
+        if (directorStorage.notExists(directorId)) {
             throw new NotFoundException("Режиссёр с id " + directorId + " не найден");
         }
 
-        log.info("Режиссёр с id {} удалён.", directorId);
         directorStorage.delete(directorId);
+        log.info("Режиссёр с id {} удалён.", directorId);
     }
 }

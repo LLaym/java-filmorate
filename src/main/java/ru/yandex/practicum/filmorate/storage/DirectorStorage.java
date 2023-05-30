@@ -18,5 +18,5 @@ public interface DirectorStorage {
 
     List<Director> findAllByNameSubstring(String query);
 
-    boolean existsById(Integer id);
+    boolean notExists(Integer id);
 }

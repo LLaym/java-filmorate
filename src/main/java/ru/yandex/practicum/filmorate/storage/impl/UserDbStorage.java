@@ -47,7 +47,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public boolean update(User user) {
+    public void update(User user) {
         String updateQuery = "UPDATE users " +
                 "SET email = ?" +
                 ", login = ?" +
@@ -60,7 +60,7 @@ public class UserDbStorage implements UserStorage {
         String name = user.getName();
         String birthday = user.getBirthday().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        return jdbcTemplate.update(updateQuery, email, login, name, birthday, id) == 1;
+        jdbcTemplate.update(updateQuery, email, login, name, birthday, id);
     }
 
     @Override
@@ -73,19 +73,19 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public boolean deleteById(int userId) {
+    public void deleteById(int userId) {
         String deleteByIdQuery = "DELETE FROM users WHERE id = ?";
 
-        return jdbcTemplate.update(deleteByIdQuery, userId) == 1;
+        jdbcTemplate.update(deleteByIdQuery, userId);
     }
 
     @Override
-    public boolean existsById(Integer id) {
-        String existsByIdQuery = "SELECT COUNT(*) FROM users WHERE id = ?";
+    public boolean notExists(Integer id) {
+        String notExistsQuery = "SELECT COUNT(*) FROM users WHERE id = ?";
 
-        Integer count = jdbcTemplate.queryForObject(existsByIdQuery, Integer.class, id);
+        Integer count = jdbcTemplate.queryForObject(notExistsQuery, Integer.class, id);
 
-        return count != null && count > 0;
+        return count == null || count == 0;
     }
 
     @Override
