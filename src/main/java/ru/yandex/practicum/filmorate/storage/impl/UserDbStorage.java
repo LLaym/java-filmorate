@@ -80,12 +80,12 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public boolean notExistsById(Integer id) {
-        String notExistsByIdQuery = "SELECT COUNT(*) FROM users WHERE id = ?";
+    public boolean notExists(Integer id) {
+        String notExistsQuery = "SELECT COUNT(*) FROM users WHERE id = ?";
 
-        Integer count = jdbcTemplate.queryForObject(notExistsByIdQuery, Integer.class, id);
+        Integer count = jdbcTemplate.queryForObject(notExistsQuery, Integer.class, id);
 
-        return count != null && count > 0;
+        return count == null || count == 0;
     }
 
     @Override

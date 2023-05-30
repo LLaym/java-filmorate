@@ -75,12 +75,12 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public boolean notExistsById(Integer id) {
-        String notExistsByIdQuery = "SELECT COUNT(*) FROM directors WHERE id = ?";
+    public boolean notExists(Integer id) {
+        String notExistsQuery = "SELECT COUNT(*) FROM directors WHERE id = ?";
 
-        Integer count = jdbcTemplate.queryForObject(notExistsByIdQuery, Integer.class, id);
+        Integer count = jdbcTemplate.queryForObject(notExistsQuery, Integer.class, id);
 
-        return count != null && count > 0;
+        return count == null || count == 0;
     }
 
     private Director makeDirector(ResultSet rs) throws SQLException {

@@ -56,7 +56,7 @@ public class FilmService {
         Integer filmId = film.getId();
         if (filmId == null) {
             throw new ValidationException("Требуется корректный id параметр");
-        } else if (filmStorage.notExistsById(filmId)) {
+        } else if (filmStorage.notExists(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
         }
 
@@ -81,7 +81,7 @@ public class FilmService {
     }
 
     public void deleteFilmById(Integer filmId) {
-        if (filmStorage.notExistsById(filmId)) {
+        if (filmStorage.notExists(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
         }
 
@@ -91,9 +91,9 @@ public class FilmService {
 
     public boolean likeFilm(Integer filmId, Integer userId) {
         try {
-            if (filmStorage.notExistsById(filmId)) {
+            if (filmStorage.notExists(filmId)) {
                 throw new NotFoundException("Фильм с id " + filmId + " не найден");
-            } else if (userStorage.notExistsById(userId)) {
+            } else if (userStorage.notExists(userId)) {
                 throw new NotFoundException("Пользователь с id " + userId + " не найден");
             }
 
@@ -116,9 +116,9 @@ public class FilmService {
     }
 
     public void dislikeFilm(@NotNull Integer filmId, @NotNull Integer userId) {
-        if (filmStorage.notExistsById(filmId)) {
+        if (filmStorage.notExists(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
-        } else if (userStorage.notExistsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -147,7 +147,7 @@ public class FilmService {
     }
 
     public List<Film> getRecommendations(Integer userId) {
-        if (userStorage.notExistsById(userId)) {
+        if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -163,9 +163,9 @@ public class FilmService {
     }
 
     public List<Film> getCommonFilms(Integer userId, Integer friendId) {
-        if (userStorage.notExistsById(userId)) {
+        if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
-        } else if (userStorage.notExistsById(friendId)) {
+        } else if (userStorage.notExists(friendId)) {
             throw new NotFoundException("Пользователь с id " + friendId + " не найден");
         }
 
@@ -197,7 +197,7 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByDirector(Integer directorId, String sortBy) {
-        if (directorStorage.notExistsById(directorId)) {
+        if (directorStorage.notExists(directorId)) {
             throw new NotFoundException("Режиссёр с id " + directorId + " не найден");
         }
 

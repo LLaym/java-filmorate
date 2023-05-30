@@ -37,9 +37,9 @@ public class ReviewService {
     public Review createReview(Review review) {
         Integer filmId = review.getFilmId();
         Integer userId = review.getUserId();
-        if (filmStorage.notExistsById(filmId)) {
+        if (filmStorage.notExists(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
-        } else if (userStorage.notExistsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -61,7 +61,7 @@ public class ReviewService {
 
     public Review updateReview(Review review) {
         Integer reviewId = review.getReviewId();
-        if (reviewStorage.notExistsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
         }
 
@@ -97,7 +97,7 @@ public class ReviewService {
     }
 
     public List<Review> getAllReviewsByFilmId(Integer filmId, Integer limit) {
-        if (filmStorage.notExistsById(filmId)) {
+        if (filmStorage.notExists(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
         }
 
@@ -106,7 +106,7 @@ public class ReviewService {
     }
 
     public boolean deleteReview(Integer reviewId) {
-        if (reviewStorage.notExistsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
         }
 
@@ -128,9 +128,9 @@ public class ReviewService {
     }
 
     public void likeReview(Integer reviewId, Integer userId) {
-        if (reviewStorage.notExistsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (userStorage.notExistsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -139,9 +139,9 @@ public class ReviewService {
     }
 
     public void dislikeReview(Integer reviewId, Integer userId) {
-        if (reviewStorage.notExistsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (userStorage.notExistsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -150,9 +150,9 @@ public class ReviewService {
     }
 
     public void deleteLike(Integer reviewId, Integer userId) {
-        if (reviewStorage.notExistsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (userStorage.notExistsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -161,9 +161,9 @@ public class ReviewService {
     }
 
     public void deleteDislike(Integer reviewId, Integer userId) {
-        if (reviewStorage.notExistsById(reviewId)) {
+        if (reviewStorage.notExists(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (userStorage.notExistsById(userId)) {
+        } else if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
