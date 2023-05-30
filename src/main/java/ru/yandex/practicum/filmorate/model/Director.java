@@ -11,6 +11,6 @@ import javax.validation.constraints.Size;
 public class Director {
     private Integer id;
     @NotBlank
-    @Size(max = 200)
+    @Size(max = 100)
     private String name;
 }
