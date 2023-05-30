@@ -49,6 +49,10 @@ public class UserService {
     }
 
     public User updateUser(User user) {
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
+
         Integer userId = user.getId();
         if (userId == null) {
             throw new ValidationException("Требуется корректный id параметр");
@@ -64,8 +68,10 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
+        List<User> users = userStorage.findAll();
+
         log.info("Возвращен список всех пользователей");
-        return userStorage.findAll();
+        return users;
     }
 
     public User getUserById(Integer userId) {
@@ -81,8 +87,8 @@ public class UserService {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
-        log.info("Пользователь с id {} удален: ", userId);
         userStorage.deleteById(userId);
+        log.info("Пользователь с id {} удален: ", userId);
     }
 
     public void makeFriendship(Integer userId, Integer friendId) {
@@ -92,8 +98,8 @@ public class UserService {
             throw new NotFoundException("Пользователь с id " + friendId + " не найден");
         }
 
-        log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", userId, friendId);
         friendshipStorage.save(userId, friendId);
+        log.info("Пользователь с id {} и пользователь с id {} теперь друзья!", userId, friendId);
 
         Event event = Event.builder()
                 .userId(userId)
@@ -174,5 +180,4 @@ public class UserService {
                 .map(user -> eventStorage.findAllByUserId(userId))
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
     }
-
 }

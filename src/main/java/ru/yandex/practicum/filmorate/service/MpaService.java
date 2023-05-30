@@ -18,8 +18,10 @@ public class MpaService {
     }
 
     public List<Mpa> getAllMpas() {
+        List<Mpa> mpas = mpaStorage.findAll();
+
         log.info("Возвращен список всех Mpa рейтингов");
-        return mpaStorage.findAll();
+        return mpas;
     }
 
     public Mpa getMpaById(Integer id) {

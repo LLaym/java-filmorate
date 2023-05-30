@@ -42,8 +42,10 @@ public class DirectorService {
     }
 
     public List<Director> getAllDirectors() {
+        List<Director> directors = directorStorage.findAll();
+
         log.info("Возвращен список всех режиссёров");
-        return directorStorage.findAll();
+        return directors;
     }
 
     public Director getDirectorById(Integer directorId) {
@@ -59,7 +61,7 @@ public class DirectorService {
             throw new NotFoundException("Режиссёр с id " + directorId + " не найден");
         }
 
-        log.info("Режиссёр с id {} удалён.", directorId);
         directorStorage.delete(directorId);
+        log.info("Режиссёр с id {} удалён.", directorId);
     }
 }

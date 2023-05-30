@@ -92,8 +92,10 @@ public class ReviewService {
     }
 
     public List<Review> getAllReviews(Integer limit) {
+        List<Review> reviews = reviewStorage.findAll(limit);
+
         log.info("Возвращен список всех отзывов");
-        return reviewStorage.findAll(limit);
+        return reviews;
     }
 
     public List<Review> getAllReviewsByFilmId(Integer filmId, Integer limit) {
@@ -134,8 +136,8 @@ public class ReviewService {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
-        log.info("Пользователь с id {} поставил лайк отзыву с id {}", userId, reviewId);
         reviewRatingStorage.save(reviewId, userId, true);
+        log.info("Пользователь с id {} поставил лайк отзыву с id {}", userId, reviewId);
     }
 
     public void dislikeReview(Integer reviewId, Integer userId) {
@@ -145,8 +147,8 @@ public class ReviewService {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
-        log.info("Пользователь с id {} поставил дизлайк отзыву с id {}", userId, reviewId);
         reviewRatingStorage.save(reviewId, userId, false);
+        log.info("Пользователь с id {} поставил дизлайк отзыву с id {}", userId, reviewId);
     }
 
     public void deleteLike(Integer reviewId, Integer userId) {
@@ -156,8 +158,8 @@ public class ReviewService {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
-        log.info("Пользователь с id {} убрал лайк с отзыва с id {}", userId, reviewId);
         reviewRatingStorage.delete(reviewId, userId, true);
+        log.info("Пользователь с id {} убрал лайк с отзыва с id {}", userId, reviewId);
     }
 
     public void deleteDislike(Integer reviewId, Integer userId) {
@@ -167,8 +169,7 @@ public class ReviewService {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
-        log.info("Пользователь с id {} убрал дизлайк с отзыва с id {}", userId, reviewId);
         reviewRatingStorage.delete(reviewId, userId, false);
+        log.info("Пользователь с id {} убрал дизлайк с отзыва с id {}", userId, reviewId);
     }
-
 }

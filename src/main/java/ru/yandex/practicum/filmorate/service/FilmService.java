@@ -68,8 +68,10 @@ public class FilmService {
     }
 
     public List<Film> getAllFilms() {
+        List<Film> films = filmStorage.findAll();
+
         log.info("Возвращен список всех фильмов");
-        return filmStorage.findAll();
+        return films;
     }
 
     public Film getFilmById(Integer filmId) {
@@ -85,8 +87,8 @@ public class FilmService {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
         }
 
-        log.info("Фильм с id {} удален: ", filmId);
         filmStorage.deleteById(filmId);
+        log.info("Фильм с id {} удален: ", filmId);
     }
 
     public boolean likeFilm(Integer filmId, Integer userId) {
