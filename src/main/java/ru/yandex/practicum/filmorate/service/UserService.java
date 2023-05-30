@@ -76,13 +76,13 @@ public class UserService {
         return user;
     }
 
-    public boolean deleteUserById(Integer userId) {
+    public void deleteUserById(Integer userId) {
         if (userStorage.notExistsById(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
         log.info("Пользователь с id {} удален: ", userId);
-        return userStorage.deleteById(userId);
+        userStorage.deleteById(userId);
     }
 
     public void makeFriendship(Integer userId, Integer friendId) {
