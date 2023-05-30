@@ -62,9 +62,8 @@ public class ReviewService {
 
     public Review updateReview(Review review) {
         Integer reviewId = review.getReviewId();
-        if (reviewId == null) {
-            throw new ValidationException("Требуется корректный id параметр");
-        } else if (!reviewStorage.existsById(reviewId)) {
+
+        if (!reviewStorage.existsById(review.getReviewId())) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
         }
 

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
@@ -22,6 +23,9 @@ public class ReviewController {
 
     @PutMapping
     public Review updateReview(@RequestBody @Valid Review review) {
+        if (review.getReviewId() == null) {
+            throw new ValidationException("Требуется корректный id параметр");
+        }
         return reviewService.updateReview(review);
     }
 
