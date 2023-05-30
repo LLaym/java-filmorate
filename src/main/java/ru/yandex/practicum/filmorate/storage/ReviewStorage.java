@@ -20,5 +20,5 @@ public interface ReviewStorage {
 
     Integer findReviewer(int reviewId);
 
-    boolean existsById(Integer id);
+    boolean notExistsById(Integer id);
 }

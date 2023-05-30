@@ -18,5 +18,5 @@ public interface FilmStorage {
 
     List<Film> findAllByNameSubstring(String query);
 
-    boolean existsById(Integer id);
+    boolean notExistsById(Integer id);
 }

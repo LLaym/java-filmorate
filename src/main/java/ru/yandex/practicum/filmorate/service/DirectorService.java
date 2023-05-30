@@ -30,7 +30,7 @@ public class DirectorService {
         Integer directorId = director.getId();
         if (directorId == null) {
             throw new ValidationException("Требуется корректный id параметр");
-        } else if (!directorStorage.existsById(directorId)) {
+        } else if (directorStorage.notExistsById(directorId)) {
             throw new NotFoundException("Режиссёр с id " + directorId + " не найден");
         }
 
@@ -55,7 +55,7 @@ public class DirectorService {
     }
 
     public void deleteDirector(Integer directorId) {
-        if (!directorStorage.existsById(directorId)) {
+        if (directorStorage.notExistsById(directorId)) {
             throw new NotFoundException("Режиссёр с id " + directorId + " не найден");
         }
 

@@ -16,5 +16,5 @@ public interface UserStorage {
 
     boolean deleteById(int userId);
 
-    boolean existsById(Integer id);
+    boolean notExistsById(Integer id);
 }

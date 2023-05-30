@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.*;
@@ -38,9 +37,9 @@ public class ReviewService {
     public Review createReview(Review review) {
         Integer filmId = review.getFilmId();
         Integer userId = review.getUserId();
-        if (!filmStorage.existsById(filmId)) {
+        if (filmStorage.notExistsById(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
-        } else if (!userStorage.existsById(userId)) {
+        } else if (userStorage.notExistsById(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -62,8 +61,7 @@ public class ReviewService {
 
     public Review updateReview(Review review) {
         Integer reviewId = review.getReviewId();
-
-        if (!reviewStorage.existsById(review.getReviewId())) {
+        if (reviewStorage.notExistsById(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
         }
 
@@ -99,7 +97,7 @@ public class ReviewService {
     }
 
     public List<Review> getAllReviewsByFilmId(Integer filmId, Integer limit) {
-        if (!filmStorage.existsById(filmId)) {
+        if (filmStorage.notExistsById(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
         }
 
@@ -108,7 +106,7 @@ public class ReviewService {
     }
 
     public boolean deleteReview(Integer reviewId) {
-        if (!reviewStorage.existsById(reviewId)) {
+        if (reviewStorage.notExistsById(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
         }
 
@@ -130,9 +128,9 @@ public class ReviewService {
     }
 
     public void likeReview(Integer reviewId, Integer userId) {
-        if (!reviewStorage.existsById(reviewId)) {
+        if (reviewStorage.notExistsById(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (!userStorage.existsById(userId)) {
+        } else if (userStorage.notExistsById(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -141,9 +139,9 @@ public class ReviewService {
     }
 
     public void dislikeReview(Integer reviewId, Integer userId) {
-        if (!reviewStorage.existsById(reviewId)) {
+        if (reviewStorage.notExistsById(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (!userStorage.existsById(userId)) {
+        } else if (userStorage.notExistsById(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -152,9 +150,9 @@ public class ReviewService {
     }
 
     public void deleteLike(Integer reviewId, Integer userId) {
-        if (!reviewStorage.existsById(reviewId)) {
+        if (reviewStorage.notExistsById(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (!userStorage.existsById(userId)) {
+        } else if (userStorage.notExistsById(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
@@ -163,9 +161,9 @@ public class ReviewService {
     }
 
     public void deleteDislike(Integer reviewId, Integer userId) {
-        if (!reviewStorage.existsById(reviewId)) {
+        if (reviewStorage.notExistsById(reviewId)) {
             throw new NotFoundException("Отзыв с id " + reviewId + " не найден");
-        } else if (!userStorage.existsById(userId)) {
+        } else if (userStorage.notExistsById(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 
