@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -27,6 +28,9 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@RequestBody @Valid User user) {
+        if (user.getId() == null) {
+            throw new ValidationException("Требуется корректный id параметр");
+        }
         return userService.updateUser(user);
     }
 

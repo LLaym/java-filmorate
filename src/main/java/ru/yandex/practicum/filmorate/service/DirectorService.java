@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
@@ -28,9 +27,8 @@ public class DirectorService {
 
     public Director updateDirector(Director director) {
         Integer directorId = director.getId();
-        if (directorId == null) {
-            throw new ValidationException("Требуется корректный id параметр");
-        } else if (directorStorage.notExists(directorId)) {
+
+        if (directorStorage.notExists(directorId)) {
             throw new NotFoundException("Режиссёр с id " + directorId + " не найден");
         }
 

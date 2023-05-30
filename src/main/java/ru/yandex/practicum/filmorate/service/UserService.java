@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
@@ -54,9 +53,8 @@ public class UserService {
         }
 
         Integer userId = user.getId();
-        if (userId == null) {
-            throw new ValidationException("Требуется корректный id параметр");
-        } else if (userStorage.notExists(userId)) {
+
+        if (userStorage.notExists(userId)) {
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
 

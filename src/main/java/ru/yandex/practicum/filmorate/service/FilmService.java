@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -54,9 +53,8 @@ public class FilmService {
 
     public Film updateFilm(Film film) {
         Integer filmId = film.getId();
-        if (filmId == null) {
-            throw new ValidationException("Требуется корректный id параметр");
-        } else if (filmStorage.notExists(filmId)) {
+
+        if (filmStorage.notExists(filmId)) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
         }
 
