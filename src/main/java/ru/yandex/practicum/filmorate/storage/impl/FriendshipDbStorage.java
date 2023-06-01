@@ -12,11 +12,6 @@ import java.util.List;
 @Repository
 public class FriendshipDbStorage implements FriendshipStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final String saveSql = "INSERT INTO friendships (first_user_id, second_user_id) VALUES (?, ?)";
-    private final String deleteSql = "DELETE FROM friendships WHERE first_user_id = ? AND second_user_id = ?";
-    private final String getAllByUserIdSql = "SELECT * " +
-            "FROM friendships " +
-            "WHERE first_user_id = ?";
 
     public FriendshipDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -24,17 +19,25 @@ public class FriendshipDbStorage implements FriendshipStorage {
 
     @Override
     public void save(int userId, int friendId) {
-        jdbcTemplate.update(saveSql, userId, friendId);
+        String saveQuery = "INSERT INTO friendships (first_user_id, second_user_id) VALUES (?, ?)";
+
+        jdbcTemplate.update(saveQuery, userId, friendId);
     }
 
     @Override
-    public boolean delete(int userId, int friendId) {
-        return jdbcTemplate.update(deleteSql, userId, friendId) > 1;
+    public void delete(int userId, int friendId) {
+        String deleteQuery = "DELETE FROM friendships WHERE first_user_id = ? AND second_user_id = ?";
+
+        jdbcTemplate.update(deleteQuery, userId, friendId);
     }
 
     @Override
-    public List<Friendship> getAllByUserId(int userId) {
-        return jdbcTemplate.query(getAllByUserIdSql, ((rs, rowNum) -> makeFriendship(rs)), userId);
+    public List<Friendship> findAllByUserId(int userId) {
+        String findAllByUserIdQuery = "SELECT * " +
+                "FROM friendships " +
+                "WHERE first_user_id = ?";
+
+        return jdbcTemplate.query(findAllByUserIdQuery, ((rs, rowNum) -> makeFriendship(rs)), userId);
     }
 
     private Friendship makeFriendship(ResultSet rs) throws SQLException {

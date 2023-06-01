@@ -8,9 +8,15 @@ import java.util.Optional;
 public interface FilmStorage {
     int save(Film film);
 
-    boolean update(Film film);
+    void update(Film film);
 
-    Optional<Film> getById(int filmId);
+    Optional<Film> findById(int filmId);
 
-    List<Film> getAll();
+    void deleteById(int filmId);
+
+    List<Film> findAll();
+
+    List<Film> findAllByNameSubstring(String query);
+
+    boolean notExists(Integer id);
 }

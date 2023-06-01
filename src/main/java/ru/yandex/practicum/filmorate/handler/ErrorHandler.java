@@ -6,7 +6,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.*;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 @Slf4j
@@ -22,41 +23,17 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
-        String error = "ошибка поиска";
-        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
-        return new ErrorResponse(error, e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleFilmNotFoundException(final FilmNotFoundException e) {
-        String error = "ошибка поиска";
-        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
-        return new ErrorResponse(error, e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleGenreNotFoundException(final GenreNotFoundException e) {
-        String error = "ошибка поиска";
-        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
-        return new ErrorResponse(error, e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleMpaNotFoundException(final MpaNotFoundException e) {
-        String error = "ошибка поиска";
-        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
-        return new ErrorResponse(error, e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
         String error = "непредвиденная ошибка";
+        log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
+        return new ErrorResponse(error, e.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFoundExceptions(final RuntimeException e) {
+        String error = "ошибка поиска";
         log.warn("Произошла ошибка: {}. Описание: {}", error, e.getMessage());
         return new ErrorResponse(error, e.getMessage());
     }

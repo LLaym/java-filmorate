@@ -12,11 +12,6 @@ import java.util.List;
 @Repository
 public class FilmGenreDbStorage implements FilmGenreStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final String saveSql = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
-    private final String getAllByFilmSql = "SELECT * " +
-            "FROM film_genre " +
-            "WHERE film_id = ?";
-    private final String deleteSql = "DELETE FROM film_genre WHERE film_id = ?";
 
     public FilmGenreDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -24,17 +19,25 @@ public class FilmGenreDbStorage implements FilmGenreStorage {
 
     @Override
     public void save(int filmId, int genreId) {
-        jdbcTemplate.update(saveSql, filmId, genreId);
+        String saveQuery = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
+
+        jdbcTemplate.update(saveQuery, filmId, genreId);
     }
 
     @Override
-    public List<FilmGenre> getAllByFilmId(int filmId) {
-        return jdbcTemplate.query(getAllByFilmSql, ((rs, rowNum) -> makeFilmGenre(rs)), filmId);
+    public List<FilmGenre> findAllByFilmId(int filmId) {
+        String findAllByFilmQuery = "SELECT * " +
+                "FROM film_genre " +
+                "WHERE film_id = ?";
+
+        return jdbcTemplate.query(findAllByFilmQuery, ((rs, rowNum) -> makeFilmGenre(rs)), filmId);
     }
 
     @Override
-    public boolean deleteAllByFilmId(int filmId) {
-        return jdbcTemplate.update(deleteSql, filmId) > 1;
+    public void deleteAllByFilmId(int filmId) {
+        String deleteQuery = "DELETE FROM film_genre WHERE film_id = ?";
+
+        jdbcTemplate.update(deleteQuery, filmId);
     }
 
     private FilmGenre makeFilmGenre(ResultSet rs) throws SQLException {

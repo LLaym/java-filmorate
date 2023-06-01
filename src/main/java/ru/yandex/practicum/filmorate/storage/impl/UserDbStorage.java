@@ -21,14 +21,6 @@ import java.util.Optional;
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final String updateSql = "UPDATE users " +
-            "SET email = ?" +
-            ", login = ?" +
-            ", name = ?" +
-            ", birthday = ? " +
-            "WHERE id = ?";
-    private final String getByIdSql = "SELECT * FROM users WHERE id = ?";
-    private final String getAllSql = "SELECT * FROM users";
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -55,26 +47,52 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public boolean update(User user) {
+    public void update(User user) {
+        String updateQuery = "UPDATE users " +
+                "SET email = ?" +
+                ", login = ?" +
+                ", name = ?" +
+                ", birthday = ? " +
+                "WHERE id = ?";
         String id = String.valueOf(user.getId());
         String email = user.getEmail();
         String login = user.getLogin();
         String name = user.getName();
         String birthday = user.getBirthday().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        return jdbcTemplate.update(updateSql, email, login, name, birthday, id) > 1;
+        jdbcTemplate.update(updateQuery, email, login, name, birthday, id);
     }
 
     @Override
-    public Optional<User> getById(int userId) {
-        return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeUser(rs)), userId)
+    public Optional<User> findById(int userId) {
+        String findByIdQuery = "SELECT * FROM users WHERE id = ?";
+
+        return jdbcTemplate.query(findByIdQuery, ((rs, rowNum) -> makeUser(rs)), userId)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public List<User> getAll() {
-        return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeUser(rs)));
+    public void deleteById(int userId) {
+        String deleteByIdQuery = "DELETE FROM users WHERE id = ?";
+
+        jdbcTemplate.update(deleteByIdQuery, userId);
+    }
+
+    @Override
+    public boolean notExists(Integer id) {
+        String notExistsQuery = "SELECT COUNT(*) FROM users WHERE id = ?";
+
+        Integer count = jdbcTemplate.queryForObject(notExistsQuery, Integer.class, id);
+
+        return count == null || count == 0;
+    }
+
+    @Override
+    public List<User> findAll() {
+        String findAllQuery = "SELECT * FROM users";
+
+        return jdbcTemplate.query(findAllQuery, ((rs, rowNum) -> makeUser(rs)));
     }
 
     private User makeUser(ResultSet rs) throws SQLException {

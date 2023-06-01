@@ -97,7 +97,7 @@ class LikeDbStorageTest {
         likeStorage.save(2, 2);
         likeStorage.save(3, 1);
 
-        List<Integer> popularFilms = likeStorage.getPopularFilmsIds(5);
+        List<Integer> popularFilms = likeStorage.findPopularFilmsIds(5);
 
         assertFalse(popularFilms.isEmpty());
         assertEquals(4, popularFilms.size());
@@ -110,7 +110,7 @@ class LikeDbStorageTest {
         likeStorage.delete(1, 2);
         likeStorage.delete(1, 3);
 
-        List<Integer> popularFilms2 = likeStorage.getPopularFilmsIds(5);
+        List<Integer> popularFilms2 = likeStorage.findPopularFilmsIds(5);
 
         assertFalse(popularFilms2.isEmpty());
         assertEquals(4, popularFilms2.size());

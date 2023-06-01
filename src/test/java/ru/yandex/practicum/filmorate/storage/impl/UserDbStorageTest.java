@@ -33,7 +33,7 @@ class UserDbStorageTest {
 
         userStorage.save(expectedUser);
 
-        User user = userStorage.getById(1).get();
+        User user = userStorage.findById(1).get();
 
         assertEquals(user.getId(), 1);
         assertEquals(user.getName(), expectedUser.getName());
@@ -63,7 +63,7 @@ class UserDbStorageTest {
 
         userStorage.update(expectedUser);
 
-        User updatedUser = userStorage.getById(1).get();
+        User updatedUser = userStorage.findById(1).get();
 
         assertEquals(updatedUser.getId(), expectedUser.getId());
         assertEquals(updatedUser.getName(), expectedUser.getName());
@@ -83,7 +83,7 @@ class UserDbStorageTest {
 
         userStorage.save(expectedUser);
 
-        User user = userStorage.getById(1).get();
+        User user = userStorage.findById(1).get();
 
         assertEquals(user.getId(), 1);
         assertEquals(user.getName(), expectedUser.getName());
@@ -103,7 +103,7 @@ class UserDbStorageTest {
 
         userStorage.save(expectedUser);
 
-        List<User> users = userStorage.getAll();
+        List<User> users = userStorage.findAll();
 
         assertEquals(1, users.size());
         assertEquals(users.get(0).getId(), 1);

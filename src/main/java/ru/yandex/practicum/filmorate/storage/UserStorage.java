@@ -8,9 +8,13 @@ import java.util.Optional;
 public interface UserStorage {
     int save(User user);
 
-    boolean update(User user);
+    void update(User user);
 
-    Optional<User> getById(int userId);
+    Optional<User> findById(int userId);
 
-    List<User> getAll();
+    List<User> findAll();
+
+    void deleteById(int userId);
+
+    boolean notExists(Integer id);
 }

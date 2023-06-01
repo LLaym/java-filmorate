@@ -4,14 +4,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.FilmGenreStorage;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.MpaStorage;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,21 +21,16 @@ public class FilmDbStorage implements FilmStorage {
     private final MpaStorage mpaStorage;
     private final FilmGenreStorage filmGenreStorage;
     private final GenreStorage genreStorage;
-    private final String updateSql = "UPDATE films "
-            + "SET name = ?"
-            + ", description = ?"
-            + ", release_date = ?"
-            + ", duration = ? "
-            + ", mpa_id = ? "
-            + "WHERE id = ?";
-    private final String getByIdSql = "SELECT * FROM films WHERE id = ?";
-    private final String getAllSql = "SELECT * FROM films";
+    private final FilmDirectorStorage filmDirectorStorage;
+    private final DirectorStorage directorStorage;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, FilmGenreStorage filmGenreStorage, GenreStorage genreStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, FilmGenreStorage filmGenreStorage, GenreStorage genreStorage, FilmDirectorStorage filmDirectorStorage, DirectorStorage directorStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaStorage = mpaStorage;
         this.filmGenreStorage = filmGenreStorage;
         this.genreStorage = genreStorage;
+        this.filmDirectorStorage = filmDirectorStorage;
+        this.directorStorage = directorStorage;
     }
 
     @Override
@@ -68,12 +57,22 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getGenres() != null) {
             film.getGenres().forEach(genre -> filmGenreStorage.save(generatedId, genre.getId()));
         }
+        if (film.getDirectors() != null) {
+            film.getDirectors().forEach(director -> filmDirectorStorage.save(generatedId, director.getId()));
+        }
 
         return generatedId;
     }
 
     @Override
-    public boolean update(Film film) {
+    public void update(Film film) {
+        String updateQuery = "UPDATE films "
+                + "SET name = ?"
+                + ", description = ?"
+                + ", release_date = ?"
+                + ", duration = ? "
+                + ", mpa_id = ? "
+                + "WHERE id = ?";
         String id = String.valueOf(film.getId());
         String name = film.getName();
         String description = film.getDescription();
@@ -88,20 +87,54 @@ public class FilmDbStorage implements FilmStorage {
                     .map(Genre::getId)
                     .forEach(genreId -> filmGenreStorage.save(film.getId(), genreId));
         }
+        filmDirectorStorage.deleteAllByFilmId(film.getId());
+        if (film.getDirectors() != null) {
+            film.getDirectors()
+                    .stream()
+                    .map(Director::getId)
+                    .forEach(directorId -> filmDirectorStorage.save(film.getId(), directorId));
+        }
 
-        return jdbcTemplate.update(updateSql, name, description, releaseDate, duration, mpa, id) > 1;
+        jdbcTemplate.update(updateQuery, name, description, releaseDate, duration, mpa, id);
     }
 
     @Override
-    public Optional<Film> getById(int filmId) {
-        return jdbcTemplate.query(getByIdSql, ((rs, rowNum) -> makeFilm(rs)), filmId)
+    public Optional<Film> findById(int filmId) {
+        String findByIdQuery = "SELECT * FROM films WHERE id = ?";
+
+        return jdbcTemplate.query(findByIdQuery, ((rs, rowNum) -> makeFilm(rs)), filmId)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public List<Film> getAll() {
-        return jdbcTemplate.query(getAllSql, ((rs, rowNum) -> makeFilm(rs)));
+    public List<Film> findAll() {
+        String findAllQuery = "SELECT * FROM films";
+
+        return jdbcTemplate.query(findAllQuery, ((rs, rowNum) -> makeFilm(rs)));
+    }
+
+    @Override
+    public void deleteById(int filmId) {
+        String deleteByIdQuery = "DELETE FROM films WHERE id = ?";
+
+        jdbcTemplate.update(deleteByIdQuery, filmId);
+    }
+
+    @Override
+    public List<Film> findAllByNameSubstring(String query) {
+        String findAllByNameSubstringQuery = "SELECT * FROM films WHERE LOWER(name) LIKE LOWER(?)";
+
+        return jdbcTemplate.query(findAllByNameSubstringQuery, ((rs, rowNum) -> makeFilm(rs)), "%" + query + "%");
+    }
+
+    @Override
+    public boolean notExists(Integer id) {
+        String notExistsQuery = "SELECT COUNT(*) FROM films WHERE id = ?";
+
+        Integer count = jdbcTemplate.queryForObject(notExistsQuery, Integer.class, id);
+
+        return count == null || count == 0;
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
@@ -110,13 +143,21 @@ public class FilmDbStorage implements FilmStorage {
         String description = rs.getString("description");
         LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
-        Mpa mpa = mpaStorage.getById(rs.getInt("mpa_id")).orElse(null);
-        Set<Genre> genres = filmGenreStorage.getAllByFilmId(id)
+        Mpa mpa = mpaStorage.findById(rs.getInt("mpa_id")).orElse(null);
+        Set<Genre> genres = filmGenreStorage.findAllByFilmId(id)
                 .stream()
                 .map(FilmGenre::getGenreId)
-                .map(genreStorage::getById)
+                .map(genreStorage::findById)
+                .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
+        List<Director> directors = filmDirectorStorage.findAllByFilmId(id)
+                .stream()
+                .map(FilmDirector::getDirectorId)
+                .map(directorStorage::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
 
         return Film.builder()
                 .id(id).name(name)
@@ -125,6 +166,7 @@ public class FilmDbStorage implements FilmStorage {
                 .duration(duration)
                 .mpa(mpa)
                 .genres(genres)
+                .directors(directors)
                 .build();
     }
 }

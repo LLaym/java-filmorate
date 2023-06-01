@@ -35,7 +35,7 @@ class FilmDbStorageTest {
 
         filmStorage.save(expectedFilm);
 
-        Film film = filmStorage.getById(1).get();
+        Film film = filmStorage.findById(1).get();
 
         assertEquals(film.getId(), 1);
         assertEquals(film.getName(), expectedFilm.getName());
@@ -68,7 +68,7 @@ class FilmDbStorageTest {
 
         filmStorage.update(expectedFilm);
 
-        Film updatedFilm = filmStorage.getById(1).get();
+        Film updatedFilm = filmStorage.findById(1).get();
 
         assertEquals(updatedFilm.getId(), expectedFilm.getId());
         assertEquals(updatedFilm.getName(), expectedFilm.getName());
@@ -90,7 +90,7 @@ class FilmDbStorageTest {
 
         filmStorage.save(expectedFilm);
 
-        Film film = filmStorage.getById(1).get();
+        Film film = filmStorage.findById(1).get();
 
         assertEquals(film.getId(), 1);
         assertEquals(film.getName(), expectedFilm.getName());
@@ -112,7 +112,7 @@ class FilmDbStorageTest {
 
         filmStorage.save(expectedFilm);
 
-        List<Film> films = filmStorage.getAll();
+        List<Film> films = filmStorage.findAll();
 
         assertEquals(1, films.size());
         assertEquals(films.get(0).getId(), 1);
